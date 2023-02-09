@@ -1,8 +1,6 @@
 name: Code style - PEP8
 
-#on: [push, pull_request]
-on: [ pull_request]
-
+on: [push, pull_request]
 
 jobs:
 
