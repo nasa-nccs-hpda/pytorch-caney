@@ -46,6 +46,9 @@ RUN git clone --single-branch --branch master https://github.com/pkolano/shift.g
 # Pip
 RUN pip --no-cache-dir install omegaconf \
     pytorch-lightning \
+    Lightning \
+    transformers \
+    datasets \
     rasterio \
     rioxarray \
     xarray \
