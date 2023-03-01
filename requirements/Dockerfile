@@ -17,7 +17,7 @@ ENV C_INCLUDE_PATH="/usr/include/gdal"
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
     add-apt-repository ppa:ubuntugis/ppa && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash && \
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
     apt-get update && apt-get -y dist-upgrade && \
     apt-get -y install build-essential libsm6 libxext6 libxrender-dev libfontconfig1 \
         bzip2 diffutils file build-essential make swig wget libnetcdf-dev \
