@@ -13,15 +13,13 @@ from torch.utils.data import DataLoader, Dataset
 
 from lightning.pytorch import cli_lightning_logo, LightningModule, Trainer
 from lightning.pytorch.loggers import WandbLogger, CSVLogger
-from pytorch_lightning.callbacks import EarlyStopping, TQDMProgressBar
-
-
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 
 
 class MODISDataset(Dataset):
 
-    IMAGE_PATH = os.path.join("img")
-    MASK_PATH = os.path.join("label")
+    IMAGE_PATH = os.path.join("images_1m_0")
+    MASK_PATH = os.path.join("labels_1m_0")
 
     def __init__(
         self,
@@ -42,9 +40,10 @@ class MODISDataset(Dataset):
         # Split between train and valid set (80/20)
         random_inst = random.Random(12345)  # for repeatability
         n_items = len(self.img_list)
-        idxs = random_inst.sample(range(n_items), n_items // 5)
+        idxs = set(random_inst.sample(range(n_items), n_items // 5))
+        total_idxs = set(range(n_items))
         if self.split == "train":
-            idxs = [idx for idx in range(n_items) if idx not in idxs]
+            idxs = total_idxs - idxs
         self.img_list = [self.img_list[i] for i in idxs]
         self.mask_list = [self.mask_list[i] for i in idxs]
 
@@ -96,13 +95,13 @@ class UNet(nn.Module):
     """
 
     def __init__(
-                self,
-                num_channels: int = 7,
-                num_classes: int = 19,
-                num_layers: int = 5,
-                features_start: int = 64,
-                bilinear: bool = False
-            ):
+        self,
+        num_channels: int = 7,
+        num_classes: int = 19,
+        num_layers: int = 5,
+        features_start: int = 64,
+        bilinear: bool = False
+    ):
 
         super().__init__()
         self.num_layers = num_layers
@@ -231,11 +230,11 @@ class SegmentationModel(LightningModule):
 
     def __init__(
         self,
-        data_path: str,
-        n_classes: int,
-        batch_size: int = 4,
-        lr: float = 1e-3,
-        num_layers: int = 3,
+        data_path: str = '.',
+        n_classes: int = 18,
+        batch_size: int = 256,
+        lr: float = 3e-4,
+        num_layers: int = 5,
         features_start: int = 64,
         bilinear: bool = False,
         **kwargs,
@@ -248,6 +247,7 @@ class SegmentationModel(LightningModule):
         self.num_layers = num_layers
         self.features_start = features_start
         self.bilinear = bilinear
+        self.validation_step_outputs = []
 
         self.net = UNet(
             num_classes=self.n_classes,
@@ -259,23 +259,19 @@ class SegmentationModel(LightningModule):
             [
                 transforms.ToTensor(),
                 transforms.Normalize(
-                    mean=[
-                        0.35675976, 0.37380189, 0.3764753,
-                        0.35675976, 0.37380189, 0.3764753,
-                        0.3764753
-                    ],
-                    std=[
-                        0.32064945, 0.32098866, 0.32325324,
-                        0.32064945, 0.32098866, 0.32325324,
-                        0.32325324
-                    ]
+                    mean=[0.0173, 0.0332, 0.0088,
+                          0.0136, 0.0381, 0.0348, 0.0249],
+                    std=[0.0150, 0.0127, 0.0124,
+                         0.0128, 0.0120, 0.0159, 0.0164]
                 ),
             ]
         )
-        self.trainset = MODISDataset(
-            self.data_path, split="train", transform=self.transform)
-        self.validset = MODISDataset(
-            self.data_path, split="valid", transform=self.transform)
+        #self.trainset = MODISDataset(
+        #    self.data_path, split="train", transform=self.transform)
+        #self.validset = MODISDataset(
+        #    self.data_path, split="valid", transform=self.transform)
+
+    # def init_
 
     def forward(self, x):
         return self.net(x)
@@ -287,6 +283,7 @@ class SegmentationModel(LightningModule):
         out = self(img)
         loss = F.cross_entropy(out, mask, ignore_index=250)
         log_dict = {"train_loss": loss}
+        self.log_dict(log_dict)
         return {"loss": loss, "log": log_dict, "progress_bar": log_dict}
 
     def validation_step(self, batch, batch_idx):
@@ -295,11 +292,14 @@ class SegmentationModel(LightningModule):
         mask = mask.long()
         out = self(img)
         loss_val = F.cross_entropy(out, mask, ignore_index=250)
+        self.validation_step_outputs.append(loss_val)
         return {"val_loss": loss_val}
 
-    def validation_epoch_end(self, outputs):
-        loss_val = torch.stack([x["val_loss"] for x in outputs]).mean()
+    def on_validation_epoch_end(self):
+        loss_val = torch.stack(self.validation_step_outputs).mean()
         log_dict = {"val_loss": loss_val}
+        self.log("val_loss", loss_val, sync_dist=True)
+        self.validation_step_outputs.clear()
         return {
             "log": log_dict,
             "val_loss": log_dict["val_loss"],
@@ -315,7 +315,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.trainset,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count(),
+            #num_workers=multiprocessing.cpu_count(),
             shuffle=True
         )
 
@@ -323,7 +323,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.validset,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count(),
+            #num_workers=multiprocessing.cpu_count(),
             shuffle=False
         )
 
@@ -344,20 +344,29 @@ def main(hparams: Namespace):
     #    logger.watch(model.net)
 
     train_callbacks = [
-        #TQDMProgressBar(refresh_rate=20),
-        EarlyStopping('val_loss', patience=5),
+        # TQDMProgressBar(refresh_rate=20),
+        ModelCheckpoint(dirpath='models/',
+                        monitor='val_loss',
+                        save_top_k=5,
+                        filename='{epoch}-{val_loss:.2f}.ckpt'),
+        EarlyStopping("val_loss", patience=10, mode='min'),
     ]
+
+    # See number of devices
+    print(f'Number of CUDA devices: {torch.cuda.device_count()}')
 
     # ------------------------
     # 3 INIT TRAINER
     # ------------------------
+    # trainer = Trainer(
+    # ------------------------
     trainer = Trainer(
         accelerator="gpu",
-        devices=torch.cuda.device_count(),
+        devices=8,
         strategy="ddp",
         min_epochs=1,
-        max_epochs=3,
-        #callbacks=[EarlyStopping('val_loss')],
+        max_epochs=500,
+        callbacks=train_callbacks,
         logger=CSVLogger(save_dir="logs/"),
         # precision=16 # makes loss nan, need to fix that
     )
@@ -377,7 +386,6 @@ def main(hparams: Namespace):
     # trainer.test(ckpt_path="best", dataloaders=)
 
 
-
 if __name__ == "__main__":
     cli_lightning_logo()
 
@@ -388,9 +396,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n-classes", type=int, default=18, help="number of classes")
     parser.add_argument(
-        "--batch_size", type=int, default=16, help="size of the batches")
+        "--batch_size", type=int, default=256, help="size of the batches")
     parser.add_argument(
-        "--lr", type=float, default=0.001, help="adam: learning rate")
+        "--lr", type=float, default=3e-4, help="adam: learning rate")
     parser.add_argument(
         "--num_layers", type=int, default=5, help="number of layers on u-net")
     parser.add_argument(

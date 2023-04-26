@@ -2,9 +2,14 @@ import logging
 import math
 import numpy as np
 
-from xrasterlib.dl.processing import normalize
-from xrasterlib.dl.processing import globalStandardization
-from xrasterlib.dl.processing import localStandardization
+import torch
+
+from tiler import Tiler, Merger
+
+from pytorch_caney.model.processing import normalize
+from pytorch_caney.model.processing import globalStandardization
+from pytorch_caney.model.processing import localStandardization
+from pytorch_caney.model.processing import standardize_image
 
 __author__ = "Jordan A Caraballo-Vega, Science Data Processing Branch"
 __email__ = "jordan.a.caraballo-vega@nasa.gov"
@@ -19,7 +24,85 @@ __status__ = "Production"
 # ---------------------------------------------------------------------------
 # Module Methods
 # ---------------------------------------------------------------------------
+def sliding_window_tiler_multiclass(
+            xraster,
+            model,
+            n_classes: int,
+            pad_style: str = 'reflect',
+            overlap: float = 0.50,
+            constant_value: int = 600,
+            batch_size: int = 1024,
+            threshold: float = 0.50,
+            standardization: str = None,
+            mean=None,
+            std=None,
+            normalize: float = 1.0,
+            rescale: str = None,
+            window: str = 'triang',  # 'overlap-tile'
+            probability_map: bool = False
+        ):
+    """
+    Sliding window using tiler.
+    """
 
+    tile_size = xraster.shape[0] # model.layers[0].input_shape[0][1]
+    tile_channels = xraster.shape[-1] # model.layers[0].input_shape[0][-1]
+    # n_classes = out of the output layer, output_shape
+
+    tiler_image = Tiler(
+        data_shape=xraster.shape,
+        tile_shape=(tile_size, tile_size, tile_channels),
+        channel_dimension=-1,
+        overlap=overlap,
+        mode=pad_style,
+        constant_value=constant_value
+    )
+
+    # Define the tiler and merger based on the output size of the prediction
+    tiler_mask = Tiler(
+        data_shape=(xraster.shape[0], xraster.shape[1], n_classes),
+        tile_shape=(tile_size, tile_size, n_classes),
+        channel_dimension=-1,
+        overlap=overlap,
+        mode=pad_style,
+        constant_value=constant_value
+    )
+
+    merger = Merger(tiler=tiler_mask, window=window)
+    # xraster = normalize_image(xraster, normalize)
+
+    # Iterate over the data in batches
+    for batch_id, batch_i in tiler_image(xraster, batch_size=batch_size):
+
+        # Standardize
+        batch = batch_i.copy()
+
+        if standardization is not None:
+            for item in range(batch.shape[0]):
+                batch[item, :, :, :] = standardize_image(
+                    batch[item, :, :, :], standardization, mean, std)
+        
+        input_batch = batch.astype('float32')
+        input_batch_tensor = torch.from_numpy(input_batch)
+        input_batch_tensor = input_batch_tensor.transpose(-1, 1)
+        with torch.no_grad():
+            y_batch = model(input_batch_tensor)
+
+        y_batch = y_batch.transpose(1, -1).numpy()
+        merger.add_batch(batch_id, batch_size, y_batch)
+
+    prediction = merger.merge(unpad=True)
+
+    if not probability_map:
+        if prediction.shape[-1] > 1:
+            prediction = np.argmax(prediction, axis=-1)
+        else:
+            prediction = np.squeeze(
+                np.where(prediction > threshold, 1, 0).astype(np.int16)
+            )
+    else:
+        prediction = np.squeeze(prediction)
+    return prediction
 
 # --------------------------- Segmentation Functions ----------------------- #
 
@@ -124,6 +207,7 @@ def predict_sliding(image, model='', stand_method='local',
     Predict on tiles of exactly the network input shape.
     This way nothing gets squeezed.
     """
+    model.eval()
     stride = math.ceil(tile_size * (1 - overlap))
     tile_rows = max(
         int(math.ceil((image.shape[0] - tile_size) / stride) + 1), 1
@@ -165,11 +249,17 @@ def predict_sliding(image, model='', stand_method='local',
                 imgn = padded_img
 
             imgn = imgn.astype('float32')
-
-            padded_prediction = model.predict(imgn)[0]
+            imgn_tensor = torch.from_numpy(imgn)
+            imgn_tensor = imgn_tensor.transpose(-1, 1)
+            with torch.no_grad():
+                padded_prediction = model(imgn_tensor)
+            # if padded_prediction.shape[1] > 1:
+            #     padded_prediction = np.argmax(padded_prediction, axis=1)
+            padded_prediction = np.squeeze(padded_prediction)
+            padded_prediction = padded_prediction.transpose(0, -1).numpy()
             prediction = padded_prediction[0:img.shape[0], 0:img.shape[1], :]
             count_predictions[y1:y2, x1:x2] += 1
-            full_probs[y1:y2, x1:x2] += prediction * spline
+            full_probs[y1:y2, x1:x2] += prediction#  * spline
     # average the predictions in the overlapping regions
     full_probs /= count_predictions
     return full_probs

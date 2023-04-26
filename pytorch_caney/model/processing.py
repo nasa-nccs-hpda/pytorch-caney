@@ -63,7 +63,7 @@ def globalStandardization(images, strategy='per-batch') -> np.array:
 
 
 def localStandardization(images, filename='normalization_data',
-                         ndata=pd.DataFrame(), strategy='per-batch'
+                         ndata=None, strategy='per-batch'
                          ) -> np.array:
     """
     Standardize numpy array using local standardization.
@@ -73,7 +73,7 @@ def localStandardization(images, filename='normalization_data',
     :param strategy: can select between per-image or per-batch.
     :return: locally standardized numpy array
     """
-    if not ndata.empty:  # for inference only
+    if ndata:  # for inference only
         for i in range(images.shape[-1]):  # for each channel in images
             # standardize all images based on given mean and std
             images[:, :, :, i] = \
@@ -111,6 +111,56 @@ def localStandardization(images, filename='normalization_data',
 
     return images
 
+def standardize_image(
+    image,
+    standardization_type: str,
+    mean: list = None,
+    std: list = None,
+    global_min: list = None,
+    global_max: list = None
+):
+    """
+    Standardize image within parameter, simple scaling of values.
+    Loca, Global, and Mixed options.
+    """
+    image = image.astype(np.float32)
+    if standardization_type == 'local':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - np.mean(image[:, :, i])) / \
+                (np.std(image[:, :, i]) + 1e-8)
+    elif standardization_type == 'minmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - 0) / (55-0)
+    elif standardization_type == 'localminmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - np.min(image[:, :, 0])) / \
+                (np.max(image[:, :, i])-np.min(image[:, :, i]))
+    elif standardization_type == 'globalminmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - global_min) / \
+                (global_max - global_min)
+    elif standardization_type == 'global':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - mean[i]) / (std[i] + 1e-8)
+    elif standardization_type == 'mixed':
+        raise NotImplementedError
+    return image
+
+
+def standardize_batch(
+    image_batch,
+    standardization_type: str,
+    mean: list = None,
+    std: list = None
+):
+    """
+    Standardize image within parameter, simple scaling of values.
+    Loca, Global, and Mixed options.
+    """
+    for item in range(image_batch.shape[0]):
+        image_batch[item, :, :, :] = standardize_image(
+            image_batch[item, :, :, :], standardization_type, mean, std)
+    return image_batch
 
 # ------------------------ Data Preparation Functions ----------------------- #
 
