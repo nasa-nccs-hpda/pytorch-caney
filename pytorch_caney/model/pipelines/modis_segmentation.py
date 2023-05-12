@@ -12,7 +12,7 @@ import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
 from lightning.pytorch import cli_lightning_logo, LightningModule, Trainer
-from lightning.pytorch.loggers import WandbLogger, CSVLogger
+from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 
 
@@ -81,7 +81,8 @@ class UNet(nn.Module):
     Architecture based on U-Net: Convolutional Networks for
     Biomedical Image Segmentation.
     Link - https://arxiv.org/abs/1505.04597
-    >>> UNet(num_classes=2, num_layers=3)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> UNet(num_classes=2, num_layers=3)  \
+        # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     UNet(
       (layers): ModuleList(
         (0): DoubleConv(...)
@@ -134,7 +135,8 @@ class UNet(nn.Module):
 
 class DoubleConv(nn.Module):
     """Double Convolution and BN and ReLU (3x3 conv -> BN -> ReLU) ** 2.
-    >>> DoubleConv(4, 4)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> DoubleConv(4, 4) \
+      # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     DoubleConv(
       (net): Sequential(...)
     )
@@ -266,12 +268,10 @@ class SegmentationModel(LightningModule):
                 ),
             ]
         )
-        #self.trainset = MODISDataset(
-        #    self.data_path, split="train", transform=self.transform)
-        #self.validset = MODISDataset(
-        #    self.data_path, split="valid", transform=self.transform)
-
-    # def init_
+        self.trainset = MODISDataset(
+            self.data_path, split="train", transform=self.transform)
+        self.validset = MODISDataset(
+            self.data_path, split="valid", transform=self.transform)
 
     def forward(self, x):
         return self.net(x)

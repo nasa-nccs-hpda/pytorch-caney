@@ -89,7 +89,6 @@ class UNetSegmentation(LightningModule):
         )
         return tensorboard_logs
 
-
     def training_epoch_end(self, outputs):
         # Get average metrics from multi-GPU batch sources
         loss_val = torch.stack([x["loss"] for x in outputs]).mean()
@@ -109,7 +108,6 @@ class UNetSegmentation(LightningModule):
             sync_dist=True, prog_bar=True
         )
         return tensorboard_logs
-
 
     #    # Send output to logger
     #    self.log(
@@ -142,8 +140,8 @@ class UNetSegmentation(LightningModule):
         tensorboard_logs['val_loss'] = F.cross_entropy(logits, mask)
 
         self.log(
-             'val_loss', tensorboard_logs['val_loss'],
-             sync_dist=True, prog_bar=True
+            'val_loss', tensorboard_logs['val_loss'],
+            sync_dist=True, prog_bar=True
         )
         self.log(
             'val_acc', tensorboard_logs['val_Accuracy'],
@@ -155,8 +153,7 @@ class UNetSegmentation(LightningModule):
         )
         return tensorboard_logs
 
-
-    #def validation_epoch_end(self, outputs):
+    # def validation_epoch_end(self, outputs):
 
     #    # Get average metrics from multi-GPU batch sources
     #    loss_val = torch.stack([x["val_loss"] for x in outputs]).mean()
