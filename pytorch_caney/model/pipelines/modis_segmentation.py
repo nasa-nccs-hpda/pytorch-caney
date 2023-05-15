@@ -135,7 +135,8 @@ class UNet(nn.Module):
 
 class DoubleConv(nn.Module):
     """Double Convolution and BN and ReLU (3x3 conv -> BN -> ReLU) ** 2.
-    >>> DoubleConv(4, 4)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> DoubleConv(4, 4) \
+      # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     DoubleConv(
       (net): Sequential(...)
     )
@@ -233,9 +234,9 @@ class SegmentationModel(LightningModule):
         self,
         data_path: str = '.',
         n_classes: int = 18,
-        batch_size: int = 4,
+        batch_size: int = 256,
         lr: float = 3e-4,
-        num_layers: int = 3,
+        num_layers: int = 5,
         features_start: int = 64,
         bilinear: bool = False,
         **kwargs,
@@ -314,7 +315,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.trainset,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count(),
+            #num_workers=multiprocessing.cpu_count(),
             shuffle=True
         )
 
@@ -322,7 +323,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.validset,
             batch_size=self.batch_size,
-            num_workers=multiprocessing.cpu_count(),
+            #num_workers=multiprocessing.cpu_count(),
             shuffle=False
         )
 
