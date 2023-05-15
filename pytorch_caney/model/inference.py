@@ -7,8 +7,8 @@ import torch
 from tiler import Tiler, Merger
 
 from pytorch_caney.model.processing import normalize
-from pytorch_caney.model.processing import globalStandardization
-from pytorch_caney.model.processing import localStandardization
+from pytorch_caney.model.processing import global_standardization
+from pytorch_caney.model.processing import local_standardization
 from pytorch_caney.model.processing import standardize_image
 
 __author__ = "Jordan A Caraballo-Vega, Science Data Processing Branch"
@@ -20,6 +20,7 @@ __status__ = "Production"
 #
 # Data segmentation and prediction functions.
 # ---------------------------------------------------------------------------
+
 
 # ---------------------------------------------------------------------------
 # Module Methods
@@ -45,8 +46,8 @@ def sliding_window_tiler_multiclass(
     Sliding window using tiler.
     """
 
-    tile_size = xraster.shape[0] # model.layers[0].input_shape[0][1]
-    tile_channels = xraster.shape[-1] # model.layers[0].input_shape[0][-1]
+    tile_size = xraster.shape[0]  # model.layers[0].input_shape[0][1]
+    tile_channels = xraster.shape[-1]  # model.layers[0].input_shape[0][-1]
     # n_classes = out of the output layer, output_shape
 
     tiler_image = Tiler(
@@ -81,7 +82,7 @@ def sliding_window_tiler_multiclass(
             for item in range(batch.shape[0]):
                 batch[item, :, :, :] = standardize_image(
                     batch[item, :, :, :], standardization, mean, std)
-        
+
         input_batch = batch.astype('float32')
         input_batch_tensor = torch.from_numpy(input_batch)
         input_batch_tensor = input_batch_tensor.transpose(-1, 1)
@@ -103,6 +104,7 @@ def sliding_window_tiler_multiclass(
     else:
         prediction = np.squeeze(prediction)
     return prediction
+
 
 # --------------------------- Segmentation Functions ----------------------- #
 
@@ -238,11 +240,11 @@ def predict_sliding(image, model='', stand_method='local',
             padded_img = np.expand_dims(padded_img, 0)
 
             if stand_method == 'local':
-                imgn = localStandardization(
+                imgn = local_standardization(
                     padded_img, ndata=stand_data, strategy=stand_strategy
                     )
             elif stand_method == 'global':
-                imgn = globalStandardization(
+                imgn = global_standardization(
                     padded_img, strategy=stand_strategy
                     )
             else:
@@ -259,7 +261,7 @@ def predict_sliding(image, model='', stand_method='local',
             padded_prediction = padded_prediction.transpose(0, -1).numpy()
             prediction = padded_prediction[0:img.shape[0], 0:img.shape[1], :]
             count_predictions[y1:y2, x1:x2] += 1
-            full_probs[y1:y2, x1:x2] += prediction#  * spline
+            full_probs[y1:y2, x1:x2] += prediction  #  * spline
     # average the predictions in the overlapping regions
     full_probs /= count_predictions
     return full_probs
@@ -345,11 +347,11 @@ def predict_windowing(x, model, stand_method='local',
     # normalization(patches_array, ndata)
 
     if stand_method == 'local':  # apply local zero center standardization
-        patches_array = localStandardization(
+        patches_array = local_standardization(
             patches_array, ndata=stand_data, strategy=stand_strategy
             )
     elif stand_method == 'global':  # apply global zero center standardization
-        patches_array = globalStandardization(
+        patches_array = global_standardization(
             patches_array, strategy=stand_strategy
             )
 
