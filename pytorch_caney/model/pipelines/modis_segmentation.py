@@ -1,79 +1,20 @@
-import os
-import random
 import multiprocessing
 from argparse import ArgumentParser, Namespace
+import warnings
 
 import torch
 from torch import nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
-import numpy as np
 
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 
 from lightning.pytorch import cli_lightning_logo, LightningModule, Trainer
 from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 
-
-class MODISDataset(Dataset):
-
-    IMAGE_PATH = os.path.join("images_1m_0")
-    MASK_PATH = os.path.join("labels_1m_0")
-
-    def __init__(
-        self,
-        data_path: str,
-        split: str,
-        img_size: tuple = (256, 256),
-        transform=None,
-    ):
-        self.img_size = img_size
-        self.transform = transform
-        self.split = split
-        self.data_path = data_path
-        self.img_path = os.path.join(self.data_path, self.IMAGE_PATH)
-        self.mask_path = os.path.join(self.data_path, self.MASK_PATH)
-        self.img_list = self.get_filenames(self.img_path)
-        self.mask_list = self.get_filenames(self.mask_path)
-
-        # Split between train and valid set (80/20)
-        random_inst = random.Random(12345)  # for repeatability
-        n_items = len(self.img_list)
-        idxs = set(random_inst.sample(range(n_items), n_items // 5))
-        total_idxs = set(range(n_items))
-        if self.split == "train":
-            idxs = total_idxs - idxs
-        self.img_list = [self.img_list[i] for i in idxs]
-        self.mask_list = [self.mask_list[i] for i in idxs]
-
-    def __len__(self):
-        return len(self.img_list)
-
-    def __getitem__(self, idx, transpose=True):
-
-        # load image
-        img = np.load(self.img_list[idx])
-
-        # load mask
-        mask = np.load(self.mask_list[idx])
-        if len(mask.shape) > 2:
-            mask = np.argmax(mask, axis=-1)
-
-        # perform transformations
-        if self.transform is not None:
-            img = self.transform(img)
-
-        return img, mask
-
-    def get_filenames(self, path):
-        """
-        Returns a list of absolute paths to images inside given `path`
-        """
-        files_list = []
-        for filename in os.listdir(path):
-            files_list.append(os.path.join(path, filename))
-        return files_list
+from pytorch_caney.model.datasets.modis_dataset import MODISDataset
+from pytorch_caney.model.utils import check_gpus_available
 
 
 class UNet(nn.Module):
@@ -232,7 +173,7 @@ class SegmentationModel(LightningModule):
 
     def __init__(
         self,
-        data_path: str = '.',
+        data_path: list = [],
         n_classes: int = 18,
         batch_size: int = 256,
         lr: float = 3e-4,
@@ -242,7 +183,7 @@ class SegmentationModel(LightningModule):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.data_path = data_path
+        self.data_paths = data_path
         self.n_classes = n_classes
         self.batch_size = batch_size
         self.learning_rate = lr
@@ -268,10 +209,12 @@ class SegmentationModel(LightningModule):
                 ),
             ]
         )
+        print('> Init datasets')
         self.trainset = MODISDataset(
-            self.data_path, split="train", transform=self.transform)
+            self.data_paths, split="train", transform=self.transform)
         self.validset = MODISDataset(
-            self.data_path, split="valid", transform=self.transform)
+            self.data_paths, split="valid", transform=self.transform)
+        print('Done init datasets')
 
     def forward(self, x):
         return self.net(x)
@@ -315,7 +258,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.trainset,
             batch_size=self.batch_size,
-            #num_workers=multiprocessing.cpu_count(),
+            num_workers=multiprocessing.cpu_count(),
             shuffle=True
         )
 
@@ -323,7 +266,7 @@ class SegmentationModel(LightningModule):
         return DataLoader(
             self.validset,
             batch_size=self.batch_size,
-            #num_workers=multiprocessing.cpu_count(),
+            num_workers=multiprocessing.cpu_count(),
             shuffle=False
         )
 
@@ -332,6 +275,9 @@ def main(hparams: Namespace):
     # ------------------------
     # 1 INIT LIGHTNING MODEL
     # ------------------------
+    ngpus = int(hparams.ngpus)
+    del hparams.ngpus # PT ligtning does not expect this, del after use
+
     model = SegmentationModel(**vars(hparams))
 
     # ------------------------
@@ -353,7 +299,7 @@ def main(hparams: Namespace):
     ]
 
     # See number of devices
-    print(f'Number of CUDA devices: {torch.cuda.device_count()}')
+    check_gpus_available(ngpus)
 
     # ------------------------
     # 3 INIT TRAINER
@@ -362,7 +308,7 @@ def main(hparams: Namespace):
     # ------------------------
     trainer = Trainer(
         accelerator="gpu",
-        devices=8,
+        devices=ngpus,
         strategy="ddp",
         min_epochs=1,
         max_epochs=500,
@@ -391,8 +337,11 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument(
-        "--data_path", type=str, required=True,
+        "--data_path", nargs='+', required=True,
         help="path where dataset is stored")
+    parser.add_argument('--ngpus', type=int,
+                        default=torch.cuda.device_count(),
+                        help='number of gpus to use')
     parser.add_argument(
         "--n-classes", type=int, default=18, help="number of classes")
     parser.add_argument(
