@@ -1,5 +1,6 @@
 import multiprocessing
 from argparse import ArgumentParser, Namespace
+import warnings
 
 import torch
 from torch import nn
@@ -13,6 +14,7 @@ from lightning.pytorch.loggers import CSVLogger
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 
 from pytorch_caney.model.datasets.modis_dataset import MODISDataset
+from pytorch_caney.model.utils import check_gpus_available
 
 
 class UNet(nn.Module):
@@ -273,6 +275,9 @@ def main(hparams: Namespace):
     # ------------------------
     # 1 INIT LIGHTNING MODEL
     # ------------------------
+    ngpus = int(hparams.ngpus)
+    del hparams.ngpus # PT ligtning does not expect this, del after use
+
     model = SegmentationModel(**vars(hparams))
 
     # ------------------------
@@ -294,7 +299,7 @@ def main(hparams: Namespace):
     ]
 
     # See number of devices
-    print(f'Number of CUDA devices: {torch.cuda.device_count()}')
+    check_gpus_available(ngpus)
 
     # ------------------------
     # 3 INIT TRAINER
@@ -303,7 +308,7 @@ def main(hparams: Namespace):
     # ------------------------
     trainer = Trainer(
         accelerator="gpu",
-        devices=7,
+        devices=ngpus,
         strategy="ddp",
         min_epochs=1,
         max_epochs=500,
@@ -334,6 +339,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data_path", nargs='+', required=True,
         help="path where dataset is stored")
+    parser.add_argument('--ngpus', type=int,
+                        default=torch.cuda.device_count(),
+                        help='number of gpus to use')
     parser.add_argument(
         "--n-classes", type=int, default=18, help="number of classes")
     parser.add_argument(

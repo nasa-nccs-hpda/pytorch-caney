@@ -30,11 +30,12 @@ class MODISDataset(Dataset):
         # Split between train and valid set (80/20)
         random_inst = random.Random(12345)  # for repeatability
         n_items = len(self.img_list)
-        print(f'> Found {n_items} patches for this dataset ({split})')
         idxs = set(random_inst.sample(range(n_items), n_items // 5))
         total_idxs = set(range(n_items))
         if self.split == "train":
             idxs = total_idxs - idxs
+
+        print(f'> Found {len(idxs)} patches for this dataset ({split})')
         self.img_list = [self.img_list[i] for i in idxs]
         self.mask_list = [self.mask_list[i] for i in idxs]
 
