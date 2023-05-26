@@ -29,6 +29,7 @@ def sliding_window_tiler_multiclass(
             xraster,
             model,
             n_classes: int,
+            img_size: int,
             pad_style: str = 'reflect',
             overlap: float = 0.50,
             constant_value: int = 600,
@@ -46,13 +47,13 @@ def sliding_window_tiler_multiclass(
     Sliding window using tiler.
     """
 
-    tile_size = xraster.shape[0]  # model.layers[0].input_shape[0][1]
     tile_channels = xraster.shape[-1]  # model.layers[0].input_shape[0][-1]
+    print(f'Standardizing: {standardization}')
     # n_classes = out of the output layer, output_shape
 
     tiler_image = Tiler(
         data_shape=xraster.shape,
-        tile_shape=(tile_size, tile_size, tile_channels),
+        tile_shape=(img_size, img_size, tile_channels),
         channel_dimension=-1,
         overlap=overlap,
         mode=pad_style,
@@ -62,7 +63,7 @@ def sliding_window_tiler_multiclass(
     # Define the tiler and merger based on the output size of the prediction
     tiler_mask = Tiler(
         data_shape=(xraster.shape[0], xraster.shape[1], n_classes),
-        tile_shape=(tile_size, tile_size, n_classes),
+        tile_shape=(img_size, img_size, n_classes),
         channel_dimension=-1,
         overlap=overlap,
         mode=pad_style,
@@ -86,10 +87,10 @@ def sliding_window_tiler_multiclass(
         input_batch = batch.astype('float32')
         input_batch_tensor = torch.from_numpy(input_batch)
         input_batch_tensor = input_batch_tensor.transpose(-1, 1)
+        # input_batch_tensor = input_batch_tensor.cuda(non_blocking=True)
         with torch.no_grad():
             y_batch = model(input_batch_tensor)
-
-        y_batch = y_batch.transpose(1, -1).numpy()
+        y_batch = y_batch.transpose(1, -1)  # .cpu().numpy()
         merger.add_batch(batch_id, batch_size, y_batch)
 
     prediction = merger.merge(unpad=True)
