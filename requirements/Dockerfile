@@ -67,6 +67,7 @@ RUN pip --no-cache-dir install omegaconf \
     tiler \
     segmentation-models \
     timm \
+    supervision \
     pytest \
     coveralls \
     rtree \
