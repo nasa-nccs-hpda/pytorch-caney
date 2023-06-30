@@ -1,11 +1,9 @@
 import logging
 import random
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 import scipy.signal
 from numpy import fliplr, flipud
-# import xarray as xr
 
 SEED = 42
 np.random.seed(SEED)
@@ -42,7 +40,7 @@ def normalize(images, factor=65535.0) -> np.array:
 
 # ------------------------ Standardization Functions ----------------------- #
 
-def globalStandardization(images, strategy='per-batch') -> np.array:
+def global_standardization(images, strategy='per-batch') -> np.array:
     """
     Standardize numpy array using global standardization.
     :param images: numpy array in the format (n,w,h,c).
@@ -62,9 +60,9 @@ def globalStandardization(images, strategy='per-batch') -> np.array:
     return images
 
 
-def localStandardization(images, filename='normalization_data',
-                         ndata=pd.DataFrame(), strategy='per-batch'
-                         ) -> np.array:
+def local_standardization(images, filename='normalization_data',
+                          ndata=None, strategy='per-batch'
+                          ) -> np.array:
     """
     Standardize numpy array using local standardization.
     :param images: numpy array in the format (n,w,h,c).
@@ -73,7 +71,7 @@ def localStandardization(images, filename='normalization_data',
     :param strategy: can select between per-image or per-batch.
     :return: locally standardized numpy array
     """
-    if not ndata.empty:  # for inference only
+    if ndata:  # for inference only
         for i in range(images.shape[-1]):  # for each channel in images
             # standardize all images based on given mean and std
             images[:, :, :, i] = \
@@ -84,7 +82,7 @@ def localStandardization(images, filename='normalization_data',
         f = open(filename + "_norm_data.csv", "w+")
         f.write(
             "i,channel_mean,channel_std,channel_mean_post,channel_std_post\n"
-            )
+        )
         for i in range(images.shape[-1]):  # for each channel in images
             channel_mean = np.mean(images[:, :, :, i])  # mean for each channel
             channel_std = np.std(images[:, :, :, i])   # std for each channel
@@ -112,7 +110,59 @@ def localStandardization(images, filename='normalization_data',
     return images
 
 
+def standardize_image(
+    image,
+    standardization_type: str,
+    mean: list = None,
+    std: list = None,
+    global_min: list = None,
+    global_max: list = None
+):
+    """
+    Standardize image within parameter, simple scaling of values.
+    Loca, Global, and Mixed options.
+    """
+    image = image.astype(np.float32)
+    if standardization_type == 'local':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - np.mean(image[:, :, i])) / \
+                (np.std(image[:, :, i]) + 1e-8)
+    elif standardization_type == 'minmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - 0) / (55-0)
+    elif standardization_type == 'localminmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - np.min(image[:, :, 0])) / \
+                (np.max(image[:, :, i])-np.min(image[:, :, i]))
+    elif standardization_type == 'globalminmax':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - global_min) / \
+                (global_max - global_min)
+    elif standardization_type == 'global':
+        for i in range(image.shape[-1]):
+            image[:, :, i] = (image[:, :, i] - mean[i]) / (std[i] + 1e-8)
+    elif standardization_type == 'mixed':
+        raise NotImplementedError
+    return image
+
+
+def standardize_batch(
+    image_batch,
+    standardization_type: str,
+    mean: list = None,
+    std: list = None
+):
+    """
+    Standardize image within parameter, simple scaling of values.
+    Loca, Global, and Mixed options.
+    """
+    for item in range(image_batch.shape[0]):
+        image_batch[item, :, :, :] = standardize_image(
+            image_batch[item, :, :, :], standardization_type, mean, std)
+    return image_batch
+
 # ------------------------ Data Preparation Functions ----------------------- #
+
 
 def get_rand_patches_rand_cond(img, mask, n_patches=16000, sz=160, nclasses=6,
                                nodata_ascloud=True, method='rand'
@@ -242,10 +292,10 @@ def get_rand_patches_aug_augcond(img, mask, n_patches=16000, sz=256,
         elif method == 'aug':
             # while loop to regenerate random ints if tile has only one class
             while nodata in mask[xc:(xc + sz), yc:(yc + sz)] or \
-                  nodata in mask[(xc + sz - over):(xc + sz + sz - over),
-                                 (yc + sz - over):(yc + sz + sz - over)] or \
-                  nodata in mask[(xc + sz - over):(xc + sz + sz - over),
-                                 yc:(yc + sz)]:
+                nodata in mask[(xc + sz - over):(xc + sz + sz - over),
+                               (yc + sz - over):(yc + sz + sz - over)] or \
+                nodata in mask[(xc + sz - over):(xc + sz + sz - over),
+                               yc:(yc + sz)]:
                 xc = random.randint(0, img.shape[0] - sz - sz)
                 yc = random.randint(0, img.shape[1] - sz - sz)
 
@@ -336,25 +386,25 @@ if __name__ == "__main__":
     logging.info(f"UT #1 PASS: {x_norm.mean()}, {x_norm.std()}")
 
     # Unit Test #2 - Testing standardization distributions
-    standardized = globalStandardization(x_norm, strategy='per-batch')
+    standardized = global_standardization(x_norm, strategy='per-batch')
     assert standardized.max() > 1.731, "Unexpected max value."
     logging.info(f"UT #2 PASS: {standardized.mean()}, {standardized.std()}")
 
     # Unit Test #3 - Testing standardization distributions
-    standardized = globalStandardization(x_norm, strategy='per-image')
+    standardized = global_standardization(x_norm, strategy='per-image')
     assert standardized.max() > 1.73, "Unexpected max value."
     logging.info(f"UT #3 PASS: {standardized.mean()}, {standardized.std()}")
 
     # Unit Test #4 - Testing standardization distributions
-    standardized = localStandardization(x_norm, filename='normalization_data',
-                                        strategy='per-batch'
-                                        )
+    standardized = local_standardization(x_norm, filename='normalization_data',
+                                         strategy='per-batch'
+                                         )
     assert standardized.max() > 1.74, "Unexpected max value."
     logging.info(f"UT #4 PASS: {standardized.mean()}, {standardized.std()}")
 
     # Unit Test #5 - Testing standardization distributions
-    standardized = localStandardization(x_norm, filename='normalization_data',
-                                        strategy='per-image'
-                                        )
+    standardized = local_standardization(x_norm, filename='normalization_data',
+                                         strategy='per-image'
+                                         )
     assert standardized.max() > 1.75, "Unexpected max value."
     logging.info(f"UT #5 PASS: {standardized.mean()}, {standardized.std()}")

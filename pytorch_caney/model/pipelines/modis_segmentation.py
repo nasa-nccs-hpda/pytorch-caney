@@ -1,80 +1,20 @@
-import os
-import random
 import multiprocessing
 from argparse import ArgumentParser, Namespace
+import warnings
 
 import torch
 from torch import nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
-import numpy as np
 
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 
 from lightning.pytorch import cli_lightning_logo, LightningModule, Trainer
-from lightning.pytorch.loggers import WandbLogger, CSVLogger
-from pytorch_lightning.callbacks import EarlyStopping, TQDMProgressBar
+from lightning.pytorch.loggers import CSVLogger
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 
-
-
-
-class MODISDataset(Dataset):
-
-    IMAGE_PATH = os.path.join("img")
-    MASK_PATH = os.path.join("label")
-
-    def __init__(
-        self,
-        data_path: str,
-        split: str,
-        img_size: tuple = (256, 256),
-        transform=None,
-    ):
-        self.img_size = img_size
-        self.transform = transform
-        self.split = split
-        self.data_path = data_path
-        self.img_path = os.path.join(self.data_path, self.IMAGE_PATH)
-        self.mask_path = os.path.join(self.data_path, self.MASK_PATH)
-        self.img_list = self.get_filenames(self.img_path)
-        self.mask_list = self.get_filenames(self.mask_path)
-
-        # Split between train and valid set (80/20)
-        random_inst = random.Random(12345)  # for repeatability
-        n_items = len(self.img_list)
-        idxs = random_inst.sample(range(n_items), n_items // 5)
-        if self.split == "train":
-            idxs = [idx for idx in range(n_items) if idx not in idxs]
-        self.img_list = [self.img_list[i] for i in idxs]
-        self.mask_list = [self.mask_list[i] for i in idxs]
-
-    def __len__(self):
-        return len(self.img_list)
-
-    def __getitem__(self, idx, transpose=True):
-
-        # load image
-        img = np.load(self.img_list[idx])
-
-        # load mask
-        mask = np.load(self.mask_list[idx])
-        if len(mask.shape) > 2:
-            mask = np.argmax(mask, axis=-1)
-
-        # perform transformations
-        if self.transform is not None:
-            img = self.transform(img)
-
-        return img, mask
-
-    def get_filenames(self, path):
-        """
-        Returns a list of absolute paths to images inside given `path`
-        """
-        files_list = []
-        for filename in os.listdir(path):
-            files_list.append(os.path.join(path, filename))
-        return files_list
+from pytorch_caney.model.datasets.modis_dataset import MODISDataset
+from pytorch_caney.model.utils import check_gpus_available
 
 
 class UNet(nn.Module):
@@ -82,7 +22,8 @@ class UNet(nn.Module):
     Architecture based on U-Net: Convolutional Networks for
     Biomedical Image Segmentation.
     Link - https://arxiv.org/abs/1505.04597
-    >>> UNet(num_classes=2, num_layers=3)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> UNet(num_classes=2, num_layers=3)  \
+        # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     UNet(
       (layers): ModuleList(
         (0): DoubleConv(...)
@@ -96,13 +37,13 @@ class UNet(nn.Module):
     """
 
     def __init__(
-                self,
-                num_channels: int = 7,
-                num_classes: int = 19,
-                num_layers: int = 5,
-                features_start: int = 64,
-                bilinear: bool = False
-            ):
+        self,
+        num_channels: int = 7,
+        num_classes: int = 19,
+        num_layers: int = 5,
+        features_start: int = 64,
+        bilinear: bool = False
+    ):
 
         super().__init__()
         self.num_layers = num_layers
@@ -135,7 +76,8 @@ class UNet(nn.Module):
 
 class DoubleConv(nn.Module):
     """Double Convolution and BN and ReLU (3x3 conv -> BN -> ReLU) ** 2.
-    >>> DoubleConv(4, 4)  # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> DoubleConv(4, 4) \
+      # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     DoubleConv(
       (net): Sequential(...)
     )
@@ -231,23 +173,24 @@ class SegmentationModel(LightningModule):
 
     def __init__(
         self,
-        data_path: str,
-        n_classes: int,
-        batch_size: int = 4,
-        lr: float = 1e-3,
-        num_layers: int = 3,
+        data_path: list = [],
+        n_classes: int = 18,
+        batch_size: int = 256,
+        lr: float = 3e-4,
+        num_layers: int = 5,
         features_start: int = 64,
         bilinear: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.data_path = data_path
+        self.data_paths = data_path
         self.n_classes = n_classes
         self.batch_size = batch_size
         self.learning_rate = lr
         self.num_layers = num_layers
         self.features_start = features_start
         self.bilinear = bilinear
+        self.validation_step_outputs = []
 
         self.net = UNet(
             num_classes=self.n_classes,
@@ -259,23 +202,19 @@ class SegmentationModel(LightningModule):
             [
                 transforms.ToTensor(),
                 transforms.Normalize(
-                    mean=[
-                        0.35675976, 0.37380189, 0.3764753,
-                        0.35675976, 0.37380189, 0.3764753,
-                        0.3764753
-                    ],
-                    std=[
-                        0.32064945, 0.32098866, 0.32325324,
-                        0.32064945, 0.32098866, 0.32325324,
-                        0.32325324
-                    ]
+                    mean=[0.0173, 0.0332, 0.0088,
+                          0.0136, 0.0381, 0.0348, 0.0249],
+                    std=[0.0150, 0.0127, 0.0124,
+                         0.0128, 0.0120, 0.0159, 0.0164]
                 ),
             ]
         )
+        print('> Init datasets')
         self.trainset = MODISDataset(
-            self.data_path, split="train", transform=self.transform)
+            self.data_paths, split="train", transform=self.transform)
         self.validset = MODISDataset(
-            self.data_path, split="valid", transform=self.transform)
+            self.data_paths, split="valid", transform=self.transform)
+        print('Done init datasets')
 
     def forward(self, x):
         return self.net(x)
@@ -287,6 +226,7 @@ class SegmentationModel(LightningModule):
         out = self(img)
         loss = F.cross_entropy(out, mask, ignore_index=250)
         log_dict = {"train_loss": loss}
+        self.log_dict(log_dict)
         return {"loss": loss, "log": log_dict, "progress_bar": log_dict}
 
     def validation_step(self, batch, batch_idx):
@@ -295,11 +235,14 @@ class SegmentationModel(LightningModule):
         mask = mask.long()
         out = self(img)
         loss_val = F.cross_entropy(out, mask, ignore_index=250)
+        self.validation_step_outputs.append(loss_val)
         return {"val_loss": loss_val}
 
-    def validation_epoch_end(self, outputs):
-        loss_val = torch.stack([x["val_loss"] for x in outputs]).mean()
+    def on_validation_epoch_end(self):
+        loss_val = torch.stack(self.validation_step_outputs).mean()
         log_dict = {"val_loss": loss_val}
+        self.log("val_loss", loss_val, sync_dist=True)
+        self.validation_step_outputs.clear()
         return {
             "log": log_dict,
             "val_loss": log_dict["val_loss"],
@@ -332,6 +275,9 @@ def main(hparams: Namespace):
     # ------------------------
     # 1 INIT LIGHTNING MODEL
     # ------------------------
+    ngpus = int(hparams.ngpus)
+    del hparams.ngpus # PT ligtning does not expect this, del after use
+
     model = SegmentationModel(**vars(hparams))
 
     # ------------------------
@@ -344,20 +290,29 @@ def main(hparams: Namespace):
     #    logger.watch(model.net)
 
     train_callbacks = [
-        #TQDMProgressBar(refresh_rate=20),
-        EarlyStopping('val_loss', patience=5),
+        # TQDMProgressBar(refresh_rate=20),
+        ModelCheckpoint(dirpath='models/',
+                        monitor='val_loss',
+                        save_top_k=5,
+                        filename='{epoch}-{val_loss:.2f}.ckpt'),
+        EarlyStopping("val_loss", patience=10, mode='min'),
     ]
+
+    # See number of devices
+    check_gpus_available(ngpus)
 
     # ------------------------
     # 3 INIT TRAINER
     # ------------------------
+    # trainer = Trainer(
+    # ------------------------
     trainer = Trainer(
         accelerator="gpu",
-        devices=torch.cuda.device_count(),
+        devices=ngpus,
         strategy="ddp",
         min_epochs=1,
-        max_epochs=3,
-        #callbacks=[EarlyStopping('val_loss')],
+        max_epochs=500,
+        callbacks=train_callbacks,
         logger=CSVLogger(save_dir="logs/"),
         # precision=16 # makes loss nan, need to fix that
     )
@@ -377,20 +332,22 @@ def main(hparams: Namespace):
     # trainer.test(ckpt_path="best", dataloaders=)
 
 
-
 if __name__ == "__main__":
     cli_lightning_logo()
 
     parser = ArgumentParser()
     parser.add_argument(
-        "--data_path", type=str, required=True,
+        "--data_path", nargs='+', required=True,
         help="path where dataset is stored")
+    parser.add_argument('--ngpus', type=int,
+                        default=torch.cuda.device_count(),
+                        help='number of gpus to use')
     parser.add_argument(
         "--n-classes", type=int, default=18, help="number of classes")
     parser.add_argument(
-        "--batch_size", type=int, default=16, help="size of the batches")
+        "--batch_size", type=int, default=256, help="size of the batches")
     parser.add_argument(
-        "--lr", type=float, default=0.001, help="adam: learning rate")
+        "--lr", type=float, default=3e-4, help="adam: learning rate")
     parser.add_argument(
         "--num_layers", type=int, default=5, help="number of layers on u-net")
     parser.add_argument(
