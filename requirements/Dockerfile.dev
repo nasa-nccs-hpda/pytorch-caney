@@ -50,10 +50,12 @@ RUN pip --no-cache-dir install omegaconf \
     Lightning \
     transformers \
     datasets \
+    webdataset \
     'huggingface_hub[cli,torch]' \
     rasterio \
     rioxarray \
     xarray \
+    xarray-spatial \
     geopandas \
     opencv-python \
     opencv-python-headless \
