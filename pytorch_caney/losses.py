@@ -1,5 +1,4 @@
-import logging
-import numpy as np
+
 
 __author__ = "Jordan A Caraballo-Vega, Science Data Processing Branch"
 __email__ = "jordan.a.caraballo-vega@nasa.gov"

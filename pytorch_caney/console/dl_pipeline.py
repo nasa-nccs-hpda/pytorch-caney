@@ -3,12 +3,16 @@
 
 import sys
 import logging
-from terragpu.decorators import DuplicateFilter
 
 # from terragpu import unet_model
-# from terragpu.ai.deep_learning.datamodules.segmentation_datamodule import SegmentationDataModule
-from pytorch_lightning import Trainer, seed_everything, LightningModule, LightningDataModule
+# from terragpu.decorators import DuplicateFilter
+# from terragpu.ai.deep_learning.datamodules.segmentation_datamodule \
+# import SegmentationDataModule
+
+from pytorch_lightning import seed_everything  # , trainer
+# from pytorch_lightning import LightningModule, LightningDataModule
 from terragpu.ai.deep_learning.console.cli import TerraGPULightningCLI
+
 
 # -----------------------------------------------------------------------------
 # main
@@ -36,18 +40,18 @@ def main():
     # -------------------------------------------------------------------------
     # Seed every library
     seed_everything(1234, workers=True)
-    cli = TerraGPULightningCLI(save_config_callback=None)
+    _ = TerraGPULightningCLI(save_config_callback=None)
     # unet_model.UNetSegmentation, SegmentationDataModule)
 
     # train
-    #trainer = pl.Trainer()
-    #trainer.fit(model, datamodule=dm)
+    # trainer = pl.Trainer()
+    # trainer.fit(model, datamodule=dm)
     # validate
-    #trainer.validate(datamodule=dm)
+    # trainer.validate(datamodule=dm)
     # test
-    #trainer.test(datamodule=dm)
+    # trainer.test(datamodule=dm)
     # predict
-    #predictions = trainer.predict(datamodule=dm)
+    # predictions = trainer.predict(datamodule=dm)
     return
 
 

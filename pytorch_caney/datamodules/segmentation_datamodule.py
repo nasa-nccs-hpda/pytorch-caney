@@ -132,9 +132,9 @@ class SegmentationDataModule(LightningDataModule):
             self.train_set,
             batch_size=self.batch_size,
             shuffle=self.shuffle,
-            #num_workers=self.num_workers,
-            #drop_last=self.drop_last,
-            #pin_memory=self.pin_memory,
+            num_workers=self.num_workers,
+            drop_last=self.drop_last,
+            pin_memory=self.pin_memory,
         )
         return loader
 
@@ -143,9 +143,9 @@ class SegmentationDataModule(LightningDataModule):
             self.val_set,
             batch_size=self.batch_size,
             shuffle=False,
-            #num_workers=self.num_workers,
-            #drop_last=self.drop_last,
-            #pin_memory=self.pin_memory,
+            num_workers=self.num_workers,
+            drop_last=self.drop_last,
+            pin_memory=self.pin_memory,
         )
         return loader
 
@@ -154,9 +154,9 @@ class SegmentationDataModule(LightningDataModule):
             self.test_set,
             batch_size=self.batch_size,
             shuffle=False,
-            #num_workers=self.num_workers,
-            #drop_last=self.drop_last,
-            #pin_memory=self.pin_memory,
+            num_workers=self.num_workers,
+            drop_last=self.drop_last,
+            pin_memory=self.pin_memory,
         )
         return loader
 
