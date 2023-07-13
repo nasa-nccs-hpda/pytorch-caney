@@ -1,20 +1,19 @@
-import multiprocessing
 from argparse import ArgumentParser, Namespace
-import warnings
+import multiprocessing
 
 import torch
 from torch import nn
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-
 from torch.utils.data import DataLoader
 
-from lightning.pytorch import cli_lightning_logo, LightningModule, Trainer
-from lightning.pytorch.loggers import CSVLogger
-from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+import torchvision.transforms as transforms
 
-from pytorch_caney.model.datasets.modis_dataset import MODISDataset
-from pytorch_caney.model.utils import check_gpus_available
+from lightning.pytorch import LightningModule, Trainer, cli_lightning_logo
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.loggers import CSVLogger
+
+from pytorch_caney.datasets.modis_dataset import MODISDataset
+from pytorch_caney.utils import check_gpus_available
 
 
 class UNet(nn.Module):
@@ -276,7 +275,8 @@ def main(hparams: Namespace):
     # 1 INIT LIGHTNING MODEL
     # ------------------------
     ngpus = int(hparams.ngpus)
-    del hparams.ngpus # PT ligtning does not expect this, del after use
+    # PT ligtning does not expect this, del after use
+    del hparams.ngpus
 
     model = SegmentationModel(**vars(hparams))
 

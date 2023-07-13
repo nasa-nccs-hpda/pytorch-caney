@@ -1,6 +1,7 @@
-import torch
-import pytorch_lightning
+# import pytorch_lightning
 from pytorch_lightning.utilities.cli import LightningCLI
+
+import torch
 
 
 class TerraGPULightningCLI(LightningCLI):
@@ -21,7 +22,7 @@ class TerraGPULightningCLI(LightningCLI):
         parser.set_defaults({"trainer.default_root_dir": "output_model"})
 
         # Trainer - optimizer - TODO
-        default_optimizer = {
+        _ = {
             "class_path": torch.optim.Adam,
             "init_args": {
                 "lr": 0.01
@@ -39,17 +40,16 @@ class TerraGPULightningCLI(LightningCLI):
                     "mode": "min"
                 }
             },
-            #{
+            # {
             #    "class_path": "pytorch_lightning.callbacks.ModelCheckpoint",
             #    "init_args": {
             #        "dirpath": "output_model",
             #        "monitor": "val_loss",
             #        "auto_insert_metric_name": True
             #    }
-            #},
+            # },
         ]
         parser.set_defaults({"trainer.callbacks": default_callbacks})
-
 
         #    {
         #        "class_path": "pytorch_lightning.callbacks.ModelCheckpoint",
