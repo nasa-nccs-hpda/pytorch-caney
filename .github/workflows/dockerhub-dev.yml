@@ -1,9 +1,9 @@
-name: CI to Dockerhub
+name: CI to Dockerhub Dev
 
 on:
   push:
     branches:
-      - 'main'
+      - 'develop'
 
 jobs:
   docker:
