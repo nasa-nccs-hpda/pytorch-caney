@@ -75,6 +75,8 @@ RUN pip --no-cache-dir install omegaconf \
     rtree \
     sphinx \
     sphinx_rtd_theme \
+    yacs \
+    termcolor \
     GDAL==`ogrinfo --version | grep -Eo '[0-9]\.[0-9]\.[0-9]+'`
 
 HEALTHCHECK NONE
