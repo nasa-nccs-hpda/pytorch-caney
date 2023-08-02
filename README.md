@@ -45,9 +45,13 @@ singularity build --sandbox pytorch-caney docker://nasanccs/pytorch-caney:latest
 
 Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 
-## Pre-training SatVision Example
+## SatVision
 
-### Pre-training with Masked Image Modeling
+| name | pretrain | resolution | #params |
+| :---: | :---: | :---: | :---: |
+| SatVision-B | MODIS-1.9-M | 192x192 | 84.5M |
+
+## Pre-training with Masked Image Modeling
 To pre-train the swinv2 base model with masked image modeling pre-training, run:
 ```bash
 torchrun --nproc_per_node <NGPUS> --cfg <config-file> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
