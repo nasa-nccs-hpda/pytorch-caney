@@ -22,11 +22,7 @@ class SimmimTransform:
 
         if config.MODEL.TYPE in ['swin', 'swinv2']:
 
-            model_patch_size = config.MODEL.SWIN.PATCH_SIZE
-
-        elif config.MODEL.TYPE == 'vit':
-
-            model_patch_size = config.MODEL.VIT.PATCH_SIZE
+            model_patch_size = config.MODEL.SWINV2.PATCH_SIZE
 
         else:
 
@@ -46,3 +42,24 @@ class SimmimTransform:
         mask = self.mask_generator()
 
         return img, mask
+
+
+class TensorResizeTransform:
+    """
+    torchvision transform which transforms the input imagery into
+    addition to generating a MiM mask
+    """
+
+    def __init__(self, config):
+
+        self.transform_img = \
+            T.Compose([
+                T.ToTensor(),
+                T.Resize((config.DATA.IMG_SIZE, config.DATA.IMG_SIZE)),
+            ])
+
+    def __call__(self, img):
+
+        img = self.transform_img(img)
+
+        return img

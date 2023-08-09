@@ -1,16 +1,16 @@
-from pytorch_caney.data.datamodules.simmim_datamodule \
-    import build_mim_dataloader
+from pytorch_caney.models.build import build_model
 
-from pytorch_caney.models.simmim.simmim \
-    import build_mim_model
+from pytorch_caney.data.datamodules.finetune_datamodule \
+    import build_finetune_dataloaders
 
 from pytorch_caney.training.simmim_utils \
-    import build_optimizer, save_checkpoint
+    import build_optimizer, save_checkpoint, reduce_tensor
 
-from pytorch_caney.training.simmim_utils import get_grad_norm
+from pytorch_caney.config import get_config
+from pytorch_caney.loss.build import build_loss
 from pytorch_caney.lr_scheduler import build_scheduler, setup_scaled_lr
 from pytorch_caney.logging import create_logger
-from pytorch_caney.config import get_config
+from pytorch_caney.training.simmim_utils import get_grad_norm
 
 import argparse
 import datetime
@@ -29,7 +29,7 @@ from timm.utils import AverageMeter
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        'pytorch-caney impletmentation of MiM pre-training script',
+        'pytorch-caney finetuning',
         add_help=False)
 
     parser.add_argument(
@@ -50,6 +50,11 @@ def parse_args():
         type=str,
         required=True,
         help='Dataset to use')
+
+    parser.add_argument(
+        '--pretrained',
+        type=str,
+        help='path to pre-trained model')
 
     parser.add_argument(
         '--batch-size',
@@ -101,23 +106,29 @@ def parse_args():
 
 
 def train(config,
-          dataloader,
+          dataloader_train,
+          dataloader_val,
           model,
           model_wo_ddp,
           optimizer,
           lr_scheduler,
-          scaler):
+          scaler,
+          criterion):
 
-    logger.info("Start training")
+    logger.info("Start fine-tuning")
 
     start_time = time.time()
 
     for epoch in range(config.TRAIN.START_EPOCH, config.TRAIN.EPOCHS):
 
-        dataloader.sampler.set_epoch(epoch)
+        dataloader_train.sampler.set_epoch(epoch)
 
-        execute_one_epoch(config, model, dataloader,
-                          optimizer, epoch, lr_scheduler, scaler)
+        execute_one_epoch(config, model, dataloader_train,
+                          optimizer, criterion, epoch, lr_scheduler, scaler)
+
+        loss = validate(config, model, dataloader_val, criterion)
+
+        logger.info(f'Model validation loss: {loss:.3f}%')
 
         if dist.get_rank() == 0 and \
             (epoch % config.SAVE_FREQ == 0 or
@@ -137,6 +148,7 @@ def execute_one_epoch(config,
                       model,
                       dataloader,
                       optimizer,
+                      criterion,
                       epoch,
                       lr_scheduler,
                       scaler):
@@ -156,20 +168,20 @@ def execute_one_epoch(config,
 
     start = time.time()
     end = time.time()
-    for idx, (img, mask, _) in enumerate(dataloader):
+    for idx, (samples, targets) in enumerate(dataloader):
 
         data_time.update(time.time() - start)
 
-        img = img.cuda(non_blocking=True)
-        mask = mask.cuda(non_blocking=True)
+        samples = samples.cuda(non_blocking=True)
+        targets = targets.cuda(non_blocking=True)
 
         with amp.autocast(enabled=config.ENABLE_AMP):
-            loss = model(img, mask)
+            logits = model(samples)
 
         if config.TRAIN.ACCUMULATION_STEPS > 1:
+            loss = criterion(logits, targets)
             loss = loss / config.TRAIN.ACCUMULATION_STEPS
             scaler.scale(loss).backward()
-            loss.backward()
             if config.TRAIN.CLIP_GRAD:
                 scaler.unscale_(optimizer)
                 grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -183,6 +195,7 @@ def execute_one_epoch(config,
                 scaler.update()
                 lr_scheduler.step_update(epoch * num_steps + idx)
         else:
+            loss = criterion(logits, targets)
             optimizer.zero_grad()
             scaler.scale(loss).backward()
             if config.TRAIN.CLIP_GRAD:
@@ -198,7 +211,7 @@ def execute_one_epoch(config,
 
         torch.cuda.synchronize()
 
-        loss_meter.update(loss.item(), img.size(0))
+        loss_meter.update(loss.item(), targets.size(0))
         norm_meter.update(grad_norm)
         loss_scale_meter.update(scaler.get_scale())
         batch_time.update(time.time() - end)
@@ -225,39 +238,92 @@ def execute_one_epoch(config,
         f"{datetime.timedelta(seconds=int(epoch_time))}")
 
 
+@torch.no_grad()
+def validate(config, model, dataloader, criterion):
+
+    model.eval()
+
+    batch_time = AverageMeter()
+
+    loss_meter = AverageMeter()
+
+    end = time.time()
+
+    for idx, (images, target) in enumerate(dataloader):
+
+        images = images.cuda(non_blocking=True)
+
+        target = target.cuda(non_blocking=True)
+
+        # compute output
+        output = model(images)
+
+        # measure accuracy and record loss
+        loss = criterion(output, target.long())
+
+        loss = reduce_tensor(loss)
+
+        loss_meter.update(loss.item(), target.size(0))
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+
+        end = time.time()
+
+        if idx % config.PRINT_FREQ == 0:
+
+            memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
+
+            logger.info(
+                f'Test: [{idx}/{len(dataloader)}]\t'
+                f'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                f'Loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
+                f'Mem {memory_used:.0f}MB')
+
+    return loss_meter.avg
+
+
 def main(config):
 
-    pretrain_data_loader = build_mim_dataloader(config, logger)
+    dataloader_train, dataloader_val = build_finetune_dataloaders(
+        config, logger)
 
-    simmim_model = build_model(config, logger)
+    model = build_finetune_model(config, logger)
 
-    simmim_optimizer = build_optimizer(config,
-                                       simmim_model,
-                                       is_pretrain=True,
-                                       logger=logger)
+    optimizer = build_optimizer(config,
+                                model,
+                                is_pretrain=False,
+                                logger=logger)
 
-    model, model_wo_ddp = make_ddp(simmim_model)
+    model, model_wo_ddp = make_ddp(model)
 
-    n_iter_per_epoch = len(pretrain_data_loader)
+    n_iter_per_epoch = len(dataloader_train)
 
-    lr_scheduler = build_scheduler(config, simmim_optimizer, n_iter_per_epoch)
+    lr_scheduler = build_scheduler(config, optimizer, n_iter_per_epoch)
 
     scaler = amp.GradScaler()
 
+    criterion = build_loss(config)
+
     train(config,
-          pretrain_data_loader,
+          dataloader_train,
+          dataloader_val,
           model,
           model_wo_ddp,
-          simmim_optimizer,
+          optimizer,
           lr_scheduler,
-          scaler)
+          scaler,
+          criterion)
 
 
-def build_model(config, logger):
+def build_finetune_model(config, logger):
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
 
-    model = build_mim_model(config)
+    model = build_model(config,
+                        pretrain=False,
+                        pretrain_method='mim',
+                        logger=logger)
 
     model.cuda()
 
@@ -269,7 +335,10 @@ def build_model(config, logger):
 def make_ddp(model):
 
     model = torch.nn.parallel.DistributedDataParallel(
-        model, device_ids=[int(os.environ["RANK"])], broadcast_buffers=False)
+        model,
+        device_ids=[int(os.environ["RANK"])],
+        broadcast_buffers=False,
+        find_unused_parameters=True)
 
     model_without_ddp = model.module
 

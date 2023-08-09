@@ -51,6 +51,12 @@ Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 | :---: | :---: | :---: | :---: |
 | SatVision-B | MODIS-1.9-M | 192x192 | 84.5M |
 
+## SatVision Datasets
+
+| name | bands | resolution | #params |
+| :---: | :---: | :---: | :---: |
+| MODIS-Small | 7 | 128x128 | 1,994,131 |
+
 ## Pre-training with Masked Image Modeling
 To pre-train the swinv2 base model with masked image modeling pre-training, run:
 ```bash
