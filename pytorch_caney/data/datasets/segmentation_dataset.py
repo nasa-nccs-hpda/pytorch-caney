@@ -282,4 +282,3 @@ class SegmentationDataset(Dataset):
         mask = xp.load(self.files[idx]['label'], allow_pickle=False)
         mask = xp.expand_dims(mask, 0) if add_dims else mask
         return from_dlpack(mask.toDlpack()).long()
-

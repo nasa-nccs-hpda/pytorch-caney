@@ -1,8 +1,9 @@
-import torch
-from pytorch_lightning import LightningModule
-from torch.nn import functional as F
 from pl_bolts.models.vision.unet import UNet
+from pytorch_lightning import LightningModule
 from pytorch_lightning.utilities.cli import MODEL_REGISTRY
+
+import torch
+from torch.nn import functional as F
 from torchmetrics import MetricCollection, Accuracy, IoU
 
 
@@ -90,32 +91,35 @@ class UNetSegmentation(LightningModule):
         return tensorboard_logs
 
     def training_epoch_end(self, outputs):
-        # Get average metrics from multi-GPU batch sources
-        loss_val = torch.stack([x["loss"] for x in outputs]).mean()
-        acc_train = torch.stack([x["train_acc"] for x in outputs]).mean()
-        iou_train = torch.stack([x["train_iou"] for x in outputs]).mean()
+        pass
 
-        tensorboard_logs = self.train_metrics(probs, mask)
-        tensorboard_logs['loss'] = F.cross_entropy(logits, mask)
+        # Get average metrics from multi-GPU batch sources
+        # loss_val = torch.stack([x["loss"] for x in outputs]).mean()
+        # acc_train = torch.stack([x["train_acc"] for x in outputs]).mean()
+        # iou_train = torch.stack([x["train_iou"] for x in outputs]).mean()
+
+        # tensorboard_logs = self.train_metrics(probs, mask)
+        # tensorboard_logs['loss'] = F.cross_entropy(logits, mask)
         # tensorboard_logs['lr'] = self._get_current_lr()
 
-        self.log(
-            'acc', tensorboard_logs['train_Accuracy'],
-            sync_dist=True, prog_bar=True
-        )
-        self.log(
-            'iou', tensorboard_logs['train_IoU'],
-            sync_dist=True, prog_bar=True
-        )
-        return tensorboard_logs
-
-    #    # Send output to logger
-    #    self.log(
-    #        "loss", loss_val, on_epoch=True, prog_bar=True, logger=True)
-    #    self.log(
-    #        "train_acc", acc_train, on_epoch=True, prog_bar=True, logger=True)
-    #    self.log(
-    #        "train_iou", iou_train, on_epoch=True, prog_bar=True, logger=True)
+        # self.log(
+        #     'acc', tensorboard_logs['train_Accuracy'],
+        #     sync_dist=True, prog_bar=True
+        # )
+        # self.log(
+        #     'iou', tensorboard_logs['train_IoU'],
+        #     sync_dist=True, prog_bar=True
+        # )
+        #    # Send output to logger
+        #    self.log(
+        #        "loss", loss_val, on_epoch=True, prog_bar=True, logger=True)
+        #    self.log(
+        #        "train_acc", acc_train,
+        #        on_epoch=True, prog_bar=True, logger=True)
+        #    self.log(
+        #        "train_iou", iou_train,
+        #        on_epoch=True, prog_bar=True, logger=True)
+        # return tensorboard_logs
 
     def validation_step(self, batch, batch_idx):
 
@@ -130,7 +134,7 @@ class UNetSegmentation(LightningModule):
         # Get target tensor from logits for metrics, calculate metrics
         probs = torch.nn.functional.softmax(logits, dim=1)
         probs = torch.argmax(probs, dim=1)
-        metrics_val = self.val_metrics(probs, mask)
+        # metrics_val = self.val_metrics(probs, mask)
 
         # return {
         #    "val_loss": loss_val, "val_acc": metrics_val['val_Accuracy'],

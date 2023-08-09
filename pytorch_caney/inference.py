@@ -6,10 +6,10 @@ import torch
 
 from tiler import Tiler, Merger
 
-from pytorch_caney.model.processing import normalize
-from pytorch_caney.model.processing import global_standardization
-from pytorch_caney.model.processing import local_standardization
-from pytorch_caney.model.processing import standardize_image
+from pytorch_caney.processing import normalize
+from pytorch_caney.processing import global_standardization
+from pytorch_caney.processing import local_standardization
+from pytorch_caney.processing import standardize_image
 
 __author__ = "Jordan A Caraballo-Vega, Science Data Processing Branch"
 __email__ = "jordan.a.caraballo-vega@nasa.gov"
@@ -262,7 +262,7 @@ def predict_sliding(image, model='', stand_method='local',
             padded_prediction = padded_prediction.transpose(0, -1).numpy()
             prediction = padded_prediction[0:img.shape[0], 0:img.shape[1], :]
             count_predictions[y1:y2, x1:x2] += 1
-            full_probs[y1:y2, x1:x2] += prediction  #  * spline
+            full_probs[y1:y2, x1:x2] += prediction  # * spline
     # average the predictions in the overlapping regions
     full_probs /= count_predictions
     return full_probs

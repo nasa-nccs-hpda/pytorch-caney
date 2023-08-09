@@ -1,9 +1,12 @@
 import logging
 import random
-import numpy as np
 from tqdm import tqdm
-import scipy.signal
+
+import numpy as np
 from numpy import fliplr, flipud
+
+import scipy.signal
+
 
 SEED = 42
 np.random.seed(SEED)
@@ -27,7 +30,6 @@ __status__ = "Production"
 
 
 # --------------------------- Normalization Functions ----------------------- #
-
 def normalize(images, factor=65535.0) -> np.array:
     """
     Normalize numpy array in the range of [0,1]
@@ -39,7 +41,6 @@ def normalize(images, factor=65535.0) -> np.array:
 
 
 # ------------------------ Standardization Functions ----------------------- #
-
 def global_standardization(images, strategy='per-batch') -> np.array:
     """
     Standardize numpy array using global standardization.
@@ -374,7 +375,6 @@ def _hann_matrix(window_size=128, power=2) -> np.array:
 # -------------------------------------------------------------------------------
 # module preprocessing Unit Tests
 # -------------------------------------------------------------------------------
-
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
