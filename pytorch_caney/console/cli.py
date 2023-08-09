@@ -1,4 +1,3 @@
-# import pytorch_lightning
 from pytorch_lightning.utilities.cli import LightningCLI
 
 import torch

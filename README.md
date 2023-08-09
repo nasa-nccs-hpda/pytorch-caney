@@ -45,6 +45,34 @@ singularity build --sandbox pytorch-caney docker://nasanccs/pytorch-caney:latest
 
 Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 
+## SatVision
+
+| name | pretrain | resolution | #params |
+| :---: | :---: | :---: | :---: |
+| SatVision-B | MODIS-1.9-M | 192x192 | 84.5M |
+
+## Pre-training with Masked Image Modeling
+To pre-train the swinv2 base model with masked image modeling pre-training, run:
+```bash
+torchrun --nproc_per_node <NGPUS> --cfg <config-file> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
+```
+
+For example to run on a compute node with 4 GPUs and a batch size of 128 on the MODIS SatVision pre-training dataset with a base swinv2 model, run:
+
+```bash
+singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
+Singularity> torchrun --nproc_per_node 4 --cfg examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml --dataset MODIS --data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* --batch-size 128 --output . --enable-amp
+```
+
+This example script runs the exact configuration used to make the SatVision-base model pre-training with MiM and the MODIS pre-training dataset.
+```bash
+singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
+Singularity> cd examples/satvision
+Singularity> ./run_satvision_pretrain.sh
+```
+
 ## References
 
 - [Pytorch Lightning](https://github.com/Lightning-AI/lightning)
+- [Swin Transformer](https://github.com/microsoft/Swin-Transformer)
+- [SimMIM](https://github.com/microsoft/SimMIM)
