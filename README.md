@@ -53,7 +53,7 @@ Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 
 ## SatVision Datasets
 
-| name | bands | resolution | #params |
+| name | bands | resolution | #chips |
 | :---: | :---: | :---: | :---: |
 | MODIS-Small | 7 | 128x128 | 1,994,131 |
 
