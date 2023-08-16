@@ -28,6 +28,9 @@ from timm.utils import AverageMeter
 
 
 def parse_args():
+    """
+    Parse command-line arguments
+    """
     parser = argparse.ArgumentParser(
         'pytorch-caney impletmentation of MiM pre-training script',
         add_help=False)
@@ -107,6 +110,18 @@ def train(config,
           optimizer,
           lr_scheduler,
           scaler):
+    """
+    Start pre-training a specific model and dataset.
+
+    Args:
+        config: config object
+        dataloader: dataloader to use
+        model: model to pre-train
+        model_wo_ddp: model to pre-train that is not the DDP version
+        optimizer: pytorch optimizer
+        lr_scheduler: learning-rate scheduler
+        scaler: loss scaler
+    """
 
     logger.info("Start training")
 
@@ -140,6 +155,18 @@ def execute_one_epoch(config,
                       epoch,
                       lr_scheduler,
                       scaler):
+    """
+    Execute training iterations on a single epoch.
+
+    Args:
+        config: config object
+        model: model to pre-train
+        dataloader: dataloader to use
+        optimizer: pytorch optimizer
+        epoch: int epoch number
+        lr_scheduler: learning-rate scheduler
+        scaler: loss scaler
+    """
 
     model.train()
 
@@ -226,6 +253,12 @@ def execute_one_epoch(config,
 
 
 def main(config):
+    """
+    Starts training process after building the proper model, optimizer, etc.
+
+    Args:
+        config: config object
+    """
 
     pretrain_data_loader = build_mim_dataloader(config, logger)
 

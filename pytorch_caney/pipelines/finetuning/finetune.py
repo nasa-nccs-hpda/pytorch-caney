@@ -28,6 +28,10 @@ from timm.utils import AverageMeter
 
 
 def parse_args():
+    """
+    Parse command-line arguments
+    """
+
     parser = argparse.ArgumentParser(
         'pytorch-caney finetuning',
         add_help=False)
@@ -114,6 +118,20 @@ def train(config,
           lr_scheduler,
           scaler,
           criterion):
+    """
+    Start fine-tuning a specific model and dataset.
+
+    Args:
+        config: config object
+        dataloader_train: training pytorch dataloader
+        dataloader_val: validation pytorch dataloader
+        model: model to pre-train
+        model_wo_ddp: model to pre-train that is not the DDP version
+        optimizer: pytorch optimizer
+        lr_scheduler: learning-rate scheduler
+        scaler: loss scaler
+        criterion: loss function to use for fine-tuning
+    """
 
     logger.info("Start fine-tuning")
 
@@ -152,7 +170,18 @@ def execute_one_epoch(config,
                       epoch,
                       lr_scheduler,
                       scaler):
+    """
+    Execute training iterations on a single epoch.
 
+    Args:
+        config: config object
+        model: model to pre-train
+        dataloader: dataloader to use
+        optimizer: pytorch optimizer
+        epoch: int epoch number
+        lr_scheduler: learning-rate scheduler
+        scaler: loss scaler
+    """
     model.train()
 
     optimizer.zero_grad()
@@ -240,6 +269,20 @@ def execute_one_epoch(config,
 
 @torch.no_grad()
 def validate(config, model, dataloader, criterion):
+    """Validation function which given a model and validation loader
+    performs a validation run and returns the average loss according
+    to the criterion.
+
+    Args:
+        config: config object
+        model: pytorch model to validate
+        dataloader: pytorch validation loader
+        criterion: pytorch-friendly loss function
+
+    Returns:
+        loss_meter.avg: average of the loss throught the validation
+        iterations
+    """
 
     model.eval()
 
@@ -284,6 +327,10 @@ def validate(config, model, dataloader, criterion):
 
 
 def main(config):
+    """
+    Performs the main function of building model, loader, etc. and starts
+    training.
+    """    
 
     dataloader_train, dataloader_val = build_finetune_dataloaders(
         config, logger)
