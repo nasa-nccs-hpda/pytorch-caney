@@ -67,13 +67,14 @@ For example to run on a compute node with 4 GPUs and a batch size of 128 on the 
 
 ```bash
 singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
-Singularity> torchrun --nproc_per_node 4 --cfg examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml --dataset MODIS --data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* --batch-size 128 --output . --enable-amp
+Singularity> export PYTHONPATH=$PWD:$PWD/pytorch-caney
+Singularity> torchrun --nproc_per_node 4 pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py --cfg pytorch-caney/examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml --dataset MODIS --data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* --batch-size 128 --output . --enable-amp
 ```
 
 This example script runs the exact configuration used to make the SatVision-base model pre-training with MiM and the MODIS pre-training dataset.
 ```bash
 singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
-Singularity> cd examples/satvision
+Singularity> cd pytorch-caney/examples/satvision
 Singularity> ./run_satvision_pretrain.sh
 ```
 

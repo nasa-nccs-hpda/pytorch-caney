@@ -10,7 +10,7 @@ export PYTHONPATH=$PWD:../../../:../../../pytorch-caney
 export NGPUS=4
 
 torchrun --nproc_per_node $NGPUS \
-    ../../../pytorch-caney/pytorch_caney/pipelines/pretraining/simmim.py \
+    ../../../pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py \
 	--cfg mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml \
     --dataset MODIS \
 	--data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* \
