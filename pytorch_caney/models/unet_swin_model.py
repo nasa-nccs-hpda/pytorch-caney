@@ -31,8 +31,8 @@ class unet_swin(nn.Module):
             kernel_size=self.KERNEL_SIZE,
             upsampling=self.UPSAMPLING)
 
-    def forward(self, input):
-        encoder_featrue = self.encoder.get_unet_feature(input)
+    def forward(self, x):
+        encoder_featrue = self.encoder.get_unet_feature(x)
         decoder_output = self.decoder(*encoder_featrue)
         masks = self.segmentation_head(decoder_output)
 

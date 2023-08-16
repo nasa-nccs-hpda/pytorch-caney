@@ -36,6 +36,8 @@ _C.DATA.MASK_RATIO = 0.6
 _C.MODEL = CN()
 # Model type
 _C.MODEL.TYPE = 'swinv2'
+# Decoder type
+_C.MODEL.DECODER = None
 # Model name
 _C.MODEL.NAME = 'swinv2_base_patch4_window7_224'
 # Pretrained weight from checkpoint, could be from previous pre-training
@@ -49,20 +51,6 @@ _C.MODEL.NUM_CLASSES = 17
 _C.MODEL.DROP_RATE = 0.0
 # Drop path rate
 _C.MODEL.DROP_PATH_RATE = 0.1
-
-# Swin Transformer parameters
-_C.MODEL.SWIN = CN()
-_C.MODEL.SWIN.PATCH_SIZE = 4
-_C.MODEL.SWIN.IN_CHANS = 4
-_C.MODEL.SWIN.EMBED_DIM = 96
-_C.MODEL.SWIN.DEPTHS = [2, 2, 6, 2]
-_C.MODEL.SWIN.NUM_HEADS = [3, 6, 12, 24]
-_C.MODEL.SWIN.WINDOW_SIZE = 7
-_C.MODEL.SWIN.MLP_RATIO = 4.
-_C.MODEL.SWIN.QKV_BIAS = True
-_C.MODEL.SWIN.QK_SCALE = None
-_C.MODEL.SWIN.APE = False
-_C.MODEL.SWIN.PATCH_NORM = True
 
 # Swin Transformer V2 parameters
 _C.MODEL.SWINV2 = CN()
@@ -78,20 +66,21 @@ _C.MODEL.SWINV2.APE = False
 _C.MODEL.SWINV2.PATCH_NORM = True
 _C.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES = [0, 0, 0, 0]
 
-# Vision Transformer parameters
-_C.MODEL.VIT = CN()
-_C.MODEL.VIT.PATCH_SIZE = 16
-_C.MODEL.VIT.IN_CHANS = 3
-_C.MODEL.VIT.EMBED_DIM = 768
-_C.MODEL.VIT.DEPTH = 12
-_C.MODEL.VIT.NUM_HEADS = 12
-_C.MODEL.VIT.MLP_RATIO = 4
-_C.MODEL.VIT.QKV_BIAS = True
-_C.MODEL.VIT.INIT_VALUES = 0.1
-_C.MODEL.VIT.USE_APE = False
-_C.MODEL.VIT.USE_RPB = False
-_C.MODEL.VIT.USE_SHARED_RPB = True
-_C.MODEL.VIT.USE_MEAN_POOLING = False
+# -----------------------------------------------------------------------------
+# Training settings
+# -----------------------------------------------------------------------------
+_C.LOSS = CN()
+_C.LOSS.NAME = 'tversky'
+_C.LOSS.MODE = 'multiclass'
+_C.LOSS.CLASSES = None
+_C.LOSS.LOG = False
+_C.LOSS.LOGITS = True
+_C.LOSS.SMOOTH = 0.0
+_C.LOSS.IGNORE_INDEX = None
+_C.LOSS.EPS = 1e-7
+_C.LOSS.ALPHA = 0.5
+_C.LOSS.BETA = 0.5
+_C.LOSS.GAMMA = 1.0
 
 # -----------------------------------------------------------------------------
 # Training settings
@@ -139,32 +128,6 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 # [SimMIM] Layer decay for fine-tuning
 _C.TRAIN.LAYER_DECAY = 1.0
 
-# -----------------------------------------------------------------------------
-# Augmentation settings
-# -----------------------------------------------------------------------------
-_C.AUG = CN()
-# Color jitter factor
-_C.AUG.COLOR_JITTER = 0.4
-# Use AutoAugment policy. "v0" or "original"
-_C.AUG.AUTO_AUGMENT = 'rand-m9-mstd0.5-inc1'
-# Random erase prob
-_C.AUG.REPROB = 0.25
-# Random erase mode
-_C.AUG.REMODE = 'pixel'
-# Random erase count
-_C.AUG.RECOUNT = 1
-# Mixup alpha, mixup enabled if > 0
-_C.AUG.MIXUP = 0.8
-# Cutmix alpha, cutmix enabled if > 0
-_C.AUG.CUTMIX = 1.0
-# Cutmix min/max ratio, overrides alpha and enables cutmix if set
-_C.AUG.CUTMIX_MINMAX = None
-# Probability of performing mixup or cutmix when either/both is enabled
-_C.AUG.MIXUP_PROB = 1.0
-# Probability of switching to cutmix when both mixup and cutmix enabled
-_C.AUG.MIXUP_SWITCH_PROB = 0.5
-# How to apply mixup/cutmix params. Per "batch", "pair", or "elem"
-_C.AUG.MIXUP_MODE = 'batch'
 
 # -----------------------------------------------------------------------------
 # Testing settings
@@ -176,24 +139,22 @@ _C.TEST.CROP = True
 # -----------------------------------------------------------------------------
 # Misc
 # -----------------------------------------------------------------------------
-# [SimMIM] Whether to enable pytorch amp, overwritten by command line argument
+# Whether to enable pytorch amp, overwritten by command line argument
 _C.ENABLE_AMP = False
 # Enable Pytorch automatic mixed precision (amp).
 _C.AMP_ENABLE = True
 # Path to output folder, overwritten by command line argument
 _C.OUTPUT = ''
 # Tag of experiment, overwritten by command line argument
-_C.TAG = 'default'
+_C.TAG = 'pt-caney-default-tag'
 # Frequency to save checkpoint
 _C.SAVE_FREQ = 1
 # Frequency to logging info
 _C.PRINT_FREQ = 10
 # Fixed random seed
-_C.SEED = 0
+_C.SEED = 42
 # Perform evaluation only, overwritten by command line argument
 _C.EVAL_MODE = False
-# Test throughput only, overwritten by command line argument
-_C.THROUGHPUT_MODE = False
 
 
 def _update_config_from_file(config, cfg_file):
