@@ -330,7 +330,7 @@ def main(config):
     """
     Performs the main function of building model, loader, etc. and starts
     training.
-    """    
+    """
 
     dataloader_train, dataloader_val = build_finetune_dataloaders(
         config, logger)
