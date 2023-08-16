@@ -56,11 +56,10 @@ Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 | name | bands | resolution | #chips |
 | :---: | :---: | :---: | :---: |
 | MODIS-Small | 7 | 128x128 | 1,994,131 |
-
 ## Pre-training with Masked Image Modeling
 To pre-train the swinv2 base model with masked image modeling pre-training, run:
 ```bash
-torchrun --nproc_per_node <NGPUS> --cfg <config-file> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
+torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py --cfg <config-file> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
 ```
 
 For example to run on a compute node with 4 GPUs and a batch size of 128 on the MODIS SatVision pre-training dataset with a base swinv2 model, run:
@@ -77,6 +76,14 @@ singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
 Singularity> cd pytorch-caney/examples/satvision
 Singularity> ./run_satvision_pretrain.sh
 ```
+
+## Fine-tuning Satvision-base
+To fine-tune the satvision-base pre-trained model, run:
+```bash
+torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/finetuning/finetune.py --cfg <config-file> --pretrained <path-to-pretrained> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
+```
+
+See example config files pytorch-caney/examples/satvision/finetune_satvision_base_*.yaml to see how to structure your config file for fine-tuning.
 
 ## References
 
