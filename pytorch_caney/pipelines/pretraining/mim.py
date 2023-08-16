@@ -32,7 +32,7 @@ def parse_args():
     Parse command-line arguments
     """
     parser = argparse.ArgumentParser(
-        'pytorch-caney impletmentation of MiM pre-training script',
+        'pytorch-caney implementation of MiM pre-training script',
         add_help=False)
 
     parser.add_argument(
