@@ -7,6 +7,9 @@ from numba import njit
 
 
 class RandomResizedCropNP(object):
+    """
+    Numpy implementation of RandomResizedCrop
+    """
 
     def __init__(self,
                  scale=(0.08, 1.0),
@@ -64,6 +67,9 @@ class RandomResizedCropNP(object):
 # MASKING
 
 class SimmimMaskGenerator:
+    """
+    Generates the masks for masked-image-modeling
+    """
     def __init__(self,
                  input_size=192,
                  mask_patch_size=32,
@@ -92,6 +98,17 @@ class SimmimMaskGenerator:
 
 @njit()
 def make_simmim_mask(token_count, mask_count, rand_size, scale):
+    """JIT-compiled random mask generation
+
+    Args:
+        token_count
+        mask_count
+        rand_size
+        scale
+
+    Returns:
+        mask
+    """
     mask_idx = np.random.permutation(token_count)[:mask_count]
     mask = np.zeros(token_count, dtype=np.int64)
     mask[mask_idx] = 1

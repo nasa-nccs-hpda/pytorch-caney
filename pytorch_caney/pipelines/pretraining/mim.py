@@ -1,15 +1,15 @@
-from pytorch_caney.data.datamodules.simmim_datamodule \
+from pytorch_caney.data.datamodules.mim_datamodule \
     import build_mim_dataloader
 
-from pytorch_caney.models.simmim.simmim \
+from pytorch_caney.models.mim.mim \
     import build_mim_model
 
-from pytorch_caney.training.simmim_utils \
+from pytorch_caney.training.mim_utils \
     import build_optimizer, save_checkpoint
 
-from pytorch_caney.training.simmim_utils import get_grad_norm
+from pytorch_caney.training.mim_utils import get_grad_norm
 from pytorch_caney.lr_scheduler import build_scheduler, setup_scaled_lr
-from pytorch_caney.logging import create_logger
+from pytorch_caney.ptc_logging import create_logger
 from pytorch_caney.config import get_config
 
 import argparse

@@ -7,6 +7,18 @@ LOSSES = {
 
 
 def get_loss_from_dict(loss_name, config):
+    """Gets the proper loss given a loss name.
+
+    Args:
+        loss_name (str): name of the loss
+        config: config object
+
+    Raises:
+        KeyError: thrown if loss key is not present in dict
+
+    Returns:
+        loss: pytorch loss
+    """
 
     try:
 
@@ -35,6 +47,15 @@ def get_loss_from_dict(loss_name, config):
 
 
 def build_loss(config):
+    """
+    Builds the loss function given a configuration object.
+
+    Args:
+        config: config object
+
+    Returns:
+        loss_to_use: pytorch loss function
+    """
 
     loss_name = config.LOSS.NAME
 

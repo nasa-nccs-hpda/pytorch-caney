@@ -3,14 +3,14 @@ from pytorch_caney.models.build import build_model
 from pytorch_caney.data.datamodules.finetune_datamodule \
     import build_finetune_dataloaders
 
-from pytorch_caney.training.simmim_utils \
+from pytorch_caney.training.mim_utils \
     import build_optimizer, save_checkpoint, reduce_tensor
 
 from pytorch_caney.config import get_config
 from pytorch_caney.loss.build import build_loss
 from pytorch_caney.lr_scheduler import build_scheduler, setup_scaled_lr
-from pytorch_caney.logging import create_logger
-from pytorch_caney.training.simmim_utils import get_grad_norm
+from pytorch_caney.ptc_logging import create_logger
+from pytorch_caney.training.mim_utils import get_grad_norm
 
 import argparse
 import datetime

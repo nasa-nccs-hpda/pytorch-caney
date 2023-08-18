@@ -26,4 +26,3 @@ yacs
 termcolor
 numba
 segmentation-models-pytorch
-GDAL>=3.3.0

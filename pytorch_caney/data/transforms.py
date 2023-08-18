@@ -38,7 +38,6 @@ class SimmimTransform:
     def __call__(self, img):
 
         img = self.transform_img(img)
-
         mask = self.mask_generator()
 
         return img, mask
