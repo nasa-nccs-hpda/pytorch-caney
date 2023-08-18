@@ -26,12 +26,6 @@ jobs:
           sudo apt-get install -y gdal-bin libgdal-dev build-essential
           python -m pip install --upgrade pip
           pip install https://github.com/rasterio/rasterio/archive/master.zip
-          pip install .[test]
-          pip install coveralls
-      - name: Run tests
-        run: coverage run -m pytest -v
-      - name: Submit coveralls
-        if: github.event_name != 'pull_request'
-        run: coveralls --service=github
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run CI tests
+        run: bash test.sh
+        shell: bash
