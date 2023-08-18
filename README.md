@@ -28,8 +28,8 @@ Note: PIP installations do not include CUDA libraries for GPU support. Make sure
 are installed locally in the system if not using conda/mamba.
 
 ```bash
-module load singularity
-singularity build --sandbox pytorch-caney docker://nasanccs/pytorch-caney:latest
+module load singularity # if a module needs to be loaded
+singularity build --sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest
 ```
 
 ## Why Caney?
@@ -65,14 +65,14 @@ torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/pretrain
 For example to run on a compute node with 4 GPUs and a batch size of 128 on the MODIS SatVision pre-training dataset with a base swinv2 model, run:
 
 ```bash
-singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
+singularity shell --nv -B <mounts> /path/to/container/pytorch-caney-container
 Singularity> export PYTHONPATH=$PWD:$PWD/pytorch-caney
 Singularity> torchrun --nproc_per_node 4 pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py --cfg pytorch-caney/examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml --dataset MODIS --data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* --batch-size 128 --output . --enable-amp
 ```
 
 This example script runs the exact configuration used to make the SatVision-base model pre-training with MiM and the MODIS pre-training dataset.
 ```bash
-singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
+singularity shell --nv -B <mounts> /path/to/container/pytorch-caney-container
 Singularity> cd pytorch-caney/examples/satvision
 Singularity> ./run_satvision_pretrain.sh
 ```
@@ -85,6 +85,28 @@ torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/finetuni
 
 See example config files pytorch-caney/examples/satvision/finetune_satvision_base_*.yaml to see how to structure your config file for fine-tuning.
 
+
+## Testing
+For unittests, run this bash command to run linting and unit test runs. This will execute unit tests and linting in a temporary venv environment only used for testing.
+```bash
+git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
+cd pytorch-caney; bash test.sh
+```
+or run unit tests directly with container or anaconda env
+
+```bash
+git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
+singularity build --sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest
+singularity shell --nv -B <mounts> /path/to/container/pytorch-caney-container
+cd pytorch-caney; python -m unittest discover pytorch_caney/tests
+```
+
+```bash
+git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
+cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
+conda activate pytorch-caney
+python -m unittest discover pytorch_caney/tests
+```
 ## References
 
 - [Pytorch Lightning](https://github.com/Lightning-AI/lightning)

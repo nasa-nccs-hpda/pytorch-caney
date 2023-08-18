@@ -39,4 +39,5 @@ dependencies:
     - yacs
     - termcolor
     - numba
+    - joblib
     - segmentation-models-pytorch
