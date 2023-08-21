@@ -89,9 +89,10 @@ Fine-tuning Satvision-base
 -----------------------------
 
 To fine-tune the satvision-base pre-trained model, run:
-```bash
+
+.. code-block:: bash
+
 torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/finetuning/finetune.py --cfg <config-file> --pretrained <path-to-pretrained> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp
-```
 
 See example config files pytorch-caney/examples/satvision/finetune_satvision_base_*.yaml to see how to structure your config file for fine-tuning.
 
@@ -100,25 +101,31 @@ Testing
 ------------
 
 For unittests, run this bash command to run linting and unit test runs. This will execute unit tests and linting in a temporary venv environment only used for testing.
-```bash
+
+.. code-block:: bash
+
 git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
 cd pytorch-caney; bash test.sh
-```
+
+
 or run unit tests directly with container or anaconda env
 
-```bash
+.. code-block:: bash
+
 git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
 singularity build --sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest
 singularity shell --nv -B <mounts> /path/to/container/pytorch-caney-container
 cd pytorch-caney; python -m unittest discover pytorch_caney/tests
-```
 
-```bash
+
+.. code-block:: bash
+
 git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
 cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
 conda activate pytorch-caney
 python -m unittest discover pytorch_caney/tests
-```
+
+
 References
 ------------
 
