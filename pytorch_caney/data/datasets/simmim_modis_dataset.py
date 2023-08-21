@@ -7,7 +7,9 @@ from torch.utils.data import Dataset
 
 
 class MODISDataset(Dataset):
-
+    """
+    MODIS MOD09GA pre-training dataset
+    """
     IMAGE_PATH = os.path.join("images")
 
     def __init__(
@@ -43,11 +45,7 @@ class MODISDataset(Dataset):
 
         if config.MODEL.TYPE in ['swin', 'swinv2']:
 
-            model_patch_size = config.MODEL.SWIN.PATCH_SIZE
-
-        elif config.MODEL.TYPE == 'vit':
-
-            model_patch_size = config.MODEL.VIT.PATCH_SIZE
+            model_patch_size = config.MODEL.SWINV2.PATCH_SIZE
 
         else:
 

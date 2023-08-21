@@ -1,12 +1,17 @@
+from .decoders.unet_decoder import UnetDecoder
+from .decoders.unet_decoder import SegmentationHead
+
 import torch.nn as nn
 
 from typing import Tuple
 
-from .decoders.unet_decoder import UnetDecoder
-from .decoders.unet_decoder import SegmentationHead
-
 
 class unet_swin(nn.Module):
+    """
+    Pytorch encoder-decoder model which pairs
+    an encoder (swin) with the attention unet
+    decoder.
+    """
 
     FEATURE_CHANNELS: Tuple[int] = (3, 256, 512, 1024, 1024)
     DECODE_CHANNELS: Tuple[int] = (512, 256, 128, 64)
@@ -31,8 +36,8 @@ class unet_swin(nn.Module):
             kernel_size=self.KERNEL_SIZE,
             upsampling=self.UPSAMPLING)
 
-    def forward(self, input):
-        encoder_featrue = self.encoder.get_unet_feature(input)
+    def forward(self, x):
+        encoder_featrue = self.encoder.get_unet_feature(x)
         decoder_output = self.decoder(*encoder_featrue)
         masks = self.segmentation_head(decoder_output)
 
