@@ -48,4 +48,6 @@ myst_enable_extensions = [
     "dollarmath",
     "html_image",
 ]
+
 myst_url_schemes = ("http", "https", "mailto")
+
