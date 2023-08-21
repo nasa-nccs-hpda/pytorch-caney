@@ -113,11 +113,10 @@ by itself, but instructions for installing the full environments are listed unde
 directory so projects, examples, and notebooks can be run.</p>
 <p>Note: PIP installations do not include CUDA libraries for GPU support. Make sure NVIDIA libraries
 are installed locally in the system if not using conda/mamba.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>module<span class="w"> </span>load<span class="w"> </span>singularity<span class="w"> </span><span class="c1"># if a module needs to be loaded</span>
+singularity<span class="w"> </span>build<span class="w"> </span>--sandbox<span class="w"> </span>pytorch-caney-container<span class="w"> </span>docker://nasanccs/pytorch-caney:latest
 </pre></div>
 </div>
-<p>module load singularity # if a module needs to be loaded
-singularity build –sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest</p>
 </section>
 <section id="why-caney">
 <h2>Why Caney?<a class="headerlink" href="#why-caney" title="Permalink to this heading"></a></h2>
@@ -136,74 +135,75 @@ singularity build –sandbox pytorch-caney-container docker://nasanccs/pytorch-c
 </section>
 <section id="satvision">
 <h2>SatVision<a class="headerlink" href="#satvision" title="Permalink to this heading"></a></h2>
-<div class="line-block">
-<div class="line">name | pretrain | resolution | #params |</div>
-<div class="line">:—: | :—: | :—: | :—: |</div>
-<div class="line">SatVision-B | MODIS-1.9-M | 192x192 | 84.5M |</div>
-</div>
 </section>
 <section id="satvision-datasets">
 <h2>SatVision Datasets<a class="headerlink" href="#satvision-datasets" title="Permalink to this heading"></a></h2>
-<div class="line-block">
-<div class="line">name | bands | resolution | #chips |</div>
-<div class="line">:—: | :—: | :—: | :—: |</div>
-<div class="line">MODIS-Small | 7 | 128x128 | 1,994,131 |</div>
-</div>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Pre-trained Vision Transformers
+   :widths: 25 25 50</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Bands</p></th>
+<th class="head"><p>Resolution</p></th>
+<th class="head"><p>Image Chips</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MODIS-Small</p></td>
+<td><p>7</p></td>
+<td><p>128x128</p></td>
+<td><p>1,994,131</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="pre-training-with-masked-image-modeling">
 <h2>Pre-training with Masked Image Modeling<a class="headerlink" href="#pre-training-with-masked-image-modeling" title="Permalink to this heading"></a></h2>
 <p>To pre-train the swinv2 base model with masked image modeling pre-training, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>torchrun<span class="w"> </span>--nproc_per_node<span class="w"> </span>&lt;NGPUS&gt;<span class="w"> </span>pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py<span class="w"> </span>--cfg<span class="w"> </span>&lt;config-file&gt;<span class="w"> </span>--dataset<span class="w"> </span>&lt;dataset-name&gt;<span class="w"> </span>--data-paths<span class="w"> </span>&lt;path-to-data-subfolder-1&gt;<span class="w"> </span>--batch-size<span class="w"> </span>&lt;batch-size&gt;<span class="w"> </span>--output<span class="w"> </span>&lt;output-dir&gt;<span class="w"> </span>--enable-amp
 </pre></div>
 </div>
-<p>torchrun –nproc_per_node &lt;NGPUS&gt; pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py –cfg &lt;config-file&gt; –dataset &lt;dataset-name&gt; –data-paths &lt;path-to-data-subfolder-1&gt; –batch-size &lt;batch-size&gt; –output &lt;output-dir&gt; –enable-amp</p>
 <p>For example to run on a compute node with 4 GPUs and a batch size of 128 on the MODIS SatVision pre-training dataset with a base swinv2 model, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span>shell<span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span>&lt;mounts&gt;<span class="w"> </span>/path/to/container/pytorch-caney-container
+Singularity&gt;<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$PWD</span>:<span class="nv">$PWD</span>/pytorch-caney
+Singularity&gt;<span class="w"> </span>torchrun<span class="w"> </span>--nproc_per_node<span class="w"> </span><span class="m">4</span><span class="w"> </span>pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py<span class="w"> </span>--cfg<span class="w"> </span>pytorch-caney/examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml<span class="w"> </span>--dataset<span class="w"> </span>MODIS<span class="w"> </span>--data-paths<span class="w"> </span>/explore/nobackup/projects/ilab/data/satvision/pretraining/training_*<span class="w"> </span>--batch-size<span class="w"> </span><span class="m">128</span><span class="w"> </span>--output<span class="w"> </span>.<span class="w"> </span>--enable-amp
 </pre></div>
 </div>
-<p>singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
-Singularity&gt; export PYTHONPATH=$PWD:$PWD/pytorch-caney
-Singularity&gt; torchrun –nproc_per_node 4 pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py –cfg pytorch-caney/examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml –dataset MODIS –data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* –batch-size 128 –output . –enable-amp</p>
 <p>This example script runs the exact configuration used to make the SatVision-base model pre-training with MiM and the MODIS pre-training dataset.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>singularity<span class="w"> </span>shell<span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span>&lt;mounts&gt;<span class="w"> </span>/path/to/container/pytorch-caney-container
+Singularity&gt;<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>pytorch-caney/examples/satvision
+Singularity&gt;<span class="w"> </span>./run_satvision_pretrain.sh
 </pre></div>
 </div>
-<p>singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
-Singularity&gt; cd pytorch-caney/examples/satvision
-Singularity&gt; ./run_satvision_pretrain.sh</p>
 </section>
 <section id="fine-tuning-satvision-base">
 <h2>Fine-tuning Satvision-base<a class="headerlink" href="#fine-tuning-satvision-base" title="Permalink to this heading"></a></h2>
 <p>To fine-tune the satvision-base pre-trained model, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>torchrun<span class="w"> </span>--nproc_per_node<span class="w"> </span>&lt;NGPUS&gt;<span class="w"> </span>pytorch-caney/pytorch_caney/pipelines/finetuning/finetune.py<span class="w"> </span>--cfg<span class="w"> </span>&lt;config-file&gt;<span class="w"> </span>--pretrained<span class="w"> </span>&lt;path-to-pretrained&gt;<span class="w"> </span>--dataset<span class="w"> </span>&lt;dataset-name&gt;<span class="w"> </span>--data-paths<span class="w"> </span>&lt;path-to-data-subfolder-1&gt;<span class="w"> </span>--batch-size<span class="w"> </span>&lt;batch-size&gt;<span class="w"> </span>--output<span class="w"> </span>&lt;output-dir&gt;<span class="w"> </span>--enable-amp
 </pre></div>
 </div>
-<p>torchrun –nproc_per_node &lt;NGPUS&gt; pytorch-caney/pytorch_caney/pipelines/finetuning/finetune.py –cfg &lt;config-file&gt; –pretrained &lt;path-to-pretrained&gt; –dataset &lt;dataset-name&gt; –data-paths &lt;path-to-data-subfolder-1&gt; –batch-size &lt;batch-size&gt; –output &lt;output-dir&gt; –enable-amp</p>
 <p>See example config files pytorch-caney/examples/satvision/finetune_satvision_base_*.yaml to see how to structure your config file for fine-tuning.</p>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
 <p>For unittests, run this bash command to run linting and unit test runs. This will execute unit tests and linting in a temporary venv environment only used for testing.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:nasa-nccs-hpda/pytorch-caney.git
+<span class="nb">cd</span><span class="w"> </span>pytorch-caney<span class="p">;</span><span class="w"> </span>bash<span class="w"> </span>test.sh
 </pre></div>
 </div>
-<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
-cd pytorch-caney; bash test.sh</p>
 <p>or run unit tests directly with container or anaconda env</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:nasa-nccs-hpda/pytorch-caney.git
+singularity<span class="w"> </span>build<span class="w"> </span>--sandbox<span class="w"> </span>pytorch-caney-container<span class="w"> </span>docker://nasanccs/pytorch-caney:latest
+singularity<span class="w"> </span>shell<span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span>&lt;mounts&gt;<span class="w"> </span>/path/to/container/pytorch-caney-container
+<span class="nb">cd</span><span class="w"> </span>pytorch-caney<span class="p">;</span><span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>pytorch_caney/tests
 </pre></div>
 </div>
-<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
-singularity build –sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest
-singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
-cd pytorch-caney; python -m unittest discover pytorch_caney/tests</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:nasa-nccs-hpda/pytorch-caney.git
+<span class="nb">cd</span><span class="w"> </span>pytorch-caney<span class="p">;</span><span class="w"> </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>requirements/environment_gpu.yml<span class="p">;</span>
+conda<span class="w"> </span>activate<span class="w"> </span>pytorch-caney
+python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>pytorch_caney/tests
 </pre></div>
 </div>
-<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
-cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
-conda activate pytorch-caney
-python -m unittest discover pytorch_caney/tests</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
