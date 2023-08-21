@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytorch_caney.processing &mdash; pytorch-caney 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pytorch-caney
+              <img src="../../_static/DSG_LOGO_REDESIGN.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">pytorch-caney</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">pytorch-caney package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pytorch-caney</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pytorch_caney.processing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pytorch_caney.processing</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">fliplr</span><span class="p">,</span> <span class="n">flipud</span>
+
+<span class="kn">import</span> <span class="nn">scipy.signal</span>
+
+
+<span class="n">SEED</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Jordan A Caraballo-Vega, Science Data Processing Branch&quot;</span>
+<span class="n">__email__</span> <span class="o">=</span> <span class="s2">&quot;jordan.a.caraballo-vega@nasa.gov&quot;</span>
+<span class="n">__status__</span> <span class="o">=</span> <span class="s2">&quot;Production&quot;</span>
+
+<span class="c1"># ----------------------------------------------------------------------------</span>
+<span class="c1"># module processing</span>
+<span class="c1">#</span>
+<span class="c1"># General functions to perform standardization of images (numpy arrays).</span>
+<span class="c1"># A couple of methods have been implemented for testing, including global and</span>
+<span class="c1"># local standardization for neural networks input. Data manipulation stage,</span>
+<span class="c1"># extract random patches for training and store them in numpy arrays.</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Module Methods</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="c1"># --------------------------- Normalization Functions ----------------------- #</span>
+<div class="viewcode-block" id="normalize"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.normalize">[docs]</a><span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">65535.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalize numpy array in the range of [0,1]</span>
+<span class="sd">    :param images: numpy array in the format (n,w,h,c).</span>
+<span class="sd">    :param factor: float number to normalize images, e.g. 2^(16)-1</span>
+<span class="sd">    :return: numpy array in the [0,1] range</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">images</span> <span class="o">/</span> <span class="n">factor</span></div>
+
+
+<span class="c1"># ------------------------ Standardization Functions ----------------------- #</span>
+<div class="viewcode-block" id="global_standardization"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.global_standardization">[docs]</a><span class="k">def</span> <span class="nf">global_standardization</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-batch&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardize numpy array using global standardization.</span>
+<span class="sd">    :param images: numpy array in the format (n,w,h,c).</span>
+<span class="sd">    :param strategy: can select between per-image or per-batch.</span>
+<span class="sd">    :return: globally standardized numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;per-batch&#39;</span><span class="p">:</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>  <span class="c1"># global mean of all images</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>  <span class="c1"># global std of all images</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># for each image in images</span>
+            <span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
+    <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;per-image&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># for each image in images</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:])</span>  <span class="c1"># image mean</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:])</span>  <span class="c1"># image std</span>
+            <span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+<div class="viewcode-block" id="local_standardization"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.local_standardization">[docs]</a><span class="k">def</span> <span class="nf">local_standardization</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;normalization_data&#39;</span><span class="p">,</span>
+                          <span class="n">ndata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-batch&#39;</span>
+                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardize numpy array using local standardization.</span>
+<span class="sd">    :param images: numpy array in the format (n,w,h,c).</span>
+<span class="sd">    :param filename: filename to store mean and std data.</span>
+<span class="sd">    :param ndata: pandas df with mean and std values for each channel.</span>
+<span class="sd">    :param strategy: can select between per-image or per-batch.</span>
+<span class="sd">    :return: locally standardized numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ndata</span><span class="p">:</span>  <span class="c1"># for inference only</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>  <span class="c1"># for each channel in images</span>
+            <span class="c1"># standardize all images based on given mean and std</span>
+            <span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;channel_mean&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> \
+                <span class="n">ndata</span><span class="p">[</span><span class="s1">&#39;channel_std&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">images</span>
+    <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;per-batch&#39;</span><span class="p">:</span>  <span class="c1"># for all images in batch</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s2">&quot;_norm_data.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="s2">&quot;i,channel_mean,channel_std,channel_mean_post,channel_std_post</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>  <span class="c1"># for each channel in images</span>
+            <span class="n">channel_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span>  <span class="c1"># mean for each channel</span>
+            <span class="n">channel_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span>   <span class="c1"># std for each channel</span>
+            <span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">channel_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">channel_std</span>
+            <span class="n">channel_mean_post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span>
+            <span class="n">channel_std_post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">images</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span>
+            <span class="c1"># write to file for each channel</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">channel_mean</span><span class="p">,</span> <span class="n">channel_std</span><span class="p">,</span>
+                                              <span class="n">channel_mean_post</span><span class="p">,</span>
+                                              <span class="n">channel_std_post</span>
+                                              <span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># close file</span>
+    <span class="k">elif</span> <span class="n">strategy</span> <span class="o">==</span> <span class="s1">&#39;per-image&#39;</span><span class="p">:</span>  <span class="c1"># standardization for each image</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>  <span class="c1"># for each image</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">images</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>  <span class="c1"># for each channel in images</span>
+                <span class="n">channel_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">])</span>
+                <span class="n">channel_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">])</span>
+                <span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">channel_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">channel_std</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Standardization &lt;</span><span class="si">{</span><span class="n">strategy</span><span class="si">}</span><span class="s1">&gt; not supported&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">images</span></div>
+
+
+<div class="viewcode-block" id="standardize_image"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.standardize_image">[docs]</a><span class="k">def</span> <span class="nf">standardize_image</span><span class="p">(</span>
+    <span class="n">image</span><span class="p">,</span>
+    <span class="n">standardization_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">std</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_min</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_max</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardize image within parameter, simple scaling of values.</span>
+<span class="sd">    Loca, Global, and Mixed options.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]))</span> <span class="o">/</span> \
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;minmax&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">55</span><span class="o">-</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;localminmax&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]))</span> <span class="o">/</span> \
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">])</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;globalminmax&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">global_min</span><span class="p">)</span> <span class="o">/</span> \
+                <span class="p">(</span><span class="n">global_max</span> <span class="o">-</span> <span class="n">global_min</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;global&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">std</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">standardization_type</span> <span class="o">==</span> <span class="s1">&#39;mixed&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">return</span> <span class="n">image</span></div>
+
+
+<div class="viewcode-block" id="standardize_batch"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.standardize_batch">[docs]</a><span class="k">def</span> <span class="nf">standardize_batch</span><span class="p">(</span>
+    <span class="n">image_batch</span><span class="p">,</span>
+    <span class="n">standardization_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">mean</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">std</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Standardize image within parameter, simple scaling of values.</span>
+<span class="sd">    Loca, Global, and Mixed options.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image_batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">image_batch</span><span class="p">[</span><span class="n">item</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">standardize_image</span><span class="p">(</span>
+            <span class="n">image_batch</span><span class="p">[</span><span class="n">item</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">standardization_type</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">image_batch</span></div>
+
+<span class="c1"># ------------------------ Data Preparation Functions ----------------------- #</span>
+
+
+<div class="viewcode-block" id="get_rand_patches_rand_cond"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.get_rand_patches_rand_cond">[docs]</a><span class="k">def</span> <span class="nf">get_rand_patches_rand_cond</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">n_patches</span><span class="o">=</span><span class="mi">16000</span><span class="p">,</span> <span class="n">sz</span><span class="o">=</span><span class="mi">160</span><span class="p">,</span> <span class="n">nclasses</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                               <span class="n">nodata_ascloud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;rand&#39;</span>
+                               <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate training data.</span>
+<span class="sd">    :param images: ndarray in the format (w,h,c).</span>
+<span class="sd">    :param mask: integer ndarray with shape (x_sz, y_sz)</span>
+<span class="sd">    :param n_patches: number of patches</span>
+<span class="sd">    :param sz: tile size, will be used for both height and width</span>
+<span class="sd">    :param nclasses: number of classes present in the output data</span>
+<span class="sd">    :param nodata_ascloud: convert no-data values to cloud labels</span>
+<span class="sd">    :param method: choose between rand, cond, cloud</span>
+<span class="sd">             rand - select N number of random patches for each image</span>
+<span class="sd">             cond - select N number of random patches for each image,</span>
+<span class="sd">                    with the condition of having 1+ class per tile.</span>
+<span class="sd">             cloud - select tiles that have clouds</span>
+<span class="sd">    :return: two numpy array with data and labels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">nodata_ascloud</span><span class="p">:</span>
+        <span class="c1"># if no-data present, change to final class</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">values</span>  <span class="c1"># return numpy array</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span> <span class="o">&gt;</span> <span class="n">nclasses</span><span class="p">]</span> <span class="o">=</span> <span class="n">nclasses</span>  <span class="c1"># some no-data are 255 or other big</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nclasses</span>  <span class="c1"># some no-data are -128 or smaller negative</span>
+
+    <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store data patches</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store label patches</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_patches</span><span class="p">)):</span>
+
+        <span class="c1"># Generate random integers from image</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;cond&#39;</span><span class="p">:</span>
+            <span class="c1"># while loop to regenerate random ints if tile has only one class</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">)]))</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> \
+                    <span class="mi">6</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">)]</span> <span class="ow">or</span> \
+                    <span class="n">img</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;rand&#39;</span><span class="p">:</span>
+            <span class="k">while</span> <span class="mi">6</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">)]</span> <span class="ow">or</span> \
+                    <span class="n">img</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;cloud&#39;</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span><span class="o">+</span><span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span><span class="o">+</span><span class="n">sz</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+
+        <span class="c1"># Generate img and mask patches</span>
+        <span class="n">patch_img</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span>
+        <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span>
+
+        <span class="c1"># Apply some random transformations</span>
+        <span class="n">random_transformation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">random_transformation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># flip left and right</span>
+            <span class="n">patch_img</span> <span class="o">=</span> <span class="n">fliplr</span><span class="p">(</span><span class="n">patch_img</span><span class="p">)</span>
+            <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">fliplr</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">random_transformation</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># reverse second dimension</span>
+            <span class="n">patch_img</span> <span class="o">=</span> <span class="n">flipud</span><span class="p">(</span><span class="n">patch_img</span><span class="p">)</span>
+            <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">flipud</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">random_transformation</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># rotate 90 degrees</span>
+            <span class="n">patch_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">random_transformation</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># rotate 180 degrees</span>
+            <span class="n">patch_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">random_transformation</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># rotate 270 degrees</span>
+            <span class="n">patch_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># original image</span>
+            <span class="k">pass</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch_img</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_rand_patches_aug_augcond"><a class="viewcode-back" href="../../modules.html#pytorch_caney.processing.get_rand_patches_aug_augcond">[docs]</a><span class="k">def</span> <span class="nf">get_rand_patches_aug_augcond</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">n_patches</span><span class="o">=</span><span class="mi">16000</span><span class="p">,</span> <span class="n">sz</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+                                 <span class="n">nclasses</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">nodata_ascloud</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                 <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;augcond&#39;</span>
+                                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate training data.</span>
+<span class="sd">    :param images: ndarray in the format (w,h,c).</span>
+<span class="sd">    :param mask: integer ndarray with shape (x_sz, y_sz)</span>
+<span class="sd">    :param n_patches: number of patches</span>
+<span class="sd">    :param sz: tile size, will be used for both height and width</span>
+<span class="sd">    :param nclasses: number of classes present in the output data</span>
+<span class="sd">    :param over: number of pixels to overlap between images</span>
+<span class="sd">    :param nodata_ascloud: convert no-data values to cloud labels</span>
+<span class="sd">    :param method: choose between rand, cond, cloud</span>
+<span class="sd">            aug - select N * 8 number of random patches for each</span>
+<span class="sd">                  image after data augmentation.</span>
+<span class="sd">            augcond - select N * 8 number of random patches for</span>
+<span class="sd">                  each image, with the condition of having 1+ per</span>
+<span class="sd">                  tile, after data augmentation.</span>
+<span class="sd">    :return: two numpy array with data and labels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">values</span>  <span class="c1"># return numpy array</span>
+
+    <span class="k">if</span> <span class="n">nodata_ascloud</span><span class="p">:</span>
+        <span class="c1"># if no-data present, change to final class</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span> <span class="o">&gt;</span> <span class="n">nclasses</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodata</span>  <span class="c1"># some no-data are 255 or other big</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodata</span>  <span class="c1"># some no-data are -128 or smaller negative</span>
+
+    <span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store data patches</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list to store label patches</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_patches</span><span class="p">)):</span>
+
+        <span class="c1"># Generate random integers from image</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;augcond&#39;</span><span class="p">:</span>
+            <span class="c1"># while loop to regenerate random ints if tile has only one class</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]))</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> \
+                    <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span> <span class="ow">or</span> \
+                    <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">)]</span> <span class="ow">or</span> \
+                    <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                                   <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;aug&#39;</span><span class="p">:</span>
+            <span class="c1"># while loop to regenerate random ints if tile has only one class</span>
+            <span class="k">while</span> <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span> <span class="ow">or</span> \
+                <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                               <span class="p">(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">)]</span> <span class="ow">or</span> \
+                <span class="n">nodata</span> <span class="ow">in</span> <span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                               <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">sz</span><span class="p">)</span>
+
+        <span class="c1"># Generate img and mask patches</span>
+        <span class="n">patch_img</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span>  <span class="c1"># original image patch</span>
+        <span class="n">patch_mask</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="n">xc</span><span class="p">:(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">),</span> <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)]</span>  <span class="c1"># original mask patch</span>
+
+        <span class="c1"># Apply transformations for data augmentation</span>
+        <span class="c1"># 1. No augmentation and append to list</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch_img</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">)</span>
+
+        <span class="c1"># 2. Rotate 90 and append to list</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># 3. Rotate 180 and append to list</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># 4. Rotate 270</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_img</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rot90</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># 5. Flipped up and down’</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flipud</span><span class="p">(</span><span class="n">patch_img</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">flipud</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">))</span>
+
+        <span class="c1"># 6. Flipped left and right</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fliplr</span><span class="p">(</span><span class="n">patch_img</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fliplr</span><span class="p">(</span><span class="n">patch_mask</span><span class="p">))</span>
+
+        <span class="c1"># 7. overlapping tiles - next tile, down</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                           <span class="p">(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">)])</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                           <span class="p">(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">)])</span>
+
+        <span class="c1"># 8. overlapping tiles - next tile, side</span>
+        <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">img</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                           <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)])</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mask</span><span class="p">[(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">):(</span><span class="n">xc</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">sz</span> <span class="o">-</span> <span class="n">over</span><span class="p">),</span>
+                           <span class="n">yc</span><span class="p">:(</span><span class="n">yc</span> <span class="o">+</span> <span class="n">sz</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span></div>
+
+
+<span class="c1"># ------------------------ Artifact Removal Functions ----------------------- #</span>
+
+<span class="k">def</span> <span class="nf">_2d_spline</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Window method for boundaries/edge artifacts smoothing.</span>
+<span class="sd">    :param window_size: size of window/tile to smooth</span>
+<span class="sd">    :param power: spline polinomial power to use</span>
+<span class="sd">    :return: smoothing distribution numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intersection</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">tria</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">triang</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+    <span class="n">wind_outer</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">tria</span><span class="p">))</span> <span class="o">**</span> <span class="n">power</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">wind_outer</span><span class="p">[</span><span class="n">intersection</span><span class="p">:</span><span class="o">-</span><span class="n">intersection</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">wind_inner</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">tria</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="n">power</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">wind_inner</span><span class="p">[:</span><span class="n">intersection</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">wind_inner</span><span class="p">[</span><span class="o">-</span><span class="n">intersection</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">wind</span> <span class="o">=</span> <span class="n">wind_inner</span> <span class="o">+</span> <span class="n">wind_outer</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="n">wind</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">wind</span><span class="p">)</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">wind</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="n">wind</span> <span class="o">*</span> <span class="n">wind</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wind</span>
+
+
+<span class="k">def</span> <span class="nf">_hann_matrix</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">power</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Placeholder for next release.&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># -------------------------------------------------------------------------------</span>
+<span class="c1"># module preprocessing Unit Tests</span>
+<span class="c1"># -------------------------------------------------------------------------------</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># Unit Test #1 - Testing normalization distributions</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">65536</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">6</span><span class="p">)))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+    <span class="n">x_norm</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">65535</span><span class="p">)</span>  <span class="c1"># apply static normalization</span>
+    <span class="k">assert</span> <span class="n">x_norm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">&quot;Unexpected max value.&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UT #1 PASS: </span><span class="si">{</span><span class="n">x_norm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">x_norm</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Unit Test #2 - Testing standardization distributions</span>
+    <span class="n">standardized</span> <span class="o">=</span> <span class="n">global_standardization</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-batch&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">standardized</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1.731</span><span class="p">,</span> <span class="s2">&quot;Unexpected max value.&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UT #2 PASS: </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Unit Test #3 - Testing standardization distributions</span>
+    <span class="n">standardized</span> <span class="o">=</span> <span class="n">global_standardization</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-image&#39;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">standardized</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1.73</span><span class="p">,</span> <span class="s2">&quot;Unexpected max value.&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UT #3 PASS: </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Unit Test #4 - Testing standardization distributions</span>
+    <span class="n">standardized</span> <span class="o">=</span> <span class="n">local_standardization</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;normalization_data&#39;</span><span class="p">,</span>
+                                         <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-batch&#39;</span>
+                                         <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">standardized</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1.74</span><span class="p">,</span> <span class="s2">&quot;Unexpected max value.&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UT #4 PASS: </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Unit Test #5 - Testing standardization distributions</span>
+    <span class="n">standardized</span> <span class="o">=</span> <span class="n">local_standardization</span><span class="p">(</span><span class="n">x_norm</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;normalization_data&#39;</span><span class="p">,</span>
+                                         <span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;per-image&#39;</span>
+                                         <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">standardized</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1.75</span><span class="p">,</span> <span class="s2">&quot;Unexpected max value.&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UT #5 PASS: </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">standardized</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jordan A. Caraballo-Vega.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

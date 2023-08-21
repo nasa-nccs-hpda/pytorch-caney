@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytorch-caney package &mdash; pytorch-caney 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pytorch-caney
+              <img src="_static/DSG_LOGO_REDESIGN.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">pytorch-caney</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pytorch-caney package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-lr-scheduler">pytorch_caney.lr_scheduler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-metrics">pytorch_caney.metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-processing">pytorch_caney.processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.get_rand_patches_aug_augcond"><code class="docutils literal notranslate"><span class="pre">get_rand_patches_aug_augcond()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.get_rand_patches_rand_cond"><code class="docutils literal notranslate"><span class="pre">get_rand_patches_rand_cond()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.global_standardization"><code class="docutils literal notranslate"><span class="pre">global_standardization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.local_standardization"><code class="docutils literal notranslate"><span class="pre">local_standardization()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.normalize"><code class="docutils literal notranslate"><span class="pre">normalize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.standardize_batch"><code class="docutils literal notranslate"><span class="pre">standardize_batch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.standardize_image"><code class="docutils literal notranslate"><span class="pre">standardize_image()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-ptc-logging">pytorch_caney.ptc_logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-utils">pytorch_caney.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pytorch-caney</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pytorch-caney package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytorch-caney-package">
+<h1>pytorch-caney package<a class="headerlink" href="#pytorch-caney-package" title="Permalink to this heading"></a></h1>
+<section id="pytorch-caney-lr-scheduler">
+<h2>pytorch_caney.lr_scheduler<a class="headerlink" href="#pytorch-caney-lr-scheduler" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-metrics">
+<h2>pytorch_caney.metrics<a class="headerlink" href="#pytorch-caney-metrics" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-processing">
+<h2>pytorch_caney.processing<a class="headerlink" href="#pytorch-caney-processing" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.processing"></span><dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.get_rand_patches_aug_augcond">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">get_rand_patches_aug_augcond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_patches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nclasses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">over</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata_ascloud</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-9999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'augcond'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#get_rand_patches_aug_augcond"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.get_rand_patches_aug_augcond" title="Permalink to this definition"></a></dt>
+<dd><p>Generate training data.
+:param images: ndarray in the format (w,h,c).
+:type mask:
+:param mask: integer ndarray with shape (x_sz, y_sz)
+:type n_patches:
+:param n_patches: number of patches
+:type sz:
+:param sz: tile size, will be used for both height and width
+:type nclasses:
+:param nclasses: number of classes present in the output data
+:type over:
+:param over: number of pixels to overlap between images
+:type nodata_ascloud:
+:param nodata_ascloud: convert no-data values to cloud labels
+:type method:
+:param method: choose between rand, cond, cloud</p>
+<blockquote>
+<div><dl class="simple">
+<dt>aug - select N * 8 number of random patches for each</dt><dd><p>image after data augmentation.</p>
+</dd>
+<dt>augcond - select N * 8 number of random patches for</dt><dd><p>each image, with the condition of having 1+ per
+tile, after data augmentation.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>two numpy array with data and labels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.get_rand_patches_rand_cond">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">get_rand_patches_rand_cond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_patches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">160</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nclasses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodata_ascloud</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rand'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#get_rand_patches_rand_cond"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.get_rand_patches_rand_cond" title="Permalink to this definition"></a></dt>
+<dd><p>Generate training data.
+:param images: ndarray in the format (w,h,c).
+:type mask:
+:param mask: integer ndarray with shape (x_sz, y_sz)
+:type n_patches:
+:param n_patches: number of patches
+:type sz:
+:param sz: tile size, will be used for both height and width
+:type nclasses:
+:param nclasses: number of classes present in the output data
+:type nodata_ascloud:
+:param nodata_ascloud: convert no-data values to cloud labels
+:type method:
+:param method: choose between rand, cond, cloud</p>
+<blockquote>
+<div><p>rand - select N number of random patches for each image
+cond - select N number of random patches for each image,</p>
+<blockquote>
+<div><p>with the condition of having 1+ class per tile.</p>
+</div></blockquote>
+<p>cloud - select tiles that have clouds</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>two numpy array with data and labels.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.global_standardization">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">global_standardization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'per-batch'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#global_standardization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.global_standardization" title="Permalink to this definition"></a></dt>
+<dd><p>Standardize numpy array using global standardization.
+:type images:
+:param images: numpy array in the format (n,w,h,c).
+:type strategy:
+:param strategy: can select between per-image or per-batch.
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code>
+:return: globally standardized numpy array</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.local_standardization">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">local_standardization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normalization_data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'per-batch'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#local_standardization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.local_standardization" title="Permalink to this definition"></a></dt>
+<dd><p>Standardize numpy array using local standardization.
+:type images:
+:param images: numpy array in the format (n,w,h,c).
+:type filename:
+:param filename: filename to store mean and std data.
+:type ndata:
+:param ndata: pandas df with mean and std values for each channel.
+:type strategy:
+:param strategy: can select between per-image or per-batch.
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code>
+:return: locally standardized numpy array</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.normalize">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">65535.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>Normalize numpy array in the range of [0,1]
+:type images:
+:param images: numpy array in the format (n,w,h,c).
+:type factor:
+:param factor: float number to normalize images, e.g. 2^(16)-1
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code>
+:return: numpy array in the [0,1] range</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.standardize_batch">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">standardize_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardization_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#standardize_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.standardize_batch" title="Permalink to this definition"></a></dt>
+<dd><p>Standardize image within parameter, simple scaling of values.
+Loca, Global, and Mixed options.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch_caney.processing.standardize_image">
+<span class="sig-prename descclassname"><span class="pre">pytorch_caney.processing.</span></span><span class="sig-name descname"><span class="pre">standardize_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standardization_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pytorch_caney/processing.html#standardize_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytorch_caney.processing.standardize_image" title="Permalink to this definition"></a></dt>
+<dd><p>Standardize image within parameter, simple scaling of values.
+Loca, Global, and Mixed options.</p>
+</dd></dl>
+
+</section>
+<section id="pytorch-caney-ptc-logging">
+<h2>pytorch_caney.ptc_logging<a class="headerlink" href="#pytorch-caney-ptc-logging" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-utils">
+<h2>pytorch_caney.utils<a class="headerlink" href="#pytorch-caney-utils" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jordan A. Caraballo-Vega.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

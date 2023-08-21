@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pytorch-caney &mdash; pytorch-caney 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="examples.html" />
+    <link rel="prev" title="Welcome to pytorch-caney’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pytorch-caney
+              <img src="_static/DSG_LOGO_REDESIGN.png" class="logo" alt="Logo"/>
+          </a>
+              <div class="version">
+                0.1.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pytorch-caney</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#objectives">Objectives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-caney">Why Caney?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#satvision">SatVision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#satvision-datasets">SatVision Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pre-training-with-masked-image-modeling">Pre-training with Masked Image Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fine-tuning-satvision-base">Fine-tuning Satvision-base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">pytorch-caney package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pytorch-caney</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pytorch-caney</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/readme.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytorch-caney">
+<h1>pytorch-caney<a class="headerlink" href="#pytorch-caney" title="Permalink to this heading"></a></h1>
+<p>Python package for lots of Pytorch tools for geospatial science problems.</p>
+<a class="reference external image-reference" href="https://zenodo.org/badge/latestdoi/472450059"><img alt="https://zenodo.org/badge/472450059.svg" src="https://zenodo.org/badge/472450059.svg" /></a>
+<section id="objectives">
+<h2>Objectives<a class="headerlink" href="#objectives" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Library to process remote sensing imagery using GPU and CPU parallelization.</p></li>
+<li><p>Machine Learning and Deep Learning image classification and regression.</p></li>
+<li><p>Agnostic array and vector-like data structures.</p></li>
+<li><p>User interface environments via Notebooks for easy to use AI/ML projects.</p></li>
+<li><p>Example notebooks for quick AI/ML start with your own data.</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<p>The following library is intended to be used to accelerate the development of data science products
+for remote sensing satellite imagery, or any other applications. pytorch-caney can be installed
+by itself, but instructions for installing the full environments are listed under the requirements
+directory so projects, examples, and notebooks can be run.</p>
+<p>Note: PIP installations do not include CUDA libraries for GPU support. Make sure NVIDIA libraries
+are installed locally in the system if not using conda/mamba.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>module load singularity # if a module needs to be loaded
+singularity build –sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest</p>
+</section>
+<section id="why-caney">
+<h2>Why Caney?<a class="headerlink" href="#why-caney" title="Permalink to this heading"></a></h2>
+<p>“Caney” means longhouse in Taíno.</p>
+</section>
+<section id="contributors">
+<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Jordan Alexis Caraballo-Vega, <a class="reference external" href="mailto:jordan&#46;a&#46;caraballo-vega&#37;&#52;&#48;nasa&#46;gov">jordan<span>&#46;</span>a<span>&#46;</span>caraballo-vega<span>&#64;</span>nasa<span>&#46;</span>gov</a></p></li>
+<li><p>Caleb Spradlin, <a class="reference external" href="mailto:caleb&#46;s&#46;spradlin&#37;&#52;&#48;nasa&#46;gov">caleb<span>&#46;</span>s<span>&#46;</span>spradlin<span>&#64;</span>nasa<span>&#46;</span>gov</a></p></li>
+</ul>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading"></a></h2>
+<p>Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).</p>
+</section>
+<section id="satvision">
+<h2>SatVision<a class="headerlink" href="#satvision" title="Permalink to this heading"></a></h2>
+<div class="line-block">
+<div class="line">name | pretrain | resolution | #params |</div>
+<div class="line">:—: | :—: | :—: | :—: |</div>
+<div class="line">SatVision-B | MODIS-1.9-M | 192x192 | 84.5M |</div>
+</div>
+</section>
+<section id="satvision-datasets">
+<h2>SatVision Datasets<a class="headerlink" href="#satvision-datasets" title="Permalink to this heading"></a></h2>
+<div class="line-block">
+<div class="line">name | bands | resolution | #chips |</div>
+<div class="line">:—: | :—: | :—: | :—: |</div>
+<div class="line">MODIS-Small | 7 | 128x128 | 1,994,131 |</div>
+</div>
+</section>
+<section id="pre-training-with-masked-image-modeling">
+<h2>Pre-training with Masked Image Modeling<a class="headerlink" href="#pre-training-with-masked-image-modeling" title="Permalink to this heading"></a></h2>
+<p>To pre-train the swinv2 base model with masked image modeling pre-training, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>torchrun –nproc_per_node &lt;NGPUS&gt; pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py –cfg &lt;config-file&gt; –dataset &lt;dataset-name&gt; –data-paths &lt;path-to-data-subfolder-1&gt; –batch-size &lt;batch-size&gt; –output &lt;output-dir&gt; –enable-amp</p>
+<p>For example to run on a compute node with 4 GPUs and a batch size of 128 on the MODIS SatVision pre-training dataset with a base swinv2 model, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
+Singularity&gt; export PYTHONPATH=$PWD:$PWD/pytorch-caney
+Singularity&gt; torchrun –nproc_per_node 4 pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py –cfg pytorch-caney/examples/satvision/mim_pretrain_swinv2_satvision_base_192_window12_800ep.yaml –dataset MODIS –data-paths /explore/nobackup/projects/ilab/data/satvision/pretraining/training_* –batch-size 128 –output . –enable-amp</p>
+<p>This example script runs the exact configuration used to make the SatVision-base model pre-training with MiM and the MODIS pre-training dataset.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
+Singularity&gt; cd pytorch-caney/examples/satvision
+Singularity&gt; ./run_satvision_pretrain.sh</p>
+</section>
+<section id="fine-tuning-satvision-base">
+<h2>Fine-tuning Satvision-base<a class="headerlink" href="#fine-tuning-satvision-base" title="Permalink to this heading"></a></h2>
+<p>To fine-tune the satvision-base pre-trained model, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>torchrun –nproc_per_node &lt;NGPUS&gt; pytorch-caney/pytorch_caney/pipelines/finetuning/finetune.py –cfg &lt;config-file&gt; –pretrained &lt;path-to-pretrained&gt; –dataset &lt;dataset-name&gt; –data-paths &lt;path-to-data-subfolder-1&gt; –batch-size &lt;batch-size&gt; –output &lt;output-dir&gt; –enable-amp</p>
+<p>See example config files pytorch-caney/examples/satvision/finetune_satvision_base_*.yaml to see how to structure your config file for fine-tuning.</p>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading"></a></h2>
+<p>For unittests, run this bash command to run linting and unit test runs. This will execute unit tests and linting in a temporary venv environment only used for testing.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
+cd pytorch-caney; bash test.sh</p>
+<p>or run unit tests directly with container or anaconda env</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
+singularity build –sandbox pytorch-caney-container docker://nasanccs/pytorch-caney:latest
+singularity shell –nv -B &lt;mounts&gt; /path/to/container/pytorch-caney-container
+cd pytorch-caney; python -m unittest discover pytorch_caney/tests</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>git clone <a class="reference external" href="mailto:git&#37;&#52;&#48;github&#46;com">git<span>&#64;</span>github<span>&#46;</span>com</a>:nasa-nccs-hpda/pytorch-caney.git
+cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
+conda activate pytorch-caney
+python -m unittest discover pytorch_caney/tests</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Lightning-AI/lightning">Pytorch Lightning</a></p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/Swin-Transformer">Swin Transformer</a></p></li>
+<li><p><a class="reference external" href="https://github.com/microsoft/SimMIM">SimMIM</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to pytorch-caney’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jordan A. Caraballo-Vega.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
