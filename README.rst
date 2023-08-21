@@ -43,16 +43,17 @@ Contributors
 
 - Jordan Alexis Caraballo-Vega, jordan.a.caraballo-vega@nasa.gov
 - Caleb Spradlin, caleb.s.spradlin@nasa.gov
+- Jian Li, jian.li@nasa.gov
 
 Contributing
 -------------
 
-Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
+Please see our `guide for contributing to pytorch-caney <CONTRIBUTING.md>`_.
 
 SatVision
 ------------
 
-.. list-table:: Pre-trained Vision Transformers
+.. list-table:: Pre-trained Vision Transformer Models
    :widths: 25 25 50
    :header-rows: 1
 
@@ -68,8 +69,8 @@ SatVision
 SatVision Datasets
 -----------------------
 
-.. list-table:: Pre-trained Vision Transformers
-      :widths: 25 25 50
+.. list-table:: Pre-trained Vision Transformer Datasets
+   :widths: 25 25 50
    :header-rows: 1
 
    * - Name
