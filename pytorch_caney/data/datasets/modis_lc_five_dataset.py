@@ -6,6 +6,9 @@ import random
 
 
 class MODISLCFiveDataset(Dataset):
+    """
+    MODIS Landcover five-class pytorch fine-tuning dataset
+    """
 
     IMAGE_PATH = os.path.join("images")
     MASK_PATH = os.path.join("labels")

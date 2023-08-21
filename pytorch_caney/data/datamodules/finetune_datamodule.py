@@ -17,6 +17,17 @@ DATASETS = {
 
 
 def get_dataset_from_dict(dataset_name: str):
+    """Gets the proper dataset given a dataset name.
+
+    Args:
+        dataset_name (str): name of the dataset
+
+    Raises:
+        KeyError: thrown if dataset key is not present in dict
+
+    Returns:
+        dataset: pytorch dataset
+    """
 
     dataset_name = dataset_name.lower()
 
@@ -36,6 +47,16 @@ def get_dataset_from_dict(dataset_name: str):
 
 
 def build_finetune_dataloaders(config, logger):
+    """Builds the dataloaders and datasets for a fine-tuning task.
+
+    Args:
+        config: config object
+        logger: logging logger
+
+    Returns:
+        dataloader_train: training dataloader
+        dataloader_val: validation dataloader
+    """
 
     transform = TensorResizeTransform(config)
 

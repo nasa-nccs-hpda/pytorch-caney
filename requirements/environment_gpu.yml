@@ -1,0 +1,43 @@
+# definition file to build pytorch-caney conda environment
+name: pytorch-caney
+
+channels:
+  - conda-forge
+  - rapidsai
+  - nvidia
+
+dependencies:
+  - python=3.9
+  - cudatoolkit=11.8
+  - pip
+  - gdal
+  - pip:
+    - torch>=2.0.0
+    - torchvision>=0.15
+    - pytorch-lightning
+    - omegaconf
+    - rasterio
+    - rioxarray
+    - xarray
+    - geopandas
+    - opencv-python
+    - opencv-python-headless
+    - opencv-contrib-python
+    - opencv-contrib-python-headless
+    - tifffile
+    - webcolors
+    - Pillow
+    - seaborn
+    - xgboost
+    - tiler
+    - segmentation-models
+    - pytest
+    - coveralls
+    - rtree
+    - sphinx
+    - sphinx_rtd_theme
+    - yacs
+    - termcolor
+    - numba
+    - joblib
+    - segmentation-models-pytorch

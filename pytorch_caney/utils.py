@@ -1,5 +1,5 @@
-import warnings
 import torch
+import warnings
 
 
 def check_gpus_available(ngpus: int) -> None:

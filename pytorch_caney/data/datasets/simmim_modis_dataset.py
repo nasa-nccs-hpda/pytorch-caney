@@ -7,7 +7,9 @@ from torch.utils.data import Dataset
 
 
 class MODISDataset(Dataset):
-
+    """
+    MODIS MOD09GA pre-training dataset
+    """
     IMAGE_PATH = os.path.join("images")
 
     def __init__(

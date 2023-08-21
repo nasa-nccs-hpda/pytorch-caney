@@ -7,7 +7,9 @@ from torch.utils.data import Dataset
 
 
 class MODISLCNineDataset(Dataset):
-
+    """
+    MODIS Landcover nine-class pytorch fine-tuning dataset
+    """
     IMAGE_PATH = os.path.join("images")
     MASK_PATH = os.path.join("labels")
 
