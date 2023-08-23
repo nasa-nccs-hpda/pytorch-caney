@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath('..'))
 
-import pytorch_caney
+import pytorch_caney  # noqa: E402
 
 project = 'pytorch-caney'
 copyright = '2023, Jordan A. Caraballo-Vega'
@@ -50,4 +50,3 @@ myst_enable_extensions = [
 ]
 
 myst_url_schemes = ("http", "https", "mailto")
-
