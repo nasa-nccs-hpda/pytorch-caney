@@ -53,34 +53,41 @@ Please see our `guide for contributing to pytorch-caney <CONTRIBUTING.md>`_.
 SatVision
 ------------
 
-.. list-table:: Pre-trained Vision Transformer Models
-   :widths: 25 25 50
-   :header-rows: 1
-
-   * - Name
-     - Pretrain
-     - Resolution
-     - Parameters
-   * - SatVision-B
-     - MODIS-1.9-M
-     - 192x192
-     - 84.5M
++---------------+--------------+------------+------------+
+| Name          | Pretrain     | Resolution | Parameters |
++===============+==============+============+============+
+| SatVision-B   | MODIS-1.9-M  | 192x192    | 84.5M      |
++---------------+--------------+------------+------------+
 
 SatVision Datasets
 -----------------------
 
-.. list-table:: Pre-trained Vision Transformer Datasets
-   :widths: 25 25 50
-   :header-rows: 1
++---------------+-----------+------------+-------------+
+| Name          | Bands     | Resolution | Image Chips |
++===============+===========+============+=============+
+| MODIS-Small   | 7         | 128x128    | 1,994,131   |
++---------------+-----------+------------+-------------+
 
-   * - Name
-     - Bands
-     - Resolution
-     - Image Chips
-   * - MODIS-Small
-     - 7
-     - 128x128
-     - 1,994,131
+MODIS Surface Reflectance (MOD09GA) Band Details
+------------------------------------------------------
+
++-----------------+---------------+
+| Band Name       | Bandwidth     |
++=================+===============+
+| sur_refl_b01_1  | 0.620 - 0.670 |
++-----------------+---------------+
+| sur_refl_b02_1  | 0.841 - 0.876 |
++-----------------+---------------+
+| sur_refl_b03_1  | 0.459 - 0.479 |
++-----------------+---------------+
+| sur_refl_b04_1  | 0.545 - 0.565 |
++-----------------+---------------+
+| sur_refl_b05_1  | 1.230 - 1.250 |
++-----------------+---------------+
+| sur_refl_b06_1  | 1.628 - 1.652 |
++-----------------+---------------+
+| sur_refl_b07_1  | 2.105 - 2.155 |
++-----------------+---------------+
 
 Pre-training with Masked Image Modeling
 -----------------------------------------
