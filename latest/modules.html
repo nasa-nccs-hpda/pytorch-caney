@@ -51,8 +51,33 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme.html">pytorch-caney</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">pytorch-caney package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-config">pytorch_caney.config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datamodules-finetune-datamodule">pytorch_caney.data.datamodules.finetune_datamodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datamodules-mim-datamodule">pytorch_caney.data.datamodules.mim_datamodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datamodules-segmentation-datamodule">pytorch_caney.data.datamodules.segmentation_datamodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datamodules-simmim-datamodule">pytorch_caney.data.datamodules.simmim_datamodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datasets-classification-dataset">pytorch_caney.data.datasets.classification_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-datasets-modis-dataset">pytorch_caney.data.datasets.modis_dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-transforms">pytorch_caney.data.transforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-data-utils">pytorch_caney.data.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-inference">pytorch_caney.inference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-loss-build">pytorch_caney.loss.build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-loss-utils">pytorch_caney.loss.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-lr-scheduler">pytorch_caney.lr_scheduler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-metrics">pytorch_caney.metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-decoders-unet-decoder">pytorch_caney.models.decoders.unet_decoder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-mim-mim">pytorch_caney.models.mim.mim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-simmim-simmim">pytorch_caney.models.simmim.simmim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-build">pytorch_caney.models.build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-maskrcnn-model">pytorch_caney.models.maskrcnn_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-swinv2-model">pytorch_caney.models.swinv2_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-unet-model">pytorch_caney.models.unet_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-models-unet-swin-model">pytorch_caney.models.unet_swin_model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-network-attention">pytorch_caney.network.attention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-network-mlp">pytorch_caney.network.mlp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-pipelines-finetuning-finetune">pytorch_caney.pipelines.finetuning.finetune</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-pipelines-pretraining-mim">pytorch_caney.pipelines.pretraining.mim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-pipelines-modis-segmentation">pytorch_caney.pipelines.modis_segmentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-processing">pytorch_caney.processing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.get_rand_patches_aug_augcond"><code class="docutils literal notranslate"><span class="pre">get_rand_patches_aug_augcond()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pytorch_caney.processing.get_rand_patches_rand_cond"><code class="docutils literal notranslate"><span class="pre">get_rand_patches_rand_cond()</span></code></a></li>
@@ -64,6 +89,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-ptc-logging">pytorch_caney.ptc_logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-training-fine-tuning">pytorch_caney.training.fine_tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-training-mim-utils">pytorch_caney.training.mim_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-training-pre-training">pytorch_caney.training.pre_training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-training-simmim-utils">pytorch_caney.training.simmim_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-training-utils">pytorch_caney.training.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pytorch-caney-utils">pytorch_caney.utils</a></li>
 </ul>
 </li>
@@ -95,11 +125,86 @@
              
   <section id="pytorch-caney-package">
 <h1>pytorch-caney package<a class="headerlink" href="#pytorch-caney-package" title="Permalink to this heading"></a></h1>
+<section id="pytorch-caney-config">
+<h2>pytorch_caney.config<a class="headerlink" href="#pytorch-caney-config" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-datamodules-finetune-datamodule">
+<h2>pytorch_caney.data.datamodules.finetune_datamodule<a class="headerlink" href="#pytorch-caney-data-datamodules-finetune-datamodule" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-datamodules-mim-datamodule">
+<h2>pytorch_caney.data.datamodules.mim_datamodule<a class="headerlink" href="#pytorch-caney-data-datamodules-mim-datamodule" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-datamodules-segmentation-datamodule">
+<h2>pytorch_caney.data.datamodules.segmentation_datamodule<a class="headerlink" href="#pytorch-caney-data-datamodules-segmentation-datamodule" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-datamodules-simmim-datamodule">
+<h2>pytorch_caney.data.datamodules.simmim_datamodule<a class="headerlink" href="#pytorch-caney-data-datamodules-simmim-datamodule" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-datasets-classification-dataset">
+<h2>pytorch_caney.data.datasets.classification_dataset<a class="headerlink" href="#pytorch-caney-data-datasets-classification-dataset" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.data.datasets.classification_dataset"></span></section>
+<section id="pytorch-caney-data-datasets-modis-dataset">
+<h2>pytorch_caney.data.datasets.modis_dataset<a class="headerlink" href="#pytorch-caney-data-datasets-modis-dataset" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-transforms">
+<h2>pytorch_caney.data.transforms<a class="headerlink" href="#pytorch-caney-data-transforms" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-data-utils">
+<h2>pytorch_caney.data.utils<a class="headerlink" href="#pytorch-caney-data-utils" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-inference">
+<h2>pytorch_caney.inference<a class="headerlink" href="#pytorch-caney-inference" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-loss-build">
+<h2>pytorch_caney.loss.build<a class="headerlink" href="#pytorch-caney-loss-build" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-loss-utils">
+<h2>pytorch_caney.loss.utils<a class="headerlink" href="#pytorch-caney-loss-utils" title="Permalink to this heading"></a></h2>
+</section>
 <section id="pytorch-caney-lr-scheduler">
 <h2>pytorch_caney.lr_scheduler<a class="headerlink" href="#pytorch-caney-lr-scheduler" title="Permalink to this heading"></a></h2>
 </section>
 <section id="pytorch-caney-metrics">
 <h2>pytorch_caney.metrics<a class="headerlink" href="#pytorch-caney-metrics" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-decoders-unet-decoder">
+<h2>pytorch_caney.models.decoders.unet_decoder<a class="headerlink" href="#pytorch-caney-models-decoders-unet-decoder" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-mim-mim">
+<h2>pytorch_caney.models.mim.mim<a class="headerlink" href="#pytorch-caney-models-mim-mim" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-simmim-simmim">
+<h2>pytorch_caney.models.simmim.simmim<a class="headerlink" href="#pytorch-caney-models-simmim-simmim" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-build">
+<h2>pytorch_caney.models.build<a class="headerlink" href="#pytorch-caney-models-build" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-maskrcnn-model">
+<h2>pytorch_caney.models.maskrcnn_model<a class="headerlink" href="#pytorch-caney-models-maskrcnn-model" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.models.maskrcnn_model"></span></section>
+<section id="pytorch-caney-models-swinv2-model">
+<h2>pytorch_caney.models.swinv2_model<a class="headerlink" href="#pytorch-caney-models-swinv2-model" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-unet-model">
+<h2>pytorch_caney.models.unet_model<a class="headerlink" href="#pytorch-caney-models-unet-model" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-models-unet-swin-model">
+<h2>pytorch_caney.models.unet_swin_model<a class="headerlink" href="#pytorch-caney-models-unet-swin-model" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-network-attention">
+<h2>pytorch_caney.network.attention<a class="headerlink" href="#pytorch-caney-network-attention" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-network-mlp">
+<h2>pytorch_caney.network.mlp<a class="headerlink" href="#pytorch-caney-network-mlp" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-pipelines-finetuning-finetune">
+<h2>pytorch_caney.pipelines.finetuning.finetune<a class="headerlink" href="#pytorch-caney-pipelines-finetuning-finetune" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-pipelines-pretraining-mim">
+<h2>pytorch_caney.pipelines.pretraining.mim<a class="headerlink" href="#pytorch-caney-pipelines-pretraining-mim" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-pipelines-modis-segmentation">
+<h2>pytorch_caney.pipelines.modis_segmentation<a class="headerlink" href="#pytorch-caney-pipelines-modis-segmentation" title="Permalink to this heading"></a></h2>
 </section>
 <section id="pytorch-caney-processing">
 <h2>pytorch_caney.processing<a class="headerlink" href="#pytorch-caney-processing" title="Permalink to this heading"></a></h2>
@@ -234,6 +339,21 @@ Loca, Global, and Mixed options.</p>
 <section id="pytorch-caney-ptc-logging">
 <h2>pytorch_caney.ptc_logging<a class="headerlink" href="#pytorch-caney-ptc-logging" title="Permalink to this heading"></a></h2>
 </section>
+<section id="pytorch-caney-training-fine-tuning">
+<h2>pytorch_caney.training.fine_tuning<a class="headerlink" href="#pytorch-caney-training-fine-tuning" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.training.fine_tuning"></span></section>
+<section id="pytorch-caney-training-mim-utils">
+<h2>pytorch_caney.training.mim_utils<a class="headerlink" href="#pytorch-caney-training-mim-utils" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-training-pre-training">
+<h2>pytorch_caney.training.pre_training<a class="headerlink" href="#pytorch-caney-training-pre-training" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.training.pre_training"></span></section>
+<section id="pytorch-caney-training-simmim-utils">
+<h2>pytorch_caney.training.simmim_utils<a class="headerlink" href="#pytorch-caney-training-simmim-utils" title="Permalink to this heading"></a></h2>
+</section>
+<section id="pytorch-caney-training-utils">
+<h2>pytorch_caney.training.utils<a class="headerlink" href="#pytorch-caney-training-utils" title="Permalink to this heading"></a></h2>
+<span class="target" id="module-pytorch_caney.training.utils"></span></section>
 <section id="pytorch-caney-utils">
 <h2>pytorch_caney.utils<a class="headerlink" href="#pytorch-caney-utils" title="Permalink to this heading"></a></h2>
 </section>
