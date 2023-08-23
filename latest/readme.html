@@ -58,6 +58,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#satvision">SatVision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#satvision-datasets">SatVision Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modis-surface-reflectance-mod09ga-band-details">MODIS Surface Reflectance (MOD09GA) Band Details</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pre-training-with-masked-image-modeling">Pre-training with Masked Image Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fine-tuning-satvision-base">Fine-tuning Satvision-base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
@@ -136,9 +137,74 @@ singularity<span class="w"> </span>build<span class="w"> </span>--sandbox<span c
 </section>
 <section id="satvision">
 <h2>SatVision<a class="headerlink" href="#satvision" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Pretrain</p></th>
+<th class="head"><p>Resolution</p></th>
+<th class="head"><p>Parameters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SatVision-B</p></td>
+<td><p>MODIS-1.9-M</p></td>
+<td><p>192x192</p></td>
+<td><p>84.5M</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="satvision-datasets">
 <h2>SatVision Datasets<a class="headerlink" href="#satvision-datasets" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Bands</p></th>
+<th class="head"><p>Resolution</p></th>
+<th class="head"><p>Image Chips</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MODIS-Small</p></td>
+<td><p>7</p></td>
+<td><p>128x128</p></td>
+<td><p>1,994,131</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="modis-surface-reflectance-mod09ga-band-details">
+<h2>MODIS Surface Reflectance (MOD09GA) Band Details<a class="headerlink" href="#modis-surface-reflectance-mod09ga-band-details" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Band Name</p></th>
+<th class="head"><p>Bandwidth</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sur_refl_b01_1</p></td>
+<td><p>0.620 - 0.670</p></td>
+</tr>
+<tr class="row-odd"><td><p>sur_refl_b02_1</p></td>
+<td><p>0.841 - 0.876</p></td>
+</tr>
+<tr class="row-even"><td><p>sur_refl_b03_1</p></td>
+<td><p>0.459 - 0.479</p></td>
+</tr>
+<tr class="row-odd"><td><p>sur_refl_b04_1</p></td>
+<td><p>0.545 - 0.565</p></td>
+</tr>
+<tr class="row-even"><td><p>sur_refl_b05_1</p></td>
+<td><p>1.230 - 1.250</p></td>
+</tr>
+<tr class="row-odd"><td><p>sur_refl_b06_1</p></td>
+<td><p>1.628 - 1.652</p></td>
+</tr>
+<tr class="row-even"><td><p>sur_refl_b07_1</p></td>
+<td><p>2.105 - 2.155</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="pre-training-with-masked-image-modeling">
 <h2>Pre-training with Masked Image Modeling<a class="headerlink" href="#pre-training-with-masked-image-modeling" title="Permalink to this heading"></a></h2>
