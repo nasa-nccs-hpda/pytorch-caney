@@ -80,6 +80,7 @@ RUN pip --no-cache-dir install omegaconf \
     Lightning \
     transformers \
     datasets \
+    deepspeed \
     webdataset \
     'huggingface_hub[cli,torch]' \
     torchgeo \
