@@ -27,8 +27,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
 from timm.utils import AverageMeter
-# from socket import gethostname
-# import sys
+
 
 def parse_args():
     """
@@ -99,8 +98,11 @@ def parse_args():
         '--tag',
         help='tag of experiment')
 
-    # distributed training
-    parser.add_argument("--local_rank", type=int, required=True, help='local rank for DistributedDataParallel')
+    # distributed training (deepspeed)
+    parser.add_argument("--local_rank",
+                        type=int,
+                        required=True,
+                        help='local rank for DistributedDataParallel')
 
     args = parser.parse_args()
 
@@ -191,9 +193,9 @@ def execute_one_epoch(config,
     for idx, (img, mask, _) in enumerate(dataloader):
 
         data_time.update(time.time() - start)
+
         img = img.cuda(non_blocking=True)
         mask = mask.cuda(non_blocking=True)
-        # with amp.autocast(enabled=config.ENABLE_AMP):
 
         loss = model(img, mask)
 
@@ -202,8 +204,6 @@ def execute_one_epoch(config,
         model.step()
 
         loss_meter.update(loss.item(), img.size(0))
-        # norm_meter.update(grad_norm)
-        # loss_scale_meter.update(scaler.get_scale())
         batch_time.update(time.time() - end)
         end = time.time()
 
@@ -251,18 +251,9 @@ def main(config):
 
     lr_scheduler = build_scheduler(config, simmim_optimizer, n_iter_per_epoch)
 
-    # """
     deepspeed_config = {
         "train_micro_batch_size_per_gpu": config.DATA.BATCH_SIZE,
-        # "gradient_accumulation_steps": 1,
-        # "gradient_clipping": "auto",
-        # "steps_per_print": 20,    
-        #"optimizer": {
-        #    "type": "Adam",
-        #    "params": {
-        #        "lr": 5e-5
-        #    }
-        #},
+
         "zero_optimization": {
             "stage": 2,
             "allgather_partitions": True,
@@ -273,38 +264,8 @@ def main(config):
             "contiguous_gradients": True,
         }
     }
-    """
-
-    deepspeed_config = {
-        "fp16": {
-            "enabled": True,
-            "loss_scale": 0,
-            "auto_cast": True,
-            "initial_scale_power": 16,
-        },
-        "zero_optimization": {
-            "stage": 2,
-            "allgather_partitions": True,
-            "allgather_bucket_size": 2e8,
-            "overlap_comm": True,
-            "reduce_scatter": True,
-            "reduce_bucket_size": "auto",
-            "contiguous_gradients": True,
-        },
-        "gradient_accumulation_steps": 1,
-        "gradient_clipping": "auto",
-        "steps_per_print": 20,
-        "train_micro_batch_size_per_gpu": 64,
-    }
-    """
 
     logger.info('Initializing deepspeed')
-
-    # logger.info('Syncing params')
-
-    # sync_params(simmim_model.parameters())
-
-    logger.info('Done syncing params')
 
     model_engine, _, _, _ = deepspeed.initialize(
         model=simmim_model,
@@ -313,7 +274,7 @@ def main(config):
         model_parameters=simmim_model.parameters(),
         config=deepspeed_config
     )
-    
+
     scaler = amp.GradScaler()
 
     logger.info('Starting training block')
@@ -341,11 +302,6 @@ def setup_seeding(config):
     seed = config.SEED + dist.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
-
-
-def log_parameters(model) -> None:
-    n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    logger.info(f"number of params: {n_parameters}")
 
 
 if __name__ == '__main__':
