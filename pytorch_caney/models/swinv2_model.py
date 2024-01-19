@@ -68,7 +68,7 @@ class SwinTransformerBlock(nn.Module):
                  window_size=7, shift_size=0, mlp_ratio=4.,
                  qkv_bias=True, drop=0., attn_drop=0., drop_path=0.,
                  act_layer=nn.GELU, norm_layer=nn.LayerNorm,
-                 pretrained_window_size=0):
+                 pretrained_window_size=0, extra_norm=False):
         super().__init__()
         self.dim = dim
         self.input_resolution = input_resolution
@@ -94,6 +94,8 @@ class SwinTransformerBlock(nn.Module):
         self.drop_path = DropPath(
             drop_path) if drop_path > 0. else nn.Identity()
         self.norm2 = norm_layer(dim)
+
+        self.norm3 = norm_layer(dim) if extra_norm else nn.Identity()
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim,
                        act_layer=act_layer, drop=drop)
@@ -170,6 +172,8 @@ class SwinTransformerBlock(nn.Module):
 
         # FFN
         x = x + self.drop_path(self.norm2(self.mlp(x)))
+
+        x = self.norm3(x)
 
         return x
 
@@ -273,13 +277,20 @@ class BasicLayer(nn.Module):
     def __init__(self, dim, input_resolution, depth, num_heads, window_size,
                  mlp_ratio=4., qkv_bias=True, drop=0., attn_drop=0.,
                  drop_path=0., norm_layer=nn.LayerNorm, downsample=None,
-                 use_checkpoint=False, pretrained_window_size=0):
+                 use_checkpoint=False, pretrained_window_size=0,
+                 extra_norm_period: int = 0, extra_norm_stage: bool = False,):
 
         super().__init__()
         self.dim = dim
         self.input_resolution = input_resolution
         self.depth = depth
         self.use_checkpoint = use_checkpoint
+
+        def _extra_norm(index):
+            i = index + 1
+            if extra_norm_period and i % extra_norm_period == 0:
+                return True
+            return i == depth if extra_norm_stage else False
 
         # build blocks
         self.blocks = nn.ModuleList([
@@ -293,7 +304,8 @@ class BasicLayer(nn.Module):
                                  drop_path=drop_path[i] if isinstance(
                                      drop_path, list) else drop_path,
                                  norm_layer=norm_layer,
-                                 pretrained_window_size=pretrained_window_size)
+                                 pretrained_window_size=pretrained_window_size,
+                                 extra_norm=_extra_norm(i))
             for i in range(depth)])
 
         # patch merging layer
@@ -432,7 +444,9 @@ class SwinTransformerV2(nn.Module):
                  qkv_bias=True, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0.1, norm_layer=nn.LayerNorm,
                  ape=False, patch_norm=True, use_checkpoint=False,
-                 pretrained_window_sizes=[0, 0, 0, 0], **kwargs):
+                 pretrained_window_sizes=[0, 0, 0, 0],
+                 extra_norm_period: int = 0, extra_norm_stage: bool = False,
+                 **kwargs):
         super().__init__()
 
         self.num_classes = num_classes
@@ -484,7 +498,9 @@ class SwinTransformerV2(nn.Module):
                 downsample=PatchMerging if (
                     i_layer < self.num_layers - 1) else None,
                 use_checkpoint=use_checkpoint,
-                pretrained_window_size=pretrained_window_sizes[i_layer])
+                pretrained_window_size=pretrained_window_sizes[i_layer],
+                extra_norm_period=extra_norm_period,
+                extra_norm_stage=extra_norm_stage)
             self.layers.append(layer)
 
         self.norm = norm_layer(self.num_features)

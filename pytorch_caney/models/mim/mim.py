@@ -124,7 +124,9 @@ def build_mim_model(config):
             drop_path_rate=config.MODEL.DROP_PATH_RATE,
             ape=config.MODEL.SWINV2.APE,
             patch_norm=config.MODEL.SWINV2.PATCH_NORM,
-            use_checkpoint=config.TRAIN.USE_CHECKPOINT)
+            use_checkpoint=config.TRAIN.USE_CHECKPOINT,
+            extra_norm_period=config.MODEL.SWINV2.NORM_PERIOD,
+            extra_norm_stage=config.MODEL.SWINV2.NORM_STAGE)
         encoder_stride = 32
         in_chans = config.MODEL.SWINV2.IN_CHANS
         patch_size = config.MODEL.SWINV2.PATCH_SIZE

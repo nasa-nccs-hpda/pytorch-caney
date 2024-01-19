@@ -65,6 +65,8 @@ _C.MODEL.SWINV2.QKV_BIAS = True
 _C.MODEL.SWINV2.APE = False
 _C.MODEL.SWINV2.PATCH_NORM = True
 _C.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES = [0, 0, 0, 0]
+_C.MODEL.SWINV2.NORM_PERIOD = 0
+_C.MODEL.SWINV2.NORM_STAGE = False
 
 # -----------------------------------------------------------------------------
 # Training settings
