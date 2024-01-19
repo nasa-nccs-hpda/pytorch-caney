@@ -1,3 +1,4 @@
+import math
 from bisect import bisect_right
 
 from timm.scheduler.cosine_lr import CosineLRScheduler
@@ -183,3 +184,23 @@ def setup_scaled_lr(config):
         linear_scaled_min_lr = linear_scaled_min_lr * accumulation_steps
 
     return linear_scaled_lr, linear_scaled_warmup_lr, linear_scaled_min_lr
+
+
+def adjust_learning_rate(config, optimizer, epoch):
+    """Decay the learning rate with half-cycle cosine after warmup"""
+    warmup_epochs = config.TRAIN.WARMUP_EPOCHS
+    base_lr = config.TRAIN.BASE_LR
+    min_lr = config.TRAIN.MIN_LR
+    epochs = config.TRAIN.EPOCHS
+
+    if epoch < warmup_epochs:
+        lr = min_lr * epoch / warmup_epochs 
+    else:
+        lr = min_lr + (base_lr - min_lr) * 0.5 * \
+            (1. + math.cos(math.pi * (epoch - warmup_epochs) / (epochs - warmup_epochs)))
+    for param_group in optimizer.param_groups:
+        if "lr_scale" in param_group:
+            param_group["lr"] = lr * param_group["lr_scale"]
+        else:
+            param_group["lr"] = lr
+    return lr

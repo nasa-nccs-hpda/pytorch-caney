@@ -68,6 +68,19 @@ _C.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES = [0, 0, 0, 0]
 _C.MODEL.SWINV2.NORM_PERIOD = 0
 _C.MODEL.SWINV2.NORM_STAGE = False
 
+# SatMAE VIT parameters
+_C.MODEL.MAE_VIT = CN()
+_C.MODEL.MAE_VIT.PATCH_SIZE = 16 
+_C.MODEL.MAE_VIT.IN_CHANS = 3
+_C.MODEL.MAE_VIT.EMBED_DIM = 768 
+_C.MODEL.MAE_VIT.DEPTHS = 12
+_C.MODEL.MAE_VIT.NUM_HEADS = 12
+_C.MODEL.MAE_VIT.MLP_RATIO = 4.
+_C.MODEL.MAE_VIT.DECODER_EMBED_DIM = 512
+_C.MODEL.MAE_VIT.DECODER_DEPTH = 8
+_C.MODEL.MAE_VIT.DECODER_NUM_HEADS = 16
+_C.MODEL.MAE_VIT.SAME_MASK = False
+
 # -----------------------------------------------------------------------------
 # Training settings
 # -----------------------------------------------------------------------------
