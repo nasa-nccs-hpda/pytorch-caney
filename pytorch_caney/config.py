@@ -1,11 +1,13 @@
 import os
 import yaml
-from yacs.config import CfgNode as CN
+from yacs.config import (
+    CfgNode as CN,
+)
 
 _C = CN()
 
 # Base config files
-_C.BASE = ['']
+_C.BASE = [""]
 
 # -----------------------------------------------------------------------------
 # Data settings
@@ -14,13 +16,13 @@ _C.DATA = CN()
 # Batch size for a single GPU, could be overwritten by command line argument
 _C.DATA.BATCH_SIZE = 128
 # Path(s) to dataset, could be overwritten by command line argument
-_C.DATA.DATA_PATHS = ['']
+_C.DATA.DATA_PATHS = [""]
 # Dataset name
-_C.DATA.DATASET = 'MODIS'
+_C.DATA.DATASET = "MODIS"
 # Input image size
 _C.DATA.IMG_SIZE = 224
 # Interpolation to resize image (random, bilinear, bicubic)
-_C.DATA.INTERPOLATION = 'bicubic'
+_C.DATA.INTERPOLATION = "bicubic"
 # Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.
 _C.DATA.PIN_MEMORY = True
 # Number of data loading threads
@@ -35,16 +37,16 @@ _C.DATA.MASK_RATIO = 0.6
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 # Model type
-_C.MODEL.TYPE = 'swinv2'
+_C.MODEL.TYPE = "swinv2"
 # Decoder type
 _C.MODEL.DECODER = None
 # Model name
-_C.MODEL.NAME = 'swinv2_base_patch4_window7_224'
+_C.MODEL.NAME = "swinv2_base_patch4_window7_224"
 # Pretrained weight from checkpoint, could be from previous pre-training
 # could be overwritten by command line argument
-_C.MODEL.PRETRAINED = ''
+_C.MODEL.PRETRAINED = ""
 # Checkpoint to resume, could be overwritten by command line argument
-_C.MODEL.RESUME = ''
+_C.MODEL.RESUME = ""
 # Number of classes, overwritten in data preparation
 _C.MODEL.NUM_CLASSES = 17
 # Dropout rate
@@ -57,25 +59,40 @@ _C.MODEL.SWINV2 = CN()
 _C.MODEL.SWINV2.PATCH_SIZE = 4
 _C.MODEL.SWINV2.IN_CHANS = 3
 _C.MODEL.SWINV2.EMBED_DIM = 96
-_C.MODEL.SWINV2.DEPTHS = [2, 2, 6, 2]
-_C.MODEL.SWINV2.NUM_HEADS = [3, 6, 12, 24]
+_C.MODEL.SWINV2.DEPTHS = [
+    2,
+    2,
+    6,
+    2,
+]
+_C.MODEL.SWINV2.NUM_HEADS = [
+    3,
+    6,
+    12,
+    24,
+]
 _C.MODEL.SWINV2.WINDOW_SIZE = 7
-_C.MODEL.SWINV2.MLP_RATIO = 4.
+_C.MODEL.SWINV2.MLP_RATIO = 4.0
 _C.MODEL.SWINV2.QKV_BIAS = True
 _C.MODEL.SWINV2.APE = False
 _C.MODEL.SWINV2.PATCH_NORM = True
-_C.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES = [0, 0, 0, 0]
+_C.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES = [
+    0,
+    0,
+    0,
+    0,
+]
 _C.MODEL.SWINV2.NORM_PERIOD = 0
 _C.MODEL.SWINV2.NORM_STAGE = False
 
 # SatMAE VIT parameters
 _C.MODEL.MAE_VIT = CN()
-_C.MODEL.MAE_VIT.PATCH_SIZE = 16 
-_C.MODEL.MAE_VIT.IN_CHANS = 3
-_C.MODEL.MAE_VIT.EMBED_DIM = 768 
+_C.MODEL.MAE_VIT.PATCH_SIZE = 16
+_C.MODEL.MAE_VIT.IN_CHANS = 14
+_C.MODEL.MAE_VIT.EMBED_DIM = 768
 _C.MODEL.MAE_VIT.DEPTHS = 12
 _C.MODEL.MAE_VIT.NUM_HEADS = 12
-_C.MODEL.MAE_VIT.MLP_RATIO = 4.
+_C.MODEL.MAE_VIT.MLP_RATIO = 4.0
 _C.MODEL.MAE_VIT.DECODER_EMBED_DIM = 512
 _C.MODEL.MAE_VIT.DECODER_DEPTH = 8
 _C.MODEL.MAE_VIT.DECODER_NUM_HEADS = 16
@@ -85,8 +102,8 @@ _C.MODEL.MAE_VIT.SAME_MASK = False
 # Training settings
 # -----------------------------------------------------------------------------
 _C.LOSS = CN()
-_C.LOSS.NAME = 'tversky'
-_C.LOSS.MODE = 'multiclass'
+_C.LOSS.NAME = "tversky"
+_C.LOSS.MODE = "multiclass"
 _C.LOSS.CLASSES = None
 _C.LOSS.LOG = False
 _C.LOSS.LOGITS = True
@@ -121,7 +138,7 @@ _C.TRAIN.USE_CHECKPOINT = False
 
 # LR scheduler
 _C.TRAIN.LR_SCHEDULER = CN()
-_C.TRAIN.LR_SCHEDULER.NAME = 'cosine'
+_C.TRAIN.LR_SCHEDULER.NAME = "cosine"
 # Epoch interval to decay LR, used in StepLRScheduler
 _C.TRAIN.LR_SCHEDULER.DECAY_EPOCHS = 30
 # LR decay rate, used in StepLRScheduler
@@ -132,11 +149,14 @@ _C.TRAIN.LR_SCHEDULER.MULTISTEPS = []
 
 # Optimizer
 _C.TRAIN.OPTIMIZER = CN()
-_C.TRAIN.OPTIMIZER.NAME = 'adamw'
+_C.TRAIN.OPTIMIZER.NAME = "adamw"
 # Optimizer Epsilon
 _C.TRAIN.OPTIMIZER.EPS = 1e-8
 # Optimizer Betas
-_C.TRAIN.OPTIMIZER.BETAS = (0.9, 0.999)
+_C.TRAIN.OPTIMIZER.BETAS = (
+    0.9,
+    0.999,
+)
 # SGD momentum
 _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 
@@ -159,9 +179,9 @@ _C.ENABLE_AMP = False
 # Enable Pytorch automatic mixed precision (amp).
 _C.AMP_ENABLE = True
 # Path to output folder, overwritten by command line argument
-_C.OUTPUT = ''
+_C.OUTPUT = ""
 # Tag of experiment, overwritten by command line argument
-_C.TAG = 'pt-caney-default-tag'
+_C.TAG = "pt-caney-default-tag"
 # Frequency to save checkpoint
 _C.SAVE_FREQ = 1
 # Frequency to logging info
@@ -172,70 +192,106 @@ _C.SEED = 42
 _C.EVAL_MODE = False
 
 
-def _update_config_from_file(config, cfg_file):
+def _update_config_from_file(
+    config,
+    cfg_file,
+):
     config.defrost()
-    with open(cfg_file, 'r') as f:
-        yaml_cfg = yaml.load(f, Loader=yaml.FullLoader)
+    with open(
+        cfg_file,
+        "r",
+    ) as f:
+        yaml_cfg = yaml.load(
+            f,
+            Loader=yaml.FullLoader,
+        )
 
-    for cfg in yaml_cfg.setdefault('BASE', ['']):
+    for cfg in yaml_cfg.setdefault(
+        "BASE",
+        [""],
+    ):
         if cfg:
             _update_config_from_file(
-                config, os.path.join(os.path.dirname(cfg_file), cfg)
+                config,
+                os.path.join(
+                    os.path.dirname(cfg_file),
+                    cfg,
+                ),
             )
-    print('=> merge config from {}'.format(cfg_file))
+    print("=> merge config from {}".format(cfg_file))
     config.merge_from_file(cfg_file)
     config.freeze()
 
 
-def update_config(config, args):
-    _update_config_from_file(config, args.cfg)
+def update_config(
+    config,
+    args,
+):
+    _update_config_from_file(
+        config,
+        args.cfg,
+    )
 
     config.defrost()
 
-    def _check_args(name):
-        if hasattr(args, name) and eval(f'args.{name}'):
+    def _check_args(
+        name,
+    ):
+        if hasattr(
+            args,
+            name,
+        ) and eval(f"args.{name}"):
             return True
         return False
 
     # merge from specific arguments
-    if _check_args('batch_size'):
+    if _check_args("batch_size"):
         config.DATA.BATCH_SIZE = args.batch_size
-    if _check_args('data_paths'):
+    if _check_args("data_paths"):
         config.DATA.DATA_PATHS = args.data_paths
-    if _check_args('dataset'):
+    if _check_args("dataset"):
         config.DATA.DATASET = args.dataset
-    if _check_args('resume'):
+    if _check_args("resume"):
         config.MODEL.RESUME = args.resume
-    if _check_args('pretrained'):
+    if _check_args("pretrained"):
         config.MODEL.PRETRAINED = args.pretrained
-    if _check_args('resume'):
+    if _check_args("resume"):
         config.MODEL.RESUME = args.resume
-    if _check_args('accumulation_steps'):
+    if _check_args("accumulation_steps"):
         config.TRAIN.ACCUMULATION_STEPS = args.accumulation_steps
-    if _check_args('use_checkpoint'):
+    if _check_args("use_checkpoint"):
         config.TRAIN.USE_CHECKPOINT = True
-    if _check_args('disable_amp'):
+    if _check_args("disable_amp"):
         config.AMP_ENABLE = False
-    if _check_args('output'):
+    if _check_args("output"):
         config.OUTPUT = args.output
-    if _check_args('tag'):
+    if _check_args("tag"):
         config.TAG = args.tag
-    if _check_args('eval'):
+    if _check_args("eval"):
         config.EVAL_MODE = True
-    if _check_args('enable_amp'):
+    if _check_args("enable_amp"):
         config.ENABLE_AMP = args.enable_amp
 
     # output folder
-    config.OUTPUT = os.path.join(config.OUTPUT, config.MODEL.NAME, config.TAG)
+    config.OUTPUT = os.path.join(
+        config.OUTPUT,
+        config.MODEL.NAME,
+        config.TAG,
+    )
 
     config.freeze()
 
 
-def get_config(args):
+def get_config(
+    args,
+):
     """Get a yacs CfgNode object with default values."""
     # Return a clone so that the defaults will not be altered
     # This is for the "local variable" use pattern
     config = _C.clone()
-    update_config(config, args)
+    update_config(
+        config,
+        args,
+    )
 
     return config
