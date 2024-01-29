@@ -70,7 +70,8 @@ class MODISDataset(Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        return img, mask
+        data_dict = {'image': img, 'label': mask}
+        return data_dict # img, mask
 
     def get_filenames(self, path):
         """

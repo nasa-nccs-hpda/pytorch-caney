@@ -37,7 +37,7 @@ class MODISLCFiveDataset(Dataset):
         n_items = len(self.img_list)
         print(f'Found {n_items} possible patches to use')
         range_n_items = range(n_items)
-        range_n_items = random_inst.sample(range_n_items, int(n_items*0.5))
+        # range_n_items = random_inst.sample(range_n_items, int(n_items))
         idxs = set(random_inst.sample(range_n_items, len(range_n_items) // 5))
         total_idxs = set(range_n_items)
         if split == 'train':
@@ -67,7 +67,11 @@ class MODISLCFiveDataset(Dataset):
         # perform transformations
         img = self.transform(img)
 
-        return img, mask
+        data_dict = {'image': img, 'mask': mask}
+        return data_dict # img, mask
+    
+    def plot(*args, **kwargs):
+        return None
 
     def get_filenames(self, path):
         """

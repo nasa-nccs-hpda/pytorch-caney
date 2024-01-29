@@ -12,7 +12,7 @@ from lightning.pytorch import LightningModule, Trainer, cli_lightning_logo
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from lightning.pytorch.loggers import CSVLogger
 
-from pytorch_caney.datasets.modis_dataset import MODISDataset
+from pytorch_caney.data.datasets.modis_lc_five_dataset import MODISLCFiveDataset
 from pytorch_caney.utils import check_gpus_available
 
 
@@ -209,9 +209,9 @@ class SegmentationModel(LightningModule):
             ]
         )
         print('> Init datasets')
-        self.trainset = MODISDataset(
+        self.trainset = MODISLCFiveDataset(
             self.data_paths, split="train", transform=self.transform)
-        self.validset = MODISDataset(
+        self.validset = MODISLCFiveDataset(
             self.data_paths, split="valid", transform=self.transform)
         print('Done init datasets')
 
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--n-classes", type=int, default=18, help="number of classes")
     parser.add_argument(
-        "--batch_size", type=int, default=256, help="size of the batches")
+        "--batch_size", type=int, default=32, help="size of the batches")
     parser.add_argument(
         "--lr", type=float, default=3e-4, help="adam: learning rate")
     parser.add_argument(
