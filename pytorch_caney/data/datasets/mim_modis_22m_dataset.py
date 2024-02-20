@@ -6,7 +6,6 @@ import logging
 from io import BytesIO
 import webdataset as wds
 import torch.distributed as dist
-import torchvision
 
 
 def nodesplitter(src, group=None):
@@ -21,7 +20,7 @@ def nodesplitter(src, group=None):
             if i % size == rank:
                 yield item
                 count += 1
-        logging.info(f"nodesplitter: rank={rank} size={size} " + \
+        logging.info(f"nodesplitter: rank={rank} size={size} " +
                      f"count={count} DONE")
     else:
         yield from src
@@ -74,7 +73,7 @@ class MODIS22MDataset(object):
                            handler=wds.ignore_and_continue,
                            nodesplitter=nodesplitter)
             .shuffle(self.random_state)
-            .to_tuple(self.INPUT_KEY, handler=wds.ignore_and_continue)  # , self.OUTPUT_KEY)
+            .to_tuple(self.INPUT_KEY, handler=wds.ignore_and_continue)
             .map_tuple(BytesIO)
             .map_tuple(np.load)
             .map_tuple(self.transform)

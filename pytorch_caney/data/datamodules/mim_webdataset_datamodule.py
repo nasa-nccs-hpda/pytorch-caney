@@ -2,12 +2,10 @@ from ..datasets.mim_modis_22m_dataset import MODIS22MDataset
 
 from ..transforms import SimmimTransform
 
-import torch.distributed as dist
-from torch.utils.data import DataLoader, DistributedSampler
+from torch.utils.data import DataLoader
 from torch.utils.data._utils.collate import default_collate
 
 import os
-import logging
 
 
 def collate_fn(batch):
