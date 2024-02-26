@@ -81,6 +81,7 @@ RUN pip --no-cache-dir install omegaconf \
     transformers \
     datasets \
     webdataset \
+    deepspeed \
     'huggingface_hub[cli,torch]' \
     torchgeo \
     rasterio \
