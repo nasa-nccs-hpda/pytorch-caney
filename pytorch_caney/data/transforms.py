@@ -1,7 +1,9 @@
+import torch
 from .utils import RandomResizedCropNP
 from .utils import SimmimMaskGenerator
 
 import torchvision.transforms as T
+import torchvision
 
 
 class SimmimTransform:
@@ -17,6 +19,9 @@ class SimmimTransform:
                 RandomResizedCropNP(scale=(0.67, 1.),
                                     ratio=(3. / 4., 4. / 3.)),
                 T.ToTensor(),
+                #lambda x: x / 500.0,
+                #T.ConvertImageDtype(dtype=torch.float32),
+                #torchvision.ops.Permute(dims=[1, 2, 0]),
                 T.Resize((config.DATA.IMG_SIZE, config.DATA.IMG_SIZE)),
             ])
 

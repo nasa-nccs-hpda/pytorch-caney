@@ -1,19 +1,13 @@
-from pytorch_caney.data.datamodules.mim_datamodule \
-    import build_mim_dataloader
-
-from pytorch_caney.models.mim.mim \
-    import build_mim_model
-
-from pytorch_caney.training.mim_utils \
-    import build_optimizer, save_checkpoint
-
-# from pytorch_caney.training.mim_utils import get_grad_norm
-from pytorch_caney.lr_scheduler import build_scheduler, setup_scaled_lr
+from pytorch_caney.data.datasets.mim_modis_22m_dataset import MODIS22MDataset
+from pytorch_caney.data.transforms import SimmimTransform
+from pytorch_caney.models.mim.mim import build_mim_model
 from pytorch_caney.ptc_logging import create_logger
 from pytorch_caney.config import get_config
 
 import deepspeed
+from deepspeed.accelerator import get_accelerator
 
+from socket import gethostname
 import argparse
 import datetime
 import joblib
@@ -22,8 +16,6 @@ import os
 import time
 
 import torch
-import torch.cuda.amp as amp
-import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 
 from timm.utils import AverageMeter
@@ -98,12 +90,6 @@ def parse_args():
         '--tag',
         help='tag of experiment')
 
-    # distributed training (deepspeed)
-    parser.add_argument("--local_rank",
-                        type=int,
-                        required=True,
-                        help='local rank for DistributedDataParallel')
-
     args = parser.parse_args()
 
     config = get_config(args)
@@ -116,7 +102,7 @@ def train(config,
           model_engine,
           optimizer,
           lr_scheduler,
-          scaler):
+          device):
     """
     Start pre-training a specific model and dataset.
 
@@ -127,26 +113,35 @@ def train(config,
         model_wo_ddp: model to pre-train that is not the DDP version
         optimizer: pytorch optimizer
         lr_scheduler: learning-rate scheduler
-        scaler: loss scaler
     """
 
     logger.info("Start training")
+
+    target_dtype = None
+    if model_engine.bfloat16_enabled():
+        target_dtype = torch.bfloat16
+    elif model_engine.fp16_enabled():
+        target_dtype = torch.half
+    logger.info(f'Target dtype: {target_dtype}')
 
     start_time = time.time()
 
     for epoch in range(config.TRAIN.START_EPOCH, config.TRAIN.EPOCHS):
 
-        dataloader.sampler.set_epoch(epoch)
-
         execute_one_epoch(config, model_engine, dataloader,
-                          optimizer, epoch, lr_scheduler, scaler)
+                          optimizer, epoch, lr_scheduler,
+                          target_dtype, device)
 
-        if dist.get_rank() == 0 and \
-            (epoch % config.SAVE_FREQ == 0 or
-             epoch == (config.TRAIN.EPOCHS - 1)):
+        # Save needs to be called by all processes since model is
+        # distributed over the processes.
+        if (epoch % config.SAVE_FREQ == 0 or
+                epoch == (config.TRAIN.EPOCHS - 1)):
 
-            save_checkpoint(config, epoch, model_engine, 0.,
-                            optimizer, lr_scheduler, scaler, logger)
+            logger.info(f'Saving ckpt to {config.OUTPUT} .....')
+
+            model_engine.save_checkpoint(save_dir=config.OUTPUT,
+                                         tag=f'ckpt_epoch_{epoch}.pth')
+            logger.info('Saved !!!')
 
     total_time = time.time() - start_time
 
@@ -161,7 +156,8 @@ def execute_one_epoch(config,
                       optimizer,
                       epoch,
                       lr_scheduler,
-                      scaler):
+                      target_dtype,
+                      device):
     """
     Execute training iterations on a single epoch.
 
@@ -179,23 +175,32 @@ def execute_one_epoch(config,
 
     optimizer.zero_grad()
 
-    num_steps = len(dataloader)
+    ntrain = 2000180
+    num_steps = max(1,
+                    ntrain // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
     # Set up logging meters
     batch_time = AverageMeter()
     data_time = AverageMeter()
     loss_meter = AverageMeter()
-    norm_meter = AverageMeter()
     loss_scale_meter = AverageMeter()
 
     start = time.time()
     end = time.time()
-    for idx, (img, mask, _) in enumerate(dataloader):
+    for idx, img_mask in enumerate(dataloader):
+
+        img_mask = img_mask[0]
+
+        img = torch.stack([pair[0] for pair in img_mask])
+        mask = torch.stack([pair[1] for pair in img_mask])
 
         data_time.update(time.time() - start)
 
-        img = img.cuda(non_blocking=True)
-        mask = mask.cuda(non_blocking=True)
+        img = img.to(device)
+        mask = mask.to(device)
+
+        if target_dtype:
+            img = img.to(target_dtype)
 
         loss = model(img, mask)
 
@@ -217,8 +222,6 @@ def execute_one_epoch(config,
                 f'time {batch_time.val:.4f} ({batch_time.avg:.4f})\t'
                 f'data_time {data_time.val:.4f} ({data_time.avg:.4f})\t'
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
-                f'grad_norm {norm_meter.val:.4f} ({norm_meter.avg:.4f})\t'
-                # f'loss_scale {loss_scale_meter.val:.4f}' +
                 f' ({loss_scale_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
 
@@ -238,53 +241,122 @@ def main(config):
 
     logger.info('In main')
 
-    pretrain_data_loader = build_mim_dataloader(config, logger)
+    transform = SimmimTransform(config)
+
+    dataset = MODIS22MDataset(config,
+                              config.DATA.DATA_PATHS,
+                              split="train",
+                              img_size=config.DATA.IMG_SIZE,
+                              transform=transform,
+                              batch_size=config.DATA.BATCH_SIZE).dataset()
+
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=None,
+        num_workers=int(os.environ["SLURM_CPUS_PER_TASK"]),
+        shuffle=False,)
 
     simmim_model = build_model(config, logger)
 
+    # Count the total number of parameters
+    total_params = sum(p.numel() for p in simmim_model.parameters())
+    logger.info(f"Total number of parameters: {total_params}")
+
+    # Count the total number of trainable parameters
+    trainable_params = sum(p.numel() for p in simmim_model.parameters()
+                           if p.requires_grad)
+    logger.info(f"Total number of trainable parameters: {trainable_params}")
+
+    """
     simmim_optimizer = build_optimizer(config,
                                        simmim_model,
                                        is_pretrain=True,
                                        logger=logger)
 
-    n_iter_per_epoch = len(pretrain_data_loader)
-
-    lr_scheduler = build_scheduler(config, simmim_optimizer, n_iter_per_epoch)
+    lr_scheduler = build_scheduler(config, simmim_optimizer, 625_000)
+    """
 
     deepspeed_config = {
+
         "train_micro_batch_size_per_gpu": config.DATA.BATCH_SIZE,
 
         "zero_optimization": {
             "stage": 2,
-            "allgather_partitions": True,
-            "allgather_bucket_size": 2e8,
             "overlap_comm": True,
             "reduce_scatter": True,
-            "reduce_bucket_size": "auto",
-            "contiguous_gradients": True,
-        }
+            "reduce_bucket_size": 5e8,
+            "allgather_bucket_size": 5e8,
+        },
+
+        # "activation_checkpointing": {
+        #     "partition_activations": True,
+        #     "cpu_checkpointing": True,
+        #     "profile": True,
+        # },
+
+        "fp16": {
+            "enabled": False,
+        },
+
+        "bf16": {
+            "enabled": True,
+        },
+
+        "optimizer": {
+            "type": "AdamW",
+            "params": {
+                "lr": config.TRAIN.BASE_LR,
+            },
+            # "type": "ZeroOneAdam",
+            # "params": {
+            #     "lr": 1e-3,
+            #     "weight_decay": 0.01,
+            #     "comm_backend_name": "nccl",
+            #     "cuda_aware": False,
+            # },
+        },
+
+        "scheduler": {
+            "type": "WarmupLR",
+            "params": {
+                "warmup_min_lr": config.TRAIN.WARMUP_LR,
+                "warmup_max_lr": config.TRAIN.BASE_LR,
+            },
+        },
+
+
+        "flops_profiler": {
+            "enabled": False,
+            "profile_step": 1,
+            "module_depth": -1,
+            "top_modules": 1,
+            "detailed": True,
+            "output_file": f'profile_{time.time()}',
+        },
+
     }
 
     logger.info('Initializing deepspeed')
 
-    model_engine, _, _, _ = deepspeed.initialize(
+    model_engine, optimizer, _, _ = deepspeed.initialize(
         model=simmim_model,
-        optimizer=simmim_optimizer,
-        lr_scheduler=lr_scheduler,
+        # optimizer=simmim_optimizer,
+        # lr_scheduler=lr_scheduler,
         model_parameters=simmim_model.parameters(),
         config=deepspeed_config
     )
 
-    scaler = amp.GradScaler()
+    local_rank = model_engine.local_rank
+    local_device = get_accelerator().device_name(local_rank)
 
     logger.info('Starting training block')
 
     train(config,
-          pretrain_data_loader,
+          dataloader,
           model_engine,
-          simmim_optimizer,
-          lr_scheduler,
-          scaler)
+          optimizer,
+          None,
+          local_device)
 
 
 def build_model(config, logger):
@@ -292,8 +364,6 @@ def build_model(config, logger):
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
 
     model = build_mim_model(config)
-
-    logger.info(str(model))
 
     return model
 
@@ -307,20 +377,21 @@ def setup_seeding(config):
 if __name__ == '__main__':
     _, config = parse_args()
 
+    world_size = int(os.environ["WORLD_SIZE"])
+    rank = int(os.environ["RANK"])
+    gpus_per_node = torch.cuda.device_count()
+    print(f" {gpus_per_node} allocated GPUs per node.", flush=True)
+
     deepspeed.init_distributed()
 
+    print(f"Hello from rank {rank} of {world_size} on"
+          f" {gethostname()} where there are"
+          f" {gpus_per_node} allocated GPUs per node.", flush=True)
+
+    if rank == 0:
+        print(f"Group initialized? {dist.is_initialized()}", flush=True)
+
     setup_seeding(config)
-
-    cudnn.benchmark = True
-
-    linear_scaled_lr, linear_scaled_min_lr, linear_scaled_warmup_lr = \
-        setup_scaled_lr(config)
-
-    config.defrost()
-    config.TRAIN.BASE_LR = linear_scaled_lr
-    config.TRAIN.WARMUP_LR = linear_scaled_warmup_lr
-    config.TRAIN.MIN_LR = linear_scaled_min_lr
-    config.freeze()
 
     os.makedirs(config.OUTPUT, exist_ok=True)
     logger = create_logger(output_dir=config.OUTPUT,
