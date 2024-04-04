@@ -30,7 +30,7 @@ class MODIS22MDataset(object):
     """
     MODIS MOD09GA 22-million pre-training dataset
     """
-    SHARD_PATH = os.path.join("shards")
+    SHARD_PATH = os.path.join("shard")
 
     INPUT_KEY = 'input.npy'
 
@@ -46,7 +46,7 @@ class MODIS22MDataset(object):
         batch_size=64,
     ):
 
-        self.random_state = 1000 
+        self.random_state = 42
 
         self.config = config
 
@@ -56,8 +56,8 @@ class MODIS22MDataset(object):
 
         self.split = split
 
-        self.shard_path = pathlib.Path(
-            os.path.join(data_paths[0], self.SHARD_PATH))
+        self.shard_path = pathlib.Path(os.path.join(data_paths[0],
+                                                    self.SHARD_PATH))
 
         shards = self.shard_path.glob('*.tar')
 
@@ -70,8 +70,6 @@ class MODIS22MDataset(object):
         dataset = (
             wds.WebDataset(self.shards,
                            shardshuffle=True,
-                           # resampled=True,
-                           repeat=True,
                            handler=wds.ignore_and_continue,
                            nodesplitter=nodesplitter)
             .shuffle(self.random_state)
@@ -80,8 +78,6 @@ class MODIS22MDataset(object):
             .map_tuple(np.load)
             .map_tuple(self.transform)
             .batched(self.batch_size, partial=False)
-            .repeat(2)
-            .with_length(1962000)
         )
 
         return dataset

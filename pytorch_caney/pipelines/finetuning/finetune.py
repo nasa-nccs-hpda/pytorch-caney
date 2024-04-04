@@ -367,8 +367,6 @@ def build_finetune_model(config, logger):
 
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
 
-    # You can replace this section by simply calling your model class
-    # For example: model = UNet(parameters)
     model = build_model(config,
                         pretrain=False,
                         pretrain_method='mim',
