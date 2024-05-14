@@ -109,7 +109,8 @@ RUN pip --no-cache-dir install omegaconf \
     sphinx_rtd_theme \
     yacs \
     termcolor \
-	segmentation-models-pytorch \
+    segmentation-models-pytorch \
+    pytorch-caney \
     GDAL==`ogrinfo --version | grep -Eo '[0-9]\.[0-9]\.[0-9]+'`
 
 HEALTHCHECK NONE
