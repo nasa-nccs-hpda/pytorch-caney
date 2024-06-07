@@ -1,5 +1,6 @@
 from pytorch_caney.data.datasets.mim_modis_22m_dataset import MODIS22MDataset
-from pytorch_caney.data.transforms import SimmimTransform
+from pytorch_caney.data.transforms import SimmimTransform, SimmimTransformScale
+from pytorch_caney.data.utils import ModisScalesAndOffsets
 from pytorch_caney.models.mim.mim import build_mim_model
 from pytorch_caney.ptc_logging import create_logger
 from pytorch_caney.config import get_config
@@ -168,6 +169,7 @@ def execute_one_epoch(config,
     num_steps = max(1,
                     ntrain // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
+
     # Set up logging meters
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -236,7 +238,7 @@ def main(config):
 
     logger.info('In main')
 
-    transform = SimmimTransform(config)
+    transform = SimmimTransformScale(config)
 
     dataset = MODIS22MDataset(config,
                               config.DATA.DATA_PATHS,
@@ -410,7 +412,8 @@ def main(config):
 
 @torch.no_grad()
 def validation_setup(config):
-    transform = SimmimTransform(config)
+
+    transform = SimmimTransformScale(config)
     validation_dataset_path = config.DATA.VALIDATION_PATH
     validation_dataset = np.load(validation_dataset_path)
     len_batch = range(validation_dataset.shape[0])

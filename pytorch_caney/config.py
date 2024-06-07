@@ -15,6 +15,8 @@ _C.DATA = CN()
 _C.DATA.BATCH_SIZE = 128
 # Path(s) to dataset, could be overwritten by command line argument
 _C.DATA.DATA_PATHS = ['']
+# Path to validation numpy dataset
+_C.DATA.VALIDATION_PATH = ''
 # Dataset name
 _C.DATA.DATASET = 'MODIS'
 # Input image size
@@ -91,6 +93,7 @@ _C.TRAIN = CN()
 _C.TRAIN.START_EPOCH = 0
 _C.TRAIN.EPOCHS = 300
 _C.TRAIN.WARMUP_EPOCHS = 20
+_C.TRAIN.WARMUP_STEPS = 200
 _C.TRAIN.WEIGHT_DECAY = 0.05
 _C.TRAIN.BASE_LR = 5e-4
 _C.TRAIN.WARMUP_LR = 5e-7
@@ -153,6 +156,8 @@ _C.TAG = 'pt-caney-default-tag'
 _C.SAVE_FREQ = 1
 # Frequency to logging info
 _C.PRINT_FREQ = 10
+# Frequency for running validation step
+_C.VALIDATION_FREQ = 1
 # Fixed random seed
 _C.SEED = 42
 # Perform evaluation only, overwritten by command line argument
@@ -189,6 +194,8 @@ def update_config(config, args):
         config.DATA.BATCH_SIZE = args.batch_size
     if _check_args('data_paths'):
         config.DATA.DATA_PATHS = args.data_paths
+    if _check_args('validation_path'):
+        config.DATA.VALIDATION_PATH = args.validation_path
     if _check_args('dataset'):
         config.DATA.DATASET = args.dataset
     if _check_args('resume'):
