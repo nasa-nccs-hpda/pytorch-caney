@@ -24,3 +24,6 @@ $ sbatch discover_svtoa_pretraining_runner_resume.sh mim_pretrain_swinv2_satvisi
 For starting model from scratch
 - same as above commands just switch out the discover runner script for the frontier runner script.
 - If needed, switch out the cast command to copy from here: /lustre/orion/geo160/proj-shared/envs/rocm-torch-test-full-0.1.0.tar.gz instead of where it currently is.
+
+## !! Note
+For 26m and 100m dataset, make sure to increase NUM_SAMPLES in the mim_deepspeed.py script, that reflects dataset length.
