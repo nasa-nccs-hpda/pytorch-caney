@@ -155,7 +155,7 @@ class WindowAttention(nn.Module):
         # logit_scale = torch.clamp(
         #     self.logit_scale, max=torch.log(torch.tensor(1. / 0.01))).exp()
         logit_scale = torch.clamp(self.logit_scale, max=torch.log(
-            torch.tensor(1. / 0.01)).to(self.logit_scale.get_device())).exp()
+            torch.tensor(1. / 0.01))).exp()
         attn = attn * logit_scale
 
         relative_position_bias_table = self.cpb_mlp(
