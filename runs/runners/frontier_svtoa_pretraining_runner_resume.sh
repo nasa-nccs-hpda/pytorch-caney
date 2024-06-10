@@ -89,8 +89,8 @@ echo $MASTER_PORT
 
 nnodes=$SLURM_JOB_NUM_NODES
 datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/02m
-validationpath=
-batchsize=128
+validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
+batchsize=64
 nprocpernode=8
 
 launcher="python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=${nprocpernode}" 

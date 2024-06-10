@@ -27,5 +27,5 @@ TRAIN:
     MULTISTEPS: [700,]
 PRINT_FREQ: 10 
 SAVE_FREQ: 1 
-VALIDATION_FREQ: 10
-TAG: mim_pretrain_swinv2_g_satvision_128_window08__128heads_100ep
+VALIDATION_FREQ: 20
+TAG: mim_pretrain_swinv2_g_satvision_128_window08_mpatch8_scaled_bt_minmax_100ep

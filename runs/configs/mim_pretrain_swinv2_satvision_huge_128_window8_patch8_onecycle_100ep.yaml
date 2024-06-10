@@ -30,4 +30,4 @@ TRAIN:
 PRINT_FREQ: 10 
 SAVE_FREQ: 1 
 VALIDATION_FREQ: 20
-TAG: mim_pretrain_swinv2_h_satvision_128_window8_mpatch8_scaled_rsb_scaled_100ep
+TAG: mim_pretrain_swinv2_h_satvision_128_window8_mpatch8_scaled_bt_minmax_100ep

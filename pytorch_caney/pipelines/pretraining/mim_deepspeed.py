@@ -164,9 +164,8 @@ def execute_one_epoch(config,
     """
     validationDataset = validation_setup(config)
 
-    ntrain = 1962000
     num_steps = max(1,
-                    ntrain // (config.DATA.BATCH_SIZE * dist.get_world_size()))
+                    NUM_SAMPLES // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
     # Set up logging meters
     batch_time = AverageMeter()
@@ -266,12 +265,10 @@ def main(config):
     logger.info(f"Total number of trainable parameters: {trainable_params}")
 
     # Total number of samples in current 2m dataset
-    ntrain = 1962000
-
     # Number of batches (or steps) to process per epoch
     num_steps = max(
         1,
-        ntrain // (config.DATA.BATCH_SIZE * dist.get_world_size()))
+        NUM_SAMPLES // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
     # Calculate LR steps
     # total steps (or batches) for the entire training iteration
@@ -296,19 +293,19 @@ def main(config):
         "zero_optimization": {
             "stage": 2,
             # "offload_optimizer": {"device": "cpu"},
-            #"offload_param": {"device": "cpu"},
+            # "offload_param": {"device": "cpu"},
             "contiguous_gradients": True,
             "overlap_comm": True,
             "reduce_bucket_size": 5e8,
             "allgather_bucket_size": 5e8,
-            #"offload_optimizer": {
-            #    "device": "cpu"
-            #},
+            # "offload_optimizer": {
+            #     "device": "cpu"
+            # },
         },
 
         "activation_checkpointing": {
            "partition_activations": True,
-        #     "cpu_checkpointing": True,
+            # "cpu_checkpointing": True,
             "profile": False,
         },
 
@@ -353,18 +350,9 @@ def main(config):
 
     logger.info('Initializing deepspeed')
 
-
     optimizer = torch.optim.AdamW(simmim_model.parameters(),
-                                  lr=config.TRAIN.BASE_LR,)
-                                  # weight_decay=config.TRAIN.WEIGHT_DECAY)
-
-    """
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer,
-                                                    max_lr=config.TRAIN.BASE_LR,
-                                                    total_steps=num_steps,
-                                                    last_epoch=num_steps-1,
-                                                    pct_start=0.4)
-    """
+                                  lr=config.TRAIN.BASE_LR,
+                                  weight_decay=config.TRAIN.WEIGHT_DECAY)
 
     model_engine, optimizer, _, _ = deepspeed.initialize(
         model=simmim_model,
@@ -484,7 +472,7 @@ if __name__ == '__main__':
     setup_seeding(config)
 
     config.defrost()
-    base_batch_size = 2048
+    base_batch_size = 2048 
     config.TRAIN.BASE_LR = (config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.WARMUP_LR = (config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.MIN_LR = (config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size

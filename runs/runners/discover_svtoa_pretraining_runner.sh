@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=sv-huge-deepspeed   # create a short name for your job
-#SBATCH --nodes=6                # node count
+#SBATCH --job-name=sv-toa-deepspeed   # create a short name for your job
+#SBATCH --nodes=7                # node count
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --cpus-per-task=40       # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH --mem=400G                # total memory per node (4 GB per cpu-core is default)
@@ -56,7 +56,7 @@ validation_path="/discover/nobackup/projects/calebtest/3dclouds.runs/development
 launcher="/discover/nobackup/jacaraba/spack/opt/spack/linux-sles15-zen/gcc-7.5.0/singularityce-3.11.3-o5pnooghlq7cgiv5zh5qnmyhmbltcynu/bin/singularity exec --nv -B /discover,/gpfsm /discover/nobackup/projects/akmosaic/container/nvpt-24.01 python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=4" 
 echo $launcher 
 
-cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed_lr_finding.py --cfg $1 --dataset MODIS --data-paths /discover/nobackup/projects/calebtest/3dclouds/v3 --output . --batch-size 512 --validation-path ${validation_path}"
+cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed.py --cfg $1 --dataset MODIS --data-paths /discover/nobackup/projects/calebtest/3dclouds/v3 --output . --batch-size 512 --validation-path ${validation_path}"
 echo $cmd
 
 srun --jobid $SLURM_JOBID bash -c "$launcher --node_rank \$SLURM_PROCID $cmd" 
