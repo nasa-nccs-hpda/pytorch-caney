@@ -40,4 +40,6 @@ dependencies:
     - termcolor
     - numba
     - joblib
+    - timm
+    - deepspeed
     - segmentation-models-pytorch
