@@ -27,4 +27,6 @@ termcolor
 numba
 segmentation-models-pytorch
 joblib
+timm
+deepspeed
 GDAL>=3.3.0
