@@ -26,3 +26,5 @@ yacs
 termcolor
 numba
 segmentation-models-pytorch
+timm
+deepspeed
