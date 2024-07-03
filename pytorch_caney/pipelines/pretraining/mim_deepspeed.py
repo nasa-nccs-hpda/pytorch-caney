@@ -218,7 +218,7 @@ def execute_one_epoch(config,
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
         
-        if idx % config.SAVE_FREQ or idx == num_steps-1:
+        if idx % config.SAVE_FREQ == 0 or idx == num_steps-1:
             tag = f'ckpt_epoch_{epoch}_step_{idx}'
             model.save_checkpoint(save_dir=config.OUTPUT,
                                   tag=tag,)
@@ -277,6 +277,7 @@ def main(config):
 
     # The step/batch/idx we are resuming from (assume 0 for start)
     resuming_step = 0
+    resuming_global_step = 0
 
     if config.MODEL.RESUME:
         load_dir = os.path.dirname(config.MODEL.RESUME)
@@ -407,6 +408,7 @@ def main(config):
     torch.distributed.barrier()
 
     train(config,
+          resuming_step,
           dataloader,
           model_engine,
           optimizer,
