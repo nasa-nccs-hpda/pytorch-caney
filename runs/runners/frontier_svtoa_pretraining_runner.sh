@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A geo160
-#SBATCH --job-name=sv-3b-26m-pt-15-epoch-test   # create a short name for your job
+#SBATCH --job-name=sv-3b-100m-pt-50-epoch-test   # create a short name for your job
 #SBATCH --nodes=32               # node count
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --gres=gpu:8             # number of allocated gpus per node
@@ -89,7 +89,7 @@ echo $MASTER_ADDR
 echo $MASTER_PORT
 
 nnodes=$SLURM_JOB_NUM_NODES
-datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/26m
+datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
 batchsize=64
 nprocpernode=8

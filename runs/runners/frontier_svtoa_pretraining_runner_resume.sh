@@ -16,6 +16,7 @@ module load cpe/23.05         # recommended cpe version with cray-mpich/8.1.26
 module load cray-mpich/8.1.26 # for better GPU-aware MPI w/ ROCm 5.7.1
 module load PrgEnv-gnu/8.4.0
 export LD_LIBRARY_PATH=$CRAY_LD_LIBRARY_PATH:$LD_LIBRARY_PATH # because using a non-default cray-mpich
+export LD_LIBRARY_PATH=/lustre/orion/geo160/proj-shared/testing/aws-olf-rccl-plugin/aws-ofi-rccl/lib:$LD_LIBRARY_PATH
 module load amd-mixed/5.7.1
 module load craype-accel-amd-gfx90a
 module load miniforge3/23.11.0
@@ -88,7 +89,7 @@ echo $MASTER_ADDR
 echo $MASTER_PORT
 
 nnodes=$SLURM_JOB_NUM_NODES
-datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/02m
+datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
 batchsize=64
 nprocpernode=8

@@ -56,8 +56,7 @@ class MODIS22MDataset(object):
 
         self.split = split
 
-        self.shard_path = pathlib.Path(
-            os.path.join(data_paths[0], self.SHARD_PATH))
+        self.shard_path = pathlib.Path(data_paths[0])
 
         shards = self.shard_path.glob('*.tar')
 
