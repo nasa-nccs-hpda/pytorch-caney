@@ -90,6 +90,7 @@ def parse_args():
 
 
 def train(config,
+          resuming_step,
           dataloader,
           model_engine,
           optimizer,
@@ -124,11 +125,8 @@ def train(config,
         start = time.time()
 
         execute_one_epoch(config, model_engine, dataloader,
-                          optimizer, epoch, target_dtype, device)
-
-        tag = f'ckpt_epoch_{epoch}'
-        model_engine.save_checkpoint(save_dir=config.OUTPUT,
-                                     tag=tag,)
+                          optimizer, epoch, resuming_step,
+                          target_dtype, device)
 
         epoch_time = time.time() - start
         logger.info(
@@ -148,6 +146,7 @@ def execute_one_epoch(config,
                       dataloader,
                       optimizer,
                       epoch,
+                      resuming_step,
                       target_dtype,
                       device):
     """
@@ -176,6 +175,7 @@ def execute_one_epoch(config,
     end = time.time()
 
     for idx, img_mask in enumerate(dataloader):
+        idx = idx + resuming_step
 
         img_mask = img_mask[0]
 
@@ -217,6 +217,11 @@ def execute_one_epoch(config,
                 f'data_time {data_time.val:.4f} ({data_time.avg:.4f})\t'
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
+        
+        if idx % config.SAVE_FREQ or idx == num_steps-1:
+            tag = f'ckpt_epoch_{epoch}_step_{idx}'
+            model.save_checkpoint(save_dir=config.OUTPUT,
+                                  tag=tag,)
 
         if idx == num_steps:
             logger.info(f'Ending step loop for epoch {idx}')
@@ -270,6 +275,24 @@ def main(config):
         1,
         NUM_SAMPLES // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
+    # The step/batch/idx we are resuming from (assume 0 for start)
+    resuming_step = 0
+
+    if config.MODEL.RESUME:
+        load_dir = os.path.dirname(config.MODEL.RESUME)
+        logger.info(f'Ckpt load dir: {load_dir}')
+
+        tag = os.path.basename(config.MODEL.RESUME)
+        logger.info(f'Ckpt tag: {tag}')
+
+        epoch = tag.split('_')[2]
+        logger.info(f'Ckpt epoch: {epoch}')
+
+        step = tag.split('_')[4]
+        logger.info(f'Ckpt step: {step}')
+        resuming_step = int(step)
+        resuming_global_step = int(resuming_step + (int(epoch) * num_steps))
+
     # Calculate LR steps
     # total steps (or batches) for the entire training iteration
     total_steps = num_steps * config.TRAIN.EPOCHS
@@ -283,6 +306,8 @@ def main(config):
     logger.info(f'OneCycle: stage-2 step size = {cycle_stage_two}')
     logger.info(f'OneCycle: min LR = {config.TRAIN.MIN_LR}')
     logger.info(f'OneCycle: max LR = {config.TRAIN.BASE_LR}')
+
+    last_batch_iteration = -1 if resuming_global_step == 0 else resuming_global_step
 
     deepspeed_config = {
         "train_micro_batch_size_per_gpu": config.DATA.BATCH_SIZE,
@@ -332,6 +357,7 @@ def main(config):
                 "cycle_max_lr": config.TRAIN.BASE_LR,
                 "cycle_first_step_size": cycle_stage_one,
                 "cycle_second_step_size": cycle_stage_two,
+                "last_batch_iteration": last_batch_iteration, 
                 # "warmup_min_ratio": 0,
                 # "warmup_num_steps": config.TRAIN.WARMUP_STEPS,
             },
@@ -364,19 +390,10 @@ def main(config):
 
     if config.MODEL.RESUME:
 
-        load_dir = os.path.dirname(config.MODEL.RESUME)
-        logger.info(f'Ckpt load dir: {load_dir}')
-
-        tag = os.path.basename(config.MODEL.RESUME)
-        logger.info(f'Ckpt tag: {tag}')
-
-        epoch = tag.split('_')[2]
-        logger.info(f'Ckpt epoch: {epoch}')
-
         load_path, _ = model_engine.load_checkpoint(load_dir=load_dir,
                                                     tag=tag)
         config.defrost()
-        config.TRAIN.START_EPOCH = int(epoch) + 1
+        config.TRAIN.START_EPOCH = int(epoch)
         config.freeze()
 
         logger.info(f'Loaded from checkpoint: {load_path}')
