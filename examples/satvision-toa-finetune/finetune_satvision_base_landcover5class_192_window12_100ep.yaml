@@ -1,0 +1,33 @@
+MODEL:
+  TYPE: swinv2
+  DECODER: unet
+  NAME: satvision_finetune_lc5class
+  DROP_PATH_RATE: 0.1
+  NUM_CLASSES: 5
+  SWINV2:
+    IN_CHANS: 7
+    EMBED_DIM: 128
+    DEPTHS: [ 2, 2, 18, 2 ]
+    NUM_HEADS: [ 4, 8, 16, 32 ]
+    WINDOW_SIZE: 14
+    PRETRAINED_WINDOW_SIZES: [ 12, 12, 12, 6 ]
+DATA:
+  IMG_SIZE: 224
+  DATASET: MODISLC5
+  MASK_PATCH_SIZE: 32
+  MASK_RATIO: 0.6
+LOSS:
+  NAME: 'tversky'
+  MODE: 'multiclass'
+  ALPHA: 0.4
+  BETA: 0.6
+TRAIN:
+  EPOCHS: 100
+  WARMUP_EPOCHS: 10
+  BASE_LR: 1e-4
+  WARMUP_LR: 5e-7
+  WEIGHT_DECAY: 0.01
+  LAYER_DECAY: 0.8
+PRINT_FREQ: 100
+SAVE_FREQ: 5
+TAG: satvision_finetune_land_cover_5class_swinv2_satvision_192_window12__800ep
