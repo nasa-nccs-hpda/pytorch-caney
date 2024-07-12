@@ -264,14 +264,14 @@ def load_checkpoint(config, model, optimizer, lr_scheduler, scaler, logger):
         checkpoint = torch.load(config.MODEL.RESUME, map_location='cpu')
 
     # re-map keys due to name change (only for loading provided models)
-    rpe_mlp_keys = [k for k in checkpoint['model'].keys() if "rpe_mlp" in k]
+    rpe_mlp_keys = [k for k in checkpoint['module'].keys() if "rpe_mlp" in k]
 
     for k in rpe_mlp_keys:
 
-        checkpoint['model'][k.replace(
-            'rpe_mlp', 'cpb_mlp')] = checkpoint['model'].pop(k)
+        checkpoint['module'][k.replace(
+            'rpe_mlp', 'cpb_mlp')] = checkpoint['module'].pop(k)
 
-    msg = model.load_state_dict(checkpoint['model'], strict=False)
+    msg = model.load_state_dict(checkpoint['module'], strict=False)
 
     logger.info(msg)
 
@@ -394,7 +394,21 @@ def load_pretrained(config, model, logger):
 
     checkpoint = torch.load(config.MODEL.PRETRAINED, map_location='cpu')
 
-    checkpoint_model = checkpoint['model']
+    try:
+
+        checkpoint_model = checkpoint['model']
+
+    except KeyError:
+
+        try:
+
+            checkpoint_model = checkpoint['module']
+
+        except KeyError:
+
+            errorMsg = 'Ckpt model does not have key "model" or "module"'
+
+            raise RuntimeError(errorMsg)
 
     if any([True if 'encoder.' in k else
             False for k in checkpoint_model.keys()]):

@@ -53,9 +53,8 @@ class MODISLCNineDataset(Dataset):
     def __getitem__(self, idx, transpose=True):
 
         # load image
-        img = np.load(self.img_list[idx])
-
-        img = np.clip(img, 0, 1.0)
+        img = np.random.rand(224, 224, 14)
+        # img = np.load(self.img_list[idx])
 
         # load mask
         mask = np.load(self.mask_list[idx])
