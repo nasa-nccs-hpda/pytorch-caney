@@ -1,15 +1,13 @@
 #!/bin/bash
 #SBATCH -A geo160
-#SBATCH --job-name=sv-3b-100m-pt-50-epoch-test   # create a short name for your job
-#SBATCH --nodes=32               # node count
+#SBATCH --job-name=hackathon-675m-batch-size-test   # create a short name for your job
+#SBATCH --nodes=1               # node count
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --gres=gpu:8             # number of allocated gpus per node
 #SBATCH --qos=debug
-#SBATCH --time=02:00:00       # total run time limit (HH:MM:SS)
+#SBATCH --time=00:30:00       # total run time limit (HH:MM:SS)
 #SBATCH --cpus-per-task=56
 #SBATCH -C nvme
-#SBATCH --mail-type=ALL        # send email when job begins
-#SBATCH --mail-user=caleb.s.spradlin@nasa.gov
 
 ##### Setup modules
 module load cpe/23.05         # recommended cpe version with cray-mpich/8.1.26
@@ -91,7 +89,7 @@ echo $MASTER_PORT
 nnodes=$SLURM_JOB_NUM_NODES
 datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
-batchsize=64
+batchsize=1536
 nprocpernode=8
 
 launcher="python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=${nprocpernode}" 

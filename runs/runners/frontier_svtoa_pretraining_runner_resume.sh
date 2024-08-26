@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -A geo160
+#SBATCH --qos=debug
 #SBATCH --job-name=satvision-giant-pretraining-15-epoch-test   # create a short name for your job
 #SBATCH --nodes=32                # node count
-#SBATCH --qos=debug
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --gres=gpu:8             # number of allocated gpus per node
 #SBATCH --time=02:00:00       # total run time limit (HH:MM:SS)
@@ -10,6 +10,7 @@
 #SBATCH -C nvme
 #SBATCH --mail-type=ALL        # send email when job begins
 #SBATCH --mail-user=caleb.s.spradlin@nasa.gov
+#SBATCH --mail-user=cspradlindev@gmail.com
 
 ##### Setup modules
 module load cpe/23.05         # recommended cpe version with cray-mpich/8.1.26
@@ -93,11 +94,12 @@ datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
 batchsize=64
 nprocpernode=8
+latest_ckpt=$(find mim_satvision_pretrain-giant/* -name "ckpt_epoch_*" | sort -n | tail -1)
 
 launcher="python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=${nprocpernode}" 
 echo $launcher 
 
-cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed.py --cfg $1 --dataset MODIS --data-paths ${datapaths} --output . --batch-size ${batchsize} --resume $2 --validation-path ${validationpath}"
+cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed.py --cfg $1 --dataset MODIS --data-paths ${datapaths} --output . --batch-size ${batchsize} --resume ${latest_ckpt} --validation-path ${validationpath}"
 echo $cmd
 
 srun -l -c56 --gpus-per-task=${nprocpernode} --gpu-bind=closest --jobid $SLURM_JOBID bash -c "$launcher --node_rank \$SLURM_PROCID $cmd" 

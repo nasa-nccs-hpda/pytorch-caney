@@ -1,12 +1,12 @@
 MODEL:
   TYPE: swinv2
-  NAME: mim_satvision_pretrain-giant
+  NAME: mim_satvision_pretrain-huge
   DROP_PATH_RATE: 0.1
   SWINV2:
     IN_CHANS: 14 
-    EMBED_DIM: 512
-    DEPTHS: [ 2, 2, 42, 2 ]
-    NUM_HEADS: [ 16, 32, 64, 128 ]
+    EMBED_DIM: 352 
+    DEPTHS: [ 2, 2, 18, 2 ]
+    NUM_HEADS: [ 4, 8, 16, 32]
     WINDOW_SIZE: 8 
     NORM_PERIOD: 6
 DATA:
@@ -28,4 +28,4 @@ TRAIN:
 PRINT_FREQ: 100
 SAVE_FREQ: 1000
 VALIDATION_FREQ: 200
-TAG: mim_pretrain_3b_26m_32nodes_128_window8_onecycle_50ep
+TAG: mim_pretrain_675m_2m_128_window8_onecycle_hackathon
