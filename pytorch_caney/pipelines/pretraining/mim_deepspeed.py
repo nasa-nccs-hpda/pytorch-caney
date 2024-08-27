@@ -21,6 +21,9 @@ import torch.distributed as dist
 
 from timm.utils import AverageMeter
 
+from torch.utils.tensorboard import SummaryWriter
+
+writer = SummaryWriter('runs/vit_160_exp_1')
 
 NUM_SAMPLES: int = 1962000
 
@@ -140,6 +143,8 @@ def train(config,
 
     logger.info('Training time {}'.format(total_time_str))
 
+    writer.close()
+
 
 def execute_one_epoch(config,
                       model,
@@ -217,6 +222,9 @@ def execute_one_epoch(config,
                 f'data_time {data_time.val:.4f} ({data_time.avg:.4f})\t'
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
+            writer.add_scalar('training loss ', loss_meter.val, idx)
+            writer.add_scalar('memory usage ', memory_used, idx)
+            writer.flush()
         
         if idx % config.SAVE_FREQ == 0 or idx == num_steps-1:
             tag = f'ckpt_epoch_{epoch}_step_{idx}'
