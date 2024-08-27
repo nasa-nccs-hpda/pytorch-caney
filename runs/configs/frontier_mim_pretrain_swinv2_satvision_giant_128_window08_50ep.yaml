@@ -28,4 +28,4 @@ TRAIN:
 PRINT_FREQ: 100
 SAVE_FREQ: 1000
 VALIDATION_FREQ: 200
-TAG: mim_pretrain_3b_26m_32nodes_128_window8_onecycle_50ep
+TAG: mim_pretrain_3b_2m_128_window8_onecycle_50ep_hackathon
