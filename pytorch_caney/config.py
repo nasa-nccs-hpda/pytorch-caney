@@ -119,6 +119,8 @@ _C.TRAIN.LR_SCHEDULER.DECAY_RATE = 0.1
 # Gamma / Multi steps value, used in MultiStepLRScheduler
 _C.TRAIN.LR_SCHEDULER.GAMMA = 0.1
 _C.TRAIN.LR_SCHEDULER.MULTISTEPS = []
+# OneCycle LR Scheduler max LR percentage
+_C.TRAIN.LR_SCHEDULER.CYCLE_PERCENTAGE = 0.3
 
 # Optimizer
 _C.TRAIN.OPTIMIZER = CN()
@@ -132,6 +134,10 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 
 # [SimMIM] Layer decay for fine-tuning
 _C.TRAIN.LAYER_DECAY = 1.0
+
+# Tensorboard settings
+_C.TENSORBOARD = CN()
+_C.TENSORBOARD.WRITER_DIR = '.'
 
 
 # -----------------------------------------------------------------------------
