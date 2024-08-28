@@ -8,8 +8,6 @@
 #SBATCH --time=00:30:00       # total run time limit (HH:MM:SS)
 #SBATCH --cpus-per-task=56
 #SBATCH -C nvme
-#SBATCH --mail-type=ALL        # send email when job begins
-#SBATCH --mail-user=caleb.s.spradlin@nasa.gov
 
 ##### Setup modules
 module load cpe/23.05         # recommended cpe version with cray-mpich/8.1.26
