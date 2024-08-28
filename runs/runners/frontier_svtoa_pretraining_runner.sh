@@ -4,7 +4,7 @@
 #SBATCH --nodes=1               # node count
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --gres=gpu:8             # number of allocated gpus per node
-#SBATCH --qos=debug
+#SBATCH -q debug
 #SBATCH --time=00:30:00       # total run time limit (HH:MM:SS)
 #SBATCH --cpus-per-task=56
 #SBATCH -C nvme
@@ -89,7 +89,7 @@ echo $MASTER_PORT
 nnodes=$SLURM_JOB_NUM_NODES
 datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
-batchsize=1536
+batchsize=256
 nprocpernode=8
 
 launcher="python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=${nprocpernode}" 

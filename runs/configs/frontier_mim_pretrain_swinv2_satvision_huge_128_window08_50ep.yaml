@@ -21,6 +21,8 @@ TRAIN:
   MIN_LR: 2e-4
   WARMUP_LR: 1e-4 
   WEIGHT_DECAY: 0.05
+  OPTIMIZER:
+    NAME: lamb
   LR_SCHEDULER:
     NAME: 'multistep'
     GAMMA: 0.1
