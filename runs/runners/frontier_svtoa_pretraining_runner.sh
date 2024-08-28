@@ -4,7 +4,7 @@
 #SBATCH --nodes=1               # node count
 #SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --gres=gpu:8             # number of allocated gpus per node
-#SBATCH --qos=debug
+#SBATCH -q debug
 #SBATCH --time=00:30:00       # total run time limit (HH:MM:SS)
 #SBATCH --cpus-per-task=56
 #SBATCH -C nvme
