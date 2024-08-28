@@ -22,12 +22,12 @@ TRAIN:
   WARMUP_LR: 1e-4 
   WEIGHT_DECAY: 0.05
   OPTIMIZER:
-    NAME: lamb
+    NAME: adamw 
   LR_SCHEDULER:
     NAME: 'multistep'
     GAMMA: 0.1
     MULTISTEPS: [700,]
 PRINT_FREQ: 10 
 SAVE_FREQ: 1000
-VALIDATION_FREQ: 20 
-TAG: mim_pretrain_675m_2m_128_window8_onecycle_hackathon_cssprad1_0
+VALIDATION_FREQ: 20
+TAG: mim_pretrain_675m_2m_128_window8_onecycle_hackathon_adamw

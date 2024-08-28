@@ -174,6 +174,10 @@ def execute_one_epoch(config,
     """
     validationDataset = validation_setup(config)
 
+    # Setup lamb gradient logging
+    if config.OPTIMIZER.NAME == 'lamb':
+        from pytorch_caney.optimizer.lamb import log_lamb_rs
+
     num_steps = max(1,
                     NUM_SAMPLES // (config.DATA.BATCH_SIZE * dist.get_world_size()))
 
@@ -241,6 +245,8 @@ def execute_one_epoch(config,
             writer.add_scalar('memory_usage ', memory_used, idx)
             writer.add_scalar('cached_memory', cached_memory, idx)
             writer.add_scalar('max_memory', max_memory, idx)
+            if config.OPTIMIZER.NAME == 'lamb':
+                log_lamb_rs(optimizer, writer, idx)
             writer.flush()
         
         if idx % config.SAVE_FREQ == 0 or idx == num_steps-1:
