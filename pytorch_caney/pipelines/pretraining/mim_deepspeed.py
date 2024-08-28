@@ -47,6 +47,13 @@ def parse_args():
         required=True,
         help="paths where dataset is stored")
 
+    parser.add_argument(
+        '--tensorboard-dir',
+        type=str,
+        required=True,
+        help='Dir path for tensorboard to write to.'
+    )
+
     parser.add_argument('--validation-path',
                         type=str,
                         required=True,

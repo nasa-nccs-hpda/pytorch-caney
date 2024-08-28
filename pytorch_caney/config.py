@@ -224,6 +224,8 @@ def update_config(config, args):
         config.EVAL_MODE = True
     if _check_args('enable_amp'):
         config.ENABLE_AMP = args.enable_amp
+    if _check_args('tensorboard_dir'):
+        config.TENSORBOARD.WRITER_DIR = args.tensorboard_dir
 
     # output folder
     config.OUTPUT = os.path.join(config.OUTPUT, config.MODEL.NAME, config.TAG)
