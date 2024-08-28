@@ -51,10 +51,27 @@ Modifications Copyright 2021 Ross Wightman
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import collections
 import math
 
 import torch
 from torch.optim import Optimizer
+
+from torch.utils.tensorboard import SummaryWriter
+
+
+def log_lamb_rs(optimizer: Optimizer, event_writer: SummaryWriter, token_count: int):
+    """Log a histogram of trust ratio scalars in across layers."""
+    results = collections.defaultdict(list)
+    for group in optimizer.param_groups:
+        for p in group['params']:
+            state = optimizer.state[p]
+            for i in ('weight_norm', 'adam_norm', 'trust_ratio'):
+                if i in state:
+                    results[i].append(state[i])
+
+    for k, v in results.items():
+        event_writer.add_histogram(f'lamb/{k}', torch.tensor(v), token_count)
 
 
 class Lamb(Optimizer):
@@ -185,6 +202,11 @@ class Lamb(Optimizer):
                     if group['trust_clip']:
                         # LAMBC trust clipping, upper bound fixed at one
                         trust_ratio = torch.minimum(trust_ratio, one_tensor)
+
+                    state['weight_norm'] = w_norm
+                    state['adam_norm'] = g_norm
+                    state['trust_ratio'] = trust_ratio
+
                     update.mul_(trust_ratio)
 
                 p.add_(update, alpha=-group['lr'])

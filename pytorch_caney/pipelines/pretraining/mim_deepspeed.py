@@ -24,10 +24,8 @@ from timm.utils import AverageMeter
 
 from torch.utils.tensorboard import SummaryWriter
 
-writer = SummaryWriter('runs/vit_160_exp_1')
 
 NUM_SAMPLES: int = 1962000
-
 
 def parse_args():
     """
@@ -49,6 +47,13 @@ def parse_args():
         nargs='+',
         required=True,
         help="paths where dataset is stored")
+
+    parser.add_argument(
+        '--tensorboard-dir',
+        type=str,
+        required=True,
+        help='Dir path for tensorboard to write to.'
+    )
 
     parser.add_argument('--validation-path',
                         type=str,
@@ -98,7 +103,8 @@ def train(config,
           dataloader,
           model_engine,
           optimizer,
-          device):
+          device,
+          writer):
     """
     Start pre-training a specific model and dataset.
 
@@ -130,7 +136,7 @@ def train(config,
 
         execute_one_epoch(config, model_engine, dataloader,
                           optimizer, epoch, resuming_step,
-                          target_dtype, device)
+                          target_dtype, device, writer)
 
         epoch_time = time.time() - start
         logger.info(
@@ -144,8 +150,6 @@ def train(config,
 
     logger.info('Training time {}'.format(total_time_str))
 
-    writer.close()
-
 
 def execute_one_epoch(config,
                       model,
@@ -154,7 +158,8 @@ def execute_one_epoch(config,
                       epoch,
                       resuming_step,
                       target_dtype,
-                      device):
+                      device,
+                      writer):
     """
     Execute training iterations on a single epoch.
 
@@ -168,6 +173,10 @@ def execute_one_epoch(config,
         device: device to move inputs to
     """
     validationDataset = validation_setup(config)
+
+    # Setup lamb gradient logging
+    if config.TRAIN.OPTIMIZER.NAME == 'lamb':
+        from pytorch_caney.optimizer.lamb import log_lamb_rs
 
     num_steps = max(1,
                     NUM_SAMPLES // (config.DATA.BATCH_SIZE * dist.get_world_size()))
@@ -210,11 +219,20 @@ def execute_one_epoch(config,
 
         if idx % config.VALIDATION_FREQ == 0:
             lr = optimizer.param_groups[0]['lr']
-            validate(model, validationDataset, lr, idx, epoch, target_dtype, device)
+            validate(model,
+                     validationDataset,
+                     lr,
+                     idx,
+                     epoch,
+                     target_dtype,
+                     device,
+                     writer)
 
         if idx % config.PRINT_FREQ == 0:
             lr = optimizer.param_groups[0]['lr']
             memory_used = torch.cuda.max_memory_allocated() / (1024.0 * 1024.0)
+            cached_memory = torch.cuda.memory_reserved() / (1024 * 1024)  # in MB
+            max_memory = torch.cuda.max_memory_reserved() / (1024 * 1024) # in MB
             etas = batch_time.avg * (num_steps - idx)
             logger.info(
                 f'Train: [{epoch}/{config.TRAIN.EPOCHS}][{idx}/{num_steps}]\t'
@@ -223,8 +241,12 @@ def execute_one_epoch(config,
                 f'data_time {data_time.val:.4f} ({data_time.avg:.4f})\t'
                 f'loss {loss_meter.val:.4f} ({loss_meter.avg:.4f})\t'
                 f'mem {memory_used:.0f}MB')
-            writer.add_scalar('training loss ', loss_meter.val, idx)
-            writer.add_scalar('memory usage ', memory_used, idx)
+            writer.add_scalar('training_loss ', loss_meter.val, idx)
+            writer.add_scalar('memory_usage ', memory_used, idx)
+            writer.add_scalar('cached_memory', cached_memory, idx)
+            writer.add_scalar('max_memory', max_memory, idx)
+            if config.TRAIN.OPTIMIZER.NAME == 'lamb':
+                log_lamb_rs(optimizer, writer, idx)
             writer.flush()
         
         if idx % config.SAVE_FREQ == 0 or idx == num_steps-1:
@@ -248,6 +270,11 @@ def main(config):
     """
 
     logger.info('In main')
+
+    tensorboardMainDir = config.TENSORBOARD.WRITER_DIR
+    tensorboardDir = f'{tensorboardMainDir}/{config.TAG}'
+    logger.info(f'Initializing tensorboard to {tensorboardDir}')
+    writer = SummaryWriter(tensorboardDir)
 
     transform = SimmimTransform(config)
 
@@ -308,7 +335,7 @@ def main(config):
     total_steps = num_steps * config.TRAIN.EPOCHS
     logger.info(f'Total steps for {config.TRAIN.EPOCHS} epochs: {total_steps}')
 
-    cycle_one_percentage = 0.3
+    cycle_one_percentage = config.TRAIN.LR_SCHEDULER.CYCLE_PERCENTAGE 
     cycle_stage_one = int(total_steps * cycle_one_percentage)
     cycle_stage_two = (total_steps - cycle_stage_one) - 1
 
@@ -430,7 +457,10 @@ def main(config):
           dataloader,
           model_engine,
           optimizer,
-          local_device)
+          local_device,
+          writer)
+
+    writer.close()
 
 
 @torch.no_grad()
@@ -448,7 +478,7 @@ def validation_setup(config):
 
 
 @torch.no_grad()
-def validate(model, img_masks, lr, step, epoch, target_dtype, device):
+def validate(model, img_masks, lr, step, epoch, target_dtype, device, writer):
     start_time = time.time()
 
     img, mask = img_masks
@@ -468,6 +498,8 @@ def validate(model, img_masks, lr, step, epoch, target_dtype, device):
         f"lr {lr}\t"
         f"val_loss {loss:.4f}\t"
         f"time {validation_time:.4f}s")
+    writer.add_scalar('validation_loss', loss, step)
+    writer.flush()
 
     del img, mask, loss
 
@@ -509,7 +541,7 @@ if __name__ == '__main__':
     setup_seeding(config)
 
     config.defrost()
-    base_batch_size = 2048 
+    base_batch_size = 512 
     config.TRAIN.BASE_LR = (config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.WARMUP_LR = (config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.MIN_LR = (config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
