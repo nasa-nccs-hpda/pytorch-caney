@@ -3,6 +3,7 @@ from pytorch_caney.data.transforms import SimmimTransform
 from pytorch_caney.models.mim.mim import build_mim_model
 from pytorch_caney.ptc_logging import create_logger
 from pytorch_caney.config import get_config
+from pytorch_caney.optimizer.build import build_optimizer
 
 import deepspeed
 from deepspeed.accelerator import get_accelerator
@@ -344,6 +345,7 @@ def main(config):
 
         "steps_per_print": config.PRINT_FREQ,
         "memory_breakdown": False,
+        "zero_allow_untested_optimizer": True,
 
         "zero_optimization": {
             "stage": 2,
@@ -406,9 +408,17 @@ def main(config):
 
     logger.info('Initializing deepspeed')
 
-    optimizer = torch.optim.AdamW(simmim_model.parameters(),
-                                  lr=config.TRAIN.BASE_LR,
-                                  weight_decay=config.TRAIN.WEIGHT_DECAY)
+    # optimizer = torch.optim.AdamW(simmim_model.parameters(),
+    #                              lr=config.TRAIN.BASE_LR,
+    #                              weight_decay=config.TRAIN.WEIGHT_DECAY)
+    # optimizer = Lamb(simmim_model.parameters(),
+    #                 lr=config.TRAIN.BASE_LR,
+    #                 weight_decay=config.TRAIN.WEIGHT_DECAY)
+    # optimizer = deepspeed.ops.lamb.FusedLamb(
+    #                 simmim_model.parameters(), lr=config.TRAIN.BASE_LR, 
+    #                 weight_decay=config.TRAIN.WEIGHT_DECAY)
+    optimizer = build_optimizer(
+            config, simmim_model, is_pretrain=True, logger=logger)
 
     model_engine, optimizer, _, _ = deepspeed.initialize(
         model=simmim_model,
