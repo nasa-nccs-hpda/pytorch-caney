@@ -8,6 +8,8 @@
 #SBATCH --time=00:30:00       # total run time limit (HH:MM:SS)
 #SBATCH --cpus-per-task=56
 #SBATCH -C nvme
+#SBATCH --mail-type=ALL        # send email when job begins
+#SBATCH --mail-user=caleb.s.spradlin@nasa.gov
 
 ##### Setup modules
 module load cpe/23.05         # recommended cpe version with cray-mpich/8.1.26
@@ -28,11 +30,11 @@ mkdir -p ${MIOPEN_USER_DB_PATH}
 echo "copying torch_env to each node in the job"
 conda_env_name='rocm-torch-test-full-0.1.0'
 
-sbcast -pf $MEMBERWORK/geo160/${conda_env_name}.tar.gz /mnt/bb/${USER}/${conda_env_name}.tar.gz
-echo $MEMBERWORK/geo160/${conda_env_name}.tar.gz
+sbcast -pf /lustre/orion/geo160/proj-shared/envs/${conda_env_name}.tar.gz.hackathon /mnt/bb/${USER}/${conda_env_name}.tar.gz
+echo /lustre/orion/geo160/proj-shared/envs/${conda_env_name}.tar.gz.hackathon
 echo /mnt/bb/${USER}/${conda_env_name}.tar.gz
 ls -l /mnt/bb/${USER}
-ls -l $MEMBERWORK/geo160
+ls -l /lustre/orion/geo160/proj-shared/envs 
 
 if [ ! "$?" == "0" ]; then
 	# CHECK EXIT CODE. When SBCAST fails, it may leave partial files on the compute nodes, and if you continue to launch srun,
@@ -89,13 +91,14 @@ echo $MASTER_PORT
 nnodes=$SLURM_JOB_NUM_NODES
 datapaths=/lustre/orion/geo160/proj-shared/data/satvision-toa/50m
 validationpath=/lustre/orion/geo160/proj-shared/data/satvision-toa/validation/sv_toa_128_chip_validation_04_24.npy
+tensorboard_dir=/lustre/orion/geo160/proj-shared/data/tensorboard/hackathon_2024
 batchsize=256
 nprocpernode=8
 
 launcher="python -u -m torch.distributed.run --nnodes=${nnodes} --master_addr ${MASTER_ADDR} --master_port ${MASTER_PORT} --nproc_per_node=${nprocpernode}" 
 echo $launcher 
 
-cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed.py --cfg $1 --dataset MODIS --data-paths ${datapaths} --output . --batch-size ${batchsize} --validation-path ${validationpath}"
+cmd=" pytorch-caney/pytorch_caney/pipelines/pretraining/mim_deepspeed.py --cfg $1 --dataset MODIS --data-paths ${datapaths} --output . --batch-size ${batchsize} --validation-path ${validationpath} --tensorboard-dir ${tensorboard_dir}"
 echo $cmd
 
 srun -l -c56 --gpus-per-task=${nprocpernode} --gpu-bind=closest --jobid $SLURM_JOBID bash -c "$launcher --node_rank \$SLURM_PROCID $cmd" 

@@ -264,7 +264,8 @@ def main(config):
 
     logger.info('In main')
 
-    tensorboardDir = config.TENSORBOARD.WRITER_DIR
+    tensorboardMainDir = config.TENSORBOARD.WRITER_DIR
+    tensorboardDir = f'{tensorboardMainDir}/{config.TAG}'
     logger.info(f'Initializing tensorboard to {tensorboardDir}')
     writer = SummaryWriter(tensorboardDir)
 
@@ -524,7 +525,7 @@ if __name__ == '__main__':
     setup_seeding(config)
 
     config.defrost()
-    base_batch_size = 2048 
+    base_batch_size = 512 
     config.TRAIN.BASE_LR = (config.TRAIN.BASE_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.WARMUP_LR = (config.TRAIN.WARMUP_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
     config.TRAIN.MIN_LR = (config.TRAIN.MIN_LR * config.DATA.BATCH_SIZE * dist.get_world_size()) / base_batch_size
