@@ -13,7 +13,7 @@ class unet_swin(nn.Module):
     decoder.
     """
 
-    FEATURE_CHANNELS: Tuple[int] = (3, 704, 1408, 2816, 2816)
+    FEATURE_CHANNELS: Tuple[int] = (3, 1024, 2048, 4096, 4096) #(3, 704, 1408, 2816, 2816)
     DECODE_CHANNELS: Tuple[int] = (512, 256, 128, 64)
     IN_CHANNELS: int = 64
     N_BLOCKS: int = 4

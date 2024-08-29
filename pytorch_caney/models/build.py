@@ -25,10 +25,11 @@ def build_model(config,
 
     encoder_architecture = config.MODEL.TYPE
     decoder_architecture = config.MODEL.DECODER
+    print("Encoder decoder", encoder_architecture, decoder_architecture)
 
     if encoder_architecture == 'swinv2':
 
-        logger.info(f'Hit encoder only build, building {encoder_architecture}')
+        #logger.info(f'Hit encoder only build, building {encoder_architecture}')
 
         window_sizes = config.MODEL.SWINV2.PRETRAINED_WINDOW_SIZES
 

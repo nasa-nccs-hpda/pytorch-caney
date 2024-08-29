@@ -74,17 +74,19 @@ def build_finetune_dataloaders(config, logger):
     dataset_train = dataset_to_use(data_paths=config.DATA.DATA_PATHS,
                                    split="train",
                                    img_size=config.DATA.IMG_SIZE,
-                                   transform=transform)
+                                   transform=transform, config=config)
 
     dataset_val = dataset_to_use(data_paths=config.DATA.DATA_PATHS,
                                  split="val",
                                  img_size=config.DATA.IMG_SIZE,
-                                 transform=transform)
+                                 transform=transform, config=config)
 
     logger.info(f'Build dataset: train images = {len(dataset_train)}')
 
     logger.info(f'Build dataset: val images = {len(dataset_val)}')
 
+    # if statemente to comment this block and the sampler
+    # options from the script
     sampler_train = DistributedSampler(
         dataset_train,
         num_replicas=dist.get_world_size(),
