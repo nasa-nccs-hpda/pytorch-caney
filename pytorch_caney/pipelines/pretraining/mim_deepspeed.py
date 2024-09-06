@@ -4,9 +4,13 @@ from pytorch_caney.models.mim.mim import build_mim_model
 from pytorch_caney.ptc_logging import create_logger
 from pytorch_caney.config import get_config
 from pytorch_caney.optimizer.build import build_optimizer
+import torch.profiler
+from torch.profiler import profile, record_function, ProfilerActivity
+
 
 import deepspeed
 from deepspeed.accelerator import get_accelerator
+from deepspeed.profiling.flops_profiler import FlopsProfiler
 
 from socket import gethostname
 import argparse
@@ -104,7 +108,8 @@ def train(config,
           model_engine,
           optimizer,
           device,
-          writer):
+          writer,
+          torchProf):
     """
     Start pre-training a specific model and dataset.
 
@@ -126,6 +131,9 @@ def train(config,
         target_dtype = torch.half
     logger.info(f'Target dtype: {target_dtype}')
 
+
+    torchProf.start()
+
     torch.cuda.empty_cache()
 
     start_time = time.time()
@@ -136,7 +144,7 @@ def train(config,
 
         execute_one_epoch(config, model_engine, dataloader,
                           optimizer, epoch, resuming_step,
-                          target_dtype, device, writer)
+                          target_dtype, device, writer, torchProf)
 
         epoch_time = time.time() - start
         logger.info(
@@ -159,7 +167,8 @@ def execute_one_epoch(config,
                       resuming_step,
                       target_dtype,
                       device,
-                      writer):
+                      writer,
+                      torchProf):
     """
     Execute training iterations on a single epoch.
 
@@ -186,12 +195,25 @@ def execute_one_epoch(config,
     data_time = AverageMeter()
     loss_meter = AverageMeter()
 
+    # Flops profiler
+    flopsProf = FlopsProfiler(model)
+    flops = 0
+    macs = 0
+    print_profile = True
+
     start = time.time()
     end = time.time()
 
     for idx, img_mask in enumerate(dataloader):
+        #Start FLOPS profiling
+        if idx % config.PRINT_FREQ == 0: 
+        #and idx % config.PRINT_FREQ == 0 and dist.get_rank()==0:
+            flopsProf.start_profile()
+            
+        torchProf.step()
+        
         idx = idx + resuming_step
-
+        
         img_mask = img_mask[0]
 
         img = torch.stack([pair[0] for pair in img_mask])
@@ -216,7 +238,7 @@ def execute_one_epoch(config,
         loss_meter.update(loss.item(), img.size(0))
         batch_time.update(time.time() - end)
         end = time.time()
-
+          
         if idx % config.VALIDATION_FREQ == 0:
             lr = optimizer.param_groups[0]['lr']
             validate(model,
@@ -234,6 +256,11 @@ def execute_one_epoch(config,
             cached_memory = torch.cuda.memory_reserved() / (1024 * 1024)  # in MB
             max_memory = torch.cuda.max_memory_reserved() / (1024 * 1024) # in MB
             etas = batch_time.avg * (num_steps - idx)
+            #if idx == 100 :
+            flopsProf.stop_profile()
+            flops = flopsProf.get_total_flops()
+            macs = flopsProf.get_total_macs()
+            
             logger.info(
                 f'Train: [{epoch}/{config.TRAIN.EPOCHS}][{idx}/{num_steps}]\t'
                 f'eta {datetime.timedelta(seconds=int(etas))} lr {lr:.6f}\t'
@@ -245,6 +272,9 @@ def execute_one_epoch(config,
             writer.add_scalar('memory_usage ', memory_used, idx)
             writer.add_scalar('cached_memory', cached_memory, idx)
             writer.add_scalar('max_memory', max_memory, idx)
+            writer.add_scalar('total_flops', flops, idx)
+            writer.add_scalar('total_macs', macs, idx)
+            
             if config.TRAIN.OPTIMIZER.NAME == 'lamb':
                 log_lamb_rs(optimizer, writer, idx)
             writer.flush()
@@ -275,6 +305,24 @@ def main(config):
     tensorboardDir = f'{tensorboardMainDir}/{config.TAG}'
     logger.info(f'Initializing tensorboard to {tensorboardDir}')
     writer = SummaryWriter(tensorboardDir)
+
+    logger.info(f'Initializing torch profiler to {tensorboardDir}')
+
+    # Torch Profiler
+    torchProf = torch.profiler.profile(
+        activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+        schedule=torch.profiler.schedule(skip_first=10, 
+                                         wait=5, 
+                                         warmup=1, 
+                                         active=3, 
+                                         repeat=2),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler(tensorboardDir),
+        #on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/svtoa"),
+        record_shapes=True,
+        with_flops=True,
+        with_stack=False, 
+        )
+    
 
     transform = SimmimTransform(config)
 
@@ -458,9 +506,11 @@ def main(config):
           model_engine,
           optimizer,
           local_device,
-          writer)
+          writer,
+          torchProf)
 
     writer.close()
+    torchProf.stop()
 
 
 @torch.no_grad()
