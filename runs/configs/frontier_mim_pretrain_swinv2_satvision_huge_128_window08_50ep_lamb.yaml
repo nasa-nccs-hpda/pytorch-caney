@@ -30,4 +30,4 @@ TRAIN:
 PRINT_FREQ: 10 
 SAVE_FREQ: 1000
 VALIDATION_FREQ: 20
-TAG: mim_pretrain_675m_2m_128_window8_onecycle_hackathon_lamb
+TAG: mim_pretrain_675m_2m_128_window8_onecycle_hackathon_lamb_debug
