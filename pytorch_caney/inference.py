@@ -41,7 +41,7 @@ def sliding_window_tiler_multiclass(
             normalize: float = 1.0,
             rescale: str = None,
             window: str = 'triang',  # 'overlap-tile'
-            probability_map: bool = False
+            probability_map: bool = False,
         ):
     """
     Sliding window using tiler.
@@ -90,7 +90,8 @@ def sliding_window_tiler_multiclass(
         # input_batch_tensor = input_batch_tensor.cuda(non_blocking=True)
         with torch.no_grad():
             y_batch = model(input_batch_tensor)
-        y_batch = y_batch.transpose(1, -1)  # .cpu().numpy()
+        y_batch = y_batch.transpose(1, -1).numpy()  # .cpu().numpy()
+        print(y_batch.shape)
         merger.add_batch(batch_id, batch_size, y_batch)
 
     prediction = merger.merge(unpad=True)

@@ -25,14 +25,14 @@ class TestTransforms(unittest.TestCase):
         # Create a sample ndarray
         img = np.random.randn(self.config.DATA.IMG_SIZE,
                               self.config.DATA.IMG_SIZE,
-                              7)
+                              14)
 
         # Apply the transform
         img_transformed, mask = transform(img)
 
         # Assertions
         self.assertIsInstance(img_transformed, torch.Tensor)
-        self.assertEqual(img_transformed.shape, (7,
+        self.assertEqual(img_transformed.shape, (14,
                          self.config.DATA.IMG_SIZE,
                          self.config.DATA.IMG_SIZE))
         self.assertIsInstance(mask, np.ndarray)
@@ -44,7 +44,7 @@ class TestTransforms(unittest.TestCase):
         # Create a sample image tensor
         img = np.random.randn(self.config.DATA.IMG_SIZE,
                               self.config.DATA.IMG_SIZE,
-                              7)
+                              14)
 
         target = np.random.randint(0, 5,
                                    size=((self.config.DATA.IMG_SIZE,
@@ -57,7 +57,7 @@ class TestTransforms(unittest.TestCase):
         # Assertions
         self.assertIsInstance(img_transformed, torch.Tensor)
         self.assertEqual(img_transformed.shape,
-                         (7, self.config.DATA.IMG_SIZE,
+                         (14, self.config.DATA.IMG_SIZE,
                           self.config.DATA.IMG_SIZE))
 
         self.assertIsInstance(target_transformed, torch.Tensor)
