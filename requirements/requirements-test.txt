@@ -26,3 +26,4 @@ yacs
 termcolor
 numba
 segmentation-models-pytorch
+coverage
