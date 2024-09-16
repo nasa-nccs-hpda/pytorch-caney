@@ -107,6 +107,18 @@ cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
 conda activate pytorch-caney
 python -m unittest discover pytorch_caney/tests
 ```
+
+Another example using the singularity exec command from the Explore system:
+
+```bash
+singularity exec --env PYTHONPATH="$NOBACKUP/development/pytorch-caney" --nv -B /path/to/mount /path/to/container/pytorch-caney-container coverage run -m unittest discover pytorch_caney/tests
+
+This command would output the report per file:
+
+```bash
+singularity exec --env PYTHONPATH="$NOBACKUP/development/pytorch-caney" --nv -B /path/to/mount /path/to/container/pytorch-caney-container coverage report
+```
+
 ## References
 
 - [Pytorch Lightning](https://github.com/Lightning-AI/lightning)
