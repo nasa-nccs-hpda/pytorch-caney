@@ -1,4 +1,4 @@
-from pytorch_lightning.strategies import DeepSpeedStrategy
+from lightning.pytorch.strategies import DeepSpeedStrategy
 
 
 # -----------------------------------------------------------------------------

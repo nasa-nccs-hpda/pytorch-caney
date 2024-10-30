@@ -15,6 +15,10 @@ _C.DATA = CN()
 _C.DATA.BATCH_SIZE = 128
 # Path(s) to dataset, could be overwritten by command line argument
 _C.DATA.DATA_PATHS = ['']
+# Path(s) to the validation/test dataset
+_C.DATA.TEST_DATA_PATHS = ['']
+# Path(s) to dataset masks
+_C.DATA.MASK_PATHS = ['']
 # Path to validation numpy dataset
 _C.DATA.VALIDATION_PATH = ''
 # Dataset name
@@ -40,8 +44,10 @@ _C.DATA.MASK_RATIO = 0.6
 _C.MODEL = CN()
 # Model type
 _C.MODEL.TYPE = 'swinv2'
-# Decoder type
-_C.MODEL.DECODER = None
+# Encoder type for fine-tuning
+_C.MODEL.ENCODER = ''
+# Decoder type for fine-tuning
+_C.MODEL.DECODER = '' 
 # Model name
 _C.MODEL.NAME = 'swinv2_base_patch4_window7_224'
 # Pretrained weight from checkpoint, could be from previous pre-training
@@ -51,6 +57,8 @@ _C.MODEL.PRETRAINED = ''
 _C.MODEL.RESUME = ''
 # Number of classes, overwritten in data preparation
 _C.MODEL.NUM_CLASSES = 17
+# Number of channels the input image has
+_C.MODEL.IN_CHANS = 3
 # Dropout rate
 _C.MODEL.DROP_RATE = 0.0
 # Drop path rate
@@ -168,7 +176,7 @@ _C.ENABLE_AMP = False
 # Enable Pytorch automatic mixed precision (amp).
 _C.AMP_ENABLE = True
 # Path to output folder, overwritten by command line argument
-_C.OUTPUT = ''
+_C.OUTPUT = '.'
 # Tag of experiment, overwritten by command line argument
 _C.TAG = 'pt-caney-default-tag'
 # Frequency to save checkpoint
@@ -183,6 +191,8 @@ _C.SEED = 42
 _C.EVAL_MODE = False
 # Pipeline
 _C.PIPELINE = 'satvisiontoapretrain'
+# Data module
+_C.DATAMODULE = 'abitoa3dcloud'
 
 
 def _update_config_from_file(config, cfg_file):

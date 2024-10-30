@@ -7,6 +7,8 @@ from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
 import numpy as np
 
+from ..model_factory import ModelFactory
+
 
 # -----------------------------------------------------------------------------
 # WindowAttention
@@ -656,6 +658,7 @@ class PatchEmbed(nn.Module):
 # -----------------------------------------------------------------------------
 # SwinTransformerV2 
 # -----------------------------------------------------------------------------
+@ModelFactory.encoder("swinv2")
 class SwinTransformerV2(nn.Module):
     r""" Swin Transformer
         A PyTorch impl of : `Swin Transformer: Hierarchical
@@ -831,8 +834,7 @@ class SwinTransformerV2(nn.Module):
         return feature
 
     def forward(self, x):
-        x = self.forward_features(x)
-        x = self.head(x)
+        x = self.extra_features(x)[-1]
         return x
 
     def flops(self):
