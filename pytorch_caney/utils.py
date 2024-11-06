@@ -27,7 +27,7 @@ def get_strategy(config):
         
         return DeepSpeedStrategy(config=deepspeed_config)
 
-    elif strategy == 'ddp' or strategy == 'fsdp':
+    else:
         # These may be return as strings
         return strategy 
 

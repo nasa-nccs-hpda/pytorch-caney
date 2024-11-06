@@ -1,9 +1,9 @@
 import torch
-
-import pytorch_lightning as pl
 import torchmetrics
-
 from torch.utils.data import DataLoader
+
+import lightning.pytorch as pl
+
 from pytorch_caney.datasets.sharded_dataset import ShardedDataset
 from pytorch_caney.models.mim import build_mim_model
 from pytorch_caney.optimizers.build import build_optimizer
@@ -21,9 +21,12 @@ class SatVisionToaPretrain(pl.LightningModule):
     def __init__(self, config):
         super(SatVisionToaPretrain, self).__init__()
         self.save_hyperparameters(ignore=['model'])
-
-        self.model = build_mim_model(config)
         self.config = config
+
+        self.model = build_mim_model(self.config)
+        if self.config.MODEL.PRETRAINED:
+            self.load_checkpoint()
+
         self.transform = MimTransform(self.config)
         self.batch_size = config.DATA.BATCH_SIZE
         self.num_workers = config.DATA.NUM_WORKERS
@@ -41,6 +44,15 @@ class SatVisionToaPretrain(pl.LightningModule):
             img_size=self.img_size,
             transform=self.transform,
             batch_size=self.batch_size).dataset()
+
+    # -------------------------------------------------------------------------
+    # load_checkpoint 
+    # -------------------------------------------------------------------------
+    def load_checkpoint(self):
+        print(f'Attempting to load checkpoint from {self.config.MODEL.PRETRAINED}')
+        checkpoint = torch.load(self.config.MODEL.PRETRAINED)
+        self.model.load_state_dict(checkpoint['module'])
+        print(f'Successfully applied checkpoint')
 
     # -------------------------------------------------------------------------
     # forward

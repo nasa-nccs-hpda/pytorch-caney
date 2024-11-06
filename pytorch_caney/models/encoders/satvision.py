@@ -1,10 +1,18 @@
 from .swinv2 import SwinTransformerV2
 from ..model_factory import ModelFactory
 import torch.nn as nn
+import torch
 
 
+# -----------------------------------------------------------------------------
+# SatVision 
+# -----------------------------------------------------------------------------
 @ModelFactory.encoder("satvision")
 class SatVision(nn.Module):
+
+    # -------------------------------------------------------------------------
+    # __init__
+    # -------------------------------------------------------------------------
     def __init__(self, config):
         super().__init__()
 
@@ -31,15 +39,60 @@ class SatVision(nn.Module):
             pretrained_window_sizes=window_sizes,
         )
 
+        if self.config.MODEL.PRETRAINED:
+            self.load_pretrained()
+
         self.num_classes = self.model.num_classes 
         self.num_layers = self.model.num_layers 
         self.num_features = self.model.num_features 
 
+    # -------------------------------------------------------------------------
+    # __init__
+    # -------------------------------------------------------------------------
+    def load_pretrained(self):
+
+        checkpoint = torch.load(self.config.MODEL.PRETRAINED, map_location='cpu')
+
+        checkpoint_model = checkpoint['module']
+
+        if any([True if 'encoder.' in k else
+                False for k in checkpoint_model.keys()]):
+
+            checkpoint_model = {k.replace(
+                'encoder.', ''): v for k, v in checkpoint_model.items()
+                if k.startswith('encoder.')}
+
+            print('Detect pre-trained model, remove [encoder.] prefix.')
+
+        else:
+
+            print(
+                'Detect non-pre-trained model, pass without doing anything.')
+
+        msg = self.model.load_state_dict(checkpoint_model, strict=False)
+
+        print(msg)
+
+        del checkpoint
+
+        torch.cuda.empty_cache()
+
+        print(f">>>>>>>>>> loaded successfully '{self.config.MODEL.PRETRAINED}'")
+
+    # -------------------------------------------------------------------------
+    # forward
+    # -------------------------------------------------------------------------
     def forward(self, x):
         return self.model.forward(x)
     
+    # -------------------------------------------------------------------------
+    # forward_features
+    # -------------------------------------------------------------------------
     def forward_features(self, x):
         return self.model.forward_features(x)
 
+    # -------------------------------------------------------------------------
+    # extra_features
+    # -------------------------------------------------------------------------
     def extra_features(self, x):
         return self.model.extra_features(x)

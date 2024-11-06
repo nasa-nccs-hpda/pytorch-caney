@@ -11,6 +11,8 @@ _C.BASE = ['']
 # Data settings
 # -----------------------------------------------------------------------------
 _C.DATA = CN()
+# Use a PL data module
+_C.DATA.DATAMODULE = True
 # Batch size for a single GPU, could be overwritten by command line argument
 _C.DATA.BATCH_SIZE = 128
 # Path(s) to dataset, could be overwritten by command line argument
@@ -100,6 +102,7 @@ _C.LOSS.GAMMA = 1.0
 # Training settings
 # -----------------------------------------------------------------------------
 _C.TRAIN = CN()
+_C.TRAIN.ACCELERATOR = 'gpu'
 _C.TRAIN.STRATEGY = 'deepspeed'
 _C.TRAIN.LIMIT_TRAIN_BATCHES = True 
 _C.TRAIN.NUM_TRAIN_BATCHES = None 
@@ -172,7 +175,7 @@ _C.TEST.CROP = True
 # Misc
 # -----------------------------------------------------------------------------
 # Whether to enable pytorch amp, overwritten by command line argument
-_C.ENABLE_AMP = False
+_C.PRECISION = '32' 
 # Enable Pytorch automatic mixed precision (amp).
 _C.AMP_ENABLE = True
 # Path to output folder, overwritten by command line argument
@@ -193,6 +196,8 @@ _C.EVAL_MODE = False
 _C.PIPELINE = 'satvisiontoapretrain'
 # Data module
 _C.DATAMODULE = 'abitoa3dcloud'
+# Fast dev run 
+_C.FAST_DEV_RUN = False
 
 
 def _update_config_from_file(config, cfg_file):

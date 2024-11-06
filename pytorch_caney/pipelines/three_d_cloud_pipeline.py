@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torchmetrics
-from torchgeo.trainers import BaseTask
 
 import lightning.pytorch as pl
+
 from pytorch_caney.models.mim import build_mim_model
 from pytorch_caney.optimizers.build import build_optimizer
 from pytorch_caney.transforms.abi_toa import AbiToaTransform
@@ -45,13 +45,17 @@ class ThreeDCloudTask(pl.LightningModule):
                                              name=self.config.MODEL.DECODER,
                                              num_features=self.encoder.num_features)
 
-        self.segmentation_head = factory.get_component(component_type="head",
-                                                       name="segmentation_head",
-                                                       decoder_channels=self.decoder.output_channels,
-                                                       num_classes=self.NUM_CLASSES,
-                                                       output_shape=self.OUTPUT_SHAPE)
+        self.segmentation_head = factory.get_component(
+            component_type="head",
+            name="segmentation_head",
+            decoder_channels=self.decoder.output_channels,
+            num_classes=self.NUM_CLASSES,
+            output_shape=self.OUTPUT_SHAPE
+        )
 
-        self.model = nn.Sequential(self.encoder, self.decoder, self.segmentation_head)
+        self.model = nn.Sequential(self.encoder,
+                                   self.decoder,
+                                   self.segmentation_head)
         print(self.model)
 
     # -------------------------------------------------------------------------
@@ -72,8 +76,10 @@ class ThreeDCloudTask(pl.LightningModule):
     # -------------------------------------------------------------------------
     def configure_metrics(self):
         num_classes = 2
-        self.train_iou = torchmetrics.JaccardIndex(num_classes=num_classes, task="binary")
-        self.val_iou = torchmetrics.JaccardIndex(num_classes=num_classes, task="binary")
+        self.train_iou = torchmetrics.JaccardIndex(num_classes=num_classes,
+                                                   task="binary")
+        self.val_iou = torchmetrics.JaccardIndex(num_classes=num_classes,
+                                                 task="binary")
         self.train_loss_avg = torchmetrics.MeanMetric()
         self.val_loss_avg = torchmetrics.MeanMetric()
 
@@ -99,8 +105,10 @@ class ThreeDCloudTask(pl.LightningModule):
 
         self.train_loss_avg.update(loss)
         self.train_iou_avg.update(iou)
-        self.log('train_loss', self.train_loss_avg.compute(), on_step=True, on_epoch=True, prog_bar=True)
-        self.log('train_iou', self.train_iou_avg.compute(), on_step=True, on_epoch=True, prog_bar=True)        
+        self.log('train_loss', self.train_loss_avg.compute(),
+                 on_step=True, on_epoch=True, prog_bar=True)
+        self.log('train_iou', self.train_iou_avg.compute(),
+                 on_step=True, on_epoch=True, prog_bar=True)        
         return loss
 
     # -------------------------------------------------------------------------
@@ -115,8 +123,10 @@ class ThreeDCloudTask(pl.LightningModule):
         val_iou = self.val_iou(preds, targets.int())
         self.val_loss_avg.update(val_loss)
         self.val_iou_avg.update(val_iou)
-        self.log('val_loss', self.val_loss_avg.compute(), on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
-        self.log('val_iou', self.val_iou_avg.compute(), on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log('val_loss', self.val_loss_avg.compute(),
+                 on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
+        self.log('val_iou', self.val_iou_avg.compute(),
+                 on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
         
         return val_loss
 
@@ -125,6 +135,7 @@ class ThreeDCloudTask(pl.LightningModule):
     # -------------------------------------------------------------------------
     def configure_optimizers(self):
         optimizer = build_optimizer(self.config, self.model, is_pretrain=True) 
+        print(f'Using optimizer: {optimizer}')
         return optimizer
 
     # -------------------------------------------------------------------------
