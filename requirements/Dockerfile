@@ -110,8 +110,7 @@ RUN pip --no-cache-dir install omegaconf \
     yacs \
     termcolor \
     segmentation-models-pytorch \
-    pytorch-caney \
-    GDAL==`ogrinfo --version | grep -Eo '[0-9]\.[0-9]\.[0-9]+'`
+    coverage
 
 HEALTHCHECK NONE
 ENTRYPOINT []

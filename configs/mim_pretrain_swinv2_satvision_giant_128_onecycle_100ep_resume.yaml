@@ -1,0 +1,49 @@
+PIPELINE: 'satvisiontoapretrain'
+
+MODEL:
+  TYPE: swinv2
+  NAME: mim_satvision_pretrain-giant
+  DROP_PATH_RATE: 0.1
+  PRETRAINED: /panfs/ccds02/nobackup/projects/ilab/projects/3DClouds/models/SV-TOA/3B_2M/mp_rank_00_model_states.pt
+  SWINV2:
+    IN_CHANS: 14
+    EMBED_DIM: 512
+    DEPTHS: [ 2, 2, 42, 2 ]
+    NUM_HEADS: [ 16, 32, 64, 128 ]
+    WINDOW_SIZE: 8
+    NORM_PERIOD: 6
+
+DATA:
+  DATAMODULE: False
+  BATCH_SIZE: 64 
+  LENGTH: 1_920_000
+  PIN_MEMORY: True
+  NUM_WORKERS: 4
+  DATA_PATHS: [/explore/nobackup/projects/ilab/projects/3DClouds/data/mosaic-v3/webdatasets/shards]
+  IMG_SIZE: 128
+  MASK_PATCH_SIZE: 8
+  MASK_RATIO: 0.6
+
+TRAIN:
+  ACCELERATOR: 'gpu'
+  STRATEGY: 'deepspeed'
+  USE_CHECKPOINT: True
+  EPOCHS: 50 
+  WARMUP_EPOCHS: 10
+  BASE_LR: 3e-4
+  MIN_LR: 2e-4
+  WARMUP_LR: 1e-4
+  WEIGHT_DECAY: 0.05
+  LR_SCHEDULER:
+    NAME: 'multistep'
+    GAMMA: 0.1
+    MULTISTEPS: [700,]
+
+DEEPSPEED:
+  STAGE: 2
+
+PRECISION: 'bf16'
+
+PRINT_FREQ: 10 
+SAVE_FREQ: 50
+TAG: mim_pretrain_giant_satvision_128_scaled_bt_minmax_50ep_resume

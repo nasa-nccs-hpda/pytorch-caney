@@ -1,0 +1,32 @@
+PIPELINE: '3dcloud'
+DATAMODULE: 'abitoa3dcloud'
+MODEL:
+  ENCODER: 'fcn'
+  DECODER: 'fcn'
+  NAME: 3dcloud-fcn-baseline
+  IN_CHANS: 14
+  DROP_PATH_RATE: 0.1
+DATA:
+  BATCH_SIZE: 32 
+  DATA_PATHS: [/explore/nobackup/projects/ilab/data/satvision-toa/3dcloud.data/abiChipsNew/]
+  TEST_DATA_PATHS: [/explore/nobackup/projects/ilab/data/satvision-toa/3dcloud.data/abiChipsNew/]
+  IMG_SIZE: 128 
+TRAIN:
+  ACCELERATOR: 'gpu'
+  STRATEGY: 'auto'
+  EPOCHS: 50 
+  WARMUP_EPOCHS: 10
+  BASE_LR: 3e-4 
+  MIN_LR: 2e-4
+  WARMUP_LR: 1e-4
+  WEIGHT_DECAY: 0.05
+  LR_SCHEDULER:
+    NAME: 'multistep'
+    GAMMA: 0.1
+    MULTISTEPS: [700,]
+LOSS:
+  NAME: 'bce'
+PRINT_FREQ: 10 
+SAVE_FREQ: 50
+VALIDATION_FREQ: 20
+TAG: 3dcloud_task_fcn_baseline_128_scaled_bt_minmax
