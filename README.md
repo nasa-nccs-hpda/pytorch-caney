@@ -9,6 +9,10 @@ Python package for lots of Pytorch tools.
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Coverage Status](https://coveralls.io/repos/github/nasa-nccs-hpda/pytorch-caney/badge.svg?branch=main)](https://coveralls.io/github/nasa-nccs-hpda/pytorch-caney?branch=main)
 
+## Documentation
+
+- Latest: https://nasa-nccs-hpda.github.io/pytorch-caney/latest
+
 ## Objectives
 
 - Library to process remote sensing imagery using GPU and CPU parallelization.
@@ -56,7 +60,21 @@ Please see our [guide for contributing to pytorch-caney](CONTRIBUTING.md).
 | name | bands | resolution | #chips |
 | :---: | :---: | :---: | :---: |
 | MODIS-Small | 7 | 128x128 | 1,994,131 |
+
+## MODIS Surface Reflectance (MOD09GA) Band Details
+
+| Band Name      | Bandwidth     |
+| :------------: | :-----------: |
+| sur_refl_b01_1 | 0.620 - 0.670 |
+| sur_refl_b02_1 | 0.841 - 0.876 |
+| sur_refl_b03_1 | 0.459 - 0.479 |
+| sur_refl_b04_1 | 0.545 - 0.565 |
+| sur_refl_b05_1 | 1.230 - 1.250 |
+| sur_refl_b06_1 | 1.628 - 1.652 |
+| sur_refl_b07_1 | 2.105 - 2.155 |
+
 ## Pre-training with Masked Image Modeling
+
 To pre-train the swinv2 base model with masked image modeling pre-training, run:
 ```bash
 torchrun --nproc_per_node <NGPUS> pytorch-caney/pytorch_caney/pipelines/pretraining/mim.py --cfg <config-file> --dataset <dataset-name> --data-paths <path-to-data-subfolder-1> --batch-size <batch-size> --output <output-dir> --enable-amp

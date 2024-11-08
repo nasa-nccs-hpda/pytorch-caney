@@ -1,0 +1,61 @@
+name: Publish Docs
+
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ created ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Publish Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Setup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          python-version: 3.9
+          conda-channels: conda-forge
+
+      - name: Install and Build
+        shell: bash
+        run: |
+          conda config --prepend channels conda-forge
+          conda config --set channel_priority strict
+          conda create -n docs python=3.9 rasterio xarray scipy pyproj pandoc sphinx sphinx-autodoc-typehints jupyter_sphinx sphinx_rtd_theme sphinx-click nbsphinx myst-nb
+          source activate docs
+          python -m pip install -e .[doc]
+          sphinx-build -b html docs/ docs/_build/
+          #cd docs/
+          #make html
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        if: ${{ github.event_name == 'release' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs/_build/
+          #folder: docs/_build/html
+          clean: false
+          target-folder: ${{ github.ref }}
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        if: ${{ github.event_name == 'push' }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs/_build/
+          #folder: docs/_build/html
+          clean: false
+          target-folder: latest
