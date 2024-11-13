@@ -11,7 +11,7 @@ def vis_calibrate(data):
     factor = np.pi * esd * esd / solar_irradiance
 
     return data * np.float32(factor) * 100
- 
+
 
 # -----------------------------------------------------------------------------
 # ir_calibrate
@@ -42,17 +42,18 @@ class ConvertABIToReflectanceBT(object):
     """
 
     def __init__(self):
-        
+
         self.reflectance_indices = [0, 1, 2, 3, 4, 6]
         self.emissive_indices = [5, 7, 8, 9, 10, 11, 12, 13]
 
     def __call__(self, img):
-        
+
         # Reflectance % to reflectance units
         img[:, :, self.reflectance_indices] = \
             vis_calibrate(img[:, :, self.reflectance_indices])
-        
+
         # Brightness temp scaled to (0,1) range
-        img[:, :, self.emissive_indices] = ir_calibrate(img[:, :, self.emissive_indices])
-        
+        img[:, :, self.emissive_indices] = ir_calibrate(
+            img[:, :, self.emissive_indices])
+
         return img

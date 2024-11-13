@@ -5,7 +5,7 @@ import torch
 
 
 # -----------------------------------------------------------------------------
-# SatVision 
+# SatVision
 # -----------------------------------------------------------------------------
 @ModelFactory.encoder("satvision")
 class SatVision(nn.Module):
@@ -42,16 +42,17 @@ class SatVision(nn.Module):
         if self.config.MODEL.PRETRAINED:
             self.load_pretrained()
 
-        self.num_classes = self.model.num_classes 
-        self.num_layers = self.model.num_layers 
-        self.num_features = self.model.num_features 
+        self.num_classes = self.model.num_classes
+        self.num_layers = self.model.num_layers
+        self.num_features = self.model.num_features
 
     # -------------------------------------------------------------------------
     # __init__
     # -------------------------------------------------------------------------
     def load_pretrained(self):
 
-        checkpoint = torch.load(self.config.MODEL.PRETRAINED, map_location='cpu')
+        checkpoint = torch.load(
+            self.config.MODEL.PRETRAINED, map_location='cpu')
 
         checkpoint_model = checkpoint['module']
 
@@ -77,14 +78,14 @@ class SatVision(nn.Module):
 
         torch.cuda.empty_cache()
 
-        print(f">>>>>>>>>> loaded successfully '{self.config.MODEL.PRETRAINED}'")
+        print(f">>>>>>> loaded successfully '{self.config.MODEL.PRETRAINED}'")
 
     # -------------------------------------------------------------------------
     # forward
     # -------------------------------------------------------------------------
     def forward(self, x):
         return self.model.forward(x)
-    
+
     # -------------------------------------------------------------------------
     # forward_features
     # -------------------------------------------------------------------------

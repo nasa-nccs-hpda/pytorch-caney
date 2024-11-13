@@ -1,7 +1,7 @@
 import torchvision.transforms as T
 
 from .random_resize_crop import RandomResizedCropNP
-from .mim_mask_generator import MimMaskGenerator 
+from .mim_mask_generator import MimMaskGenerator
 from .modis_toa_scale import MinMaxEmissiveScaleReflectance
 
 
@@ -18,7 +18,7 @@ class MimTransform:
 
         self.transform_img = \
             T.Compose([
-                MinMaxEmissiveScaleReflectance(), # New transform for MinMax
+                MinMaxEmissiveScaleReflectance(),
                 RandomResizedCropNP(scale=(0.67, 1.),
                                     ratio=(3. / 4., 4. / 3.)),
                 T.ToTensor(),

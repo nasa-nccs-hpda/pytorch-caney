@@ -7,7 +7,7 @@ from .encoders.swinv2 import SwinTransformerV2
 
 
 # -----------------------------------------------------------------------------
-# SwinTransformerV2ForMiM 
+# SwinTransformerV2ForMiM
 # -----------------------------------------------------------------------------
 class SwinTransformerV2ForSimMIM(SwinTransformerV2):
     def __init__(self, **kwargs):
@@ -48,7 +48,7 @@ class SwinTransformerV2ForSimMIM(SwinTransformerV2):
 
 
 # -----------------------------------------------------------------------------
-# MiMModel 
+# MiMModel
 # -----------------------------------------------------------------------------
 class MiMModel(nn.Module):
     """
@@ -101,7 +101,7 @@ class MiMModel(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# build_mim_model 
+# build_mim_model
 # -----------------------------------------------------------------------------
 def build_mim_model(config):
     """Builds the masked-image-modeling model.

@@ -15,7 +15,7 @@ class ModisToaTransform:
 
         self.transform_img = \
             T.Compose([
-                MinMaxEmissiveScaleReflectance(), # New transform for MinMax
+                MinMaxEmissiveScaleReflectance(),
                 T.ToTensor(),
                 T.Resize((config.DATA.IMG_SIZE, config.DATA.IMG_SIZE)),
             ])

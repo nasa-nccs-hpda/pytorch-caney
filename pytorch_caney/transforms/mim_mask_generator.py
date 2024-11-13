@@ -30,7 +30,7 @@ class MimMaskGenerator:
 
     def __call__(self):
         mask = make_mim_mask(self.token_count, self.mask_count,
-                                self.rand_size, self.scale)
+                             self.rand_size, self.scale)
         mask = mask.repeat(self.scale, axis=0).repeat(self.scale, axis=1)
         return mask
 

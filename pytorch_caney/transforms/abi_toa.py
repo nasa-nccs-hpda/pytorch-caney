@@ -17,7 +17,7 @@ class AbiToaTransform:
 
         self.transform_img = \
             T.Compose([
-                ConvertABIToReflectanceBT(), # New transform for MinMax
+                ConvertABIToReflectanceBT(),
                 MinMaxEmissiveScaleReflectance(),
                 T.ToTensor(),
                 T.Resize((img_size, img_size), antialias=True),
