@@ -75,7 +75,7 @@ RUN git clone --single-branch --branch master https://github.com/pkolano/shift.g
     rm -rf /app
 
 # Pip
-RUN pip --no-cache-dir install omegaconf \
+RUN pip --no-cache-dir install \
     pytorch-lightning \
     Lightning \
     transformers \
@@ -95,9 +95,6 @@ RUN pip --no-cache-dir install omegaconf \
     opencv-contrib-python-headless \
     tifffile \
     webcolors \
-    Pillow \
-    seaborn \
-    xgboost \
     tiler \
     segmentation-models \
     timm \
