@@ -9,15 +9,15 @@ class FcnDecoder(nn.Module):
         super(FcnDecoder, self).__init__()
         self.output_channels = 64
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(num_features, 2048, kernel_size=3, stride=2, padding=1, output_padding=1),  # 16x16x512
+            nn.ConvTranspose2d(num_features, 2048, kernel_size=3, stride=2, padding=1, output_padding=1),  # 16x16x512  # noqa: E501
             nn.ReLU(),
-            nn.ConvTranspose2d(2048, 512, kernel_size=3, stride=2, padding=1, output_padding=1),  # 32x32x256
+            nn.ConvTranspose2d(2048, 512, kernel_size=3, stride=2, padding=1, output_padding=1),  # 32x32x256  # noqa: E501
             nn.ReLU(),
-            nn.ConvTranspose2d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),  # 64x64x128
+            nn.ConvTranspose2d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),  # 64x64x128  # noqa: E501
             nn.ReLU(),
-            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1), # 64x64x128
+            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),  # 64x64x128  # noqa: E501
             nn.ReLU(),
-            nn.ConvTranspose2d(128, self.output_channels, kernel_size=3, stride=2, padding=1, output_padding=1),   # 128x128x64
+            nn.ConvTranspose2d(128, self.output_channels, kernel_size=3, stride=2, padding=1, output_padding=1),   # 128x128x64  # noqa: E501
             nn.ReLU()
         )
 

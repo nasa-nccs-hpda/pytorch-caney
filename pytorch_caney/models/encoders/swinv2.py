@@ -219,7 +219,7 @@ class WindowAttention(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# Mlp 
+# Mlp
 # -----------------------------------------------------------------------------
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None,
@@ -242,7 +242,7 @@ class Mlp(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# window_partition 
+# window_partition
 # -----------------------------------------------------------------------------
 def window_partition(x, window_size):
     """
@@ -262,7 +262,7 @@ def window_partition(x, window_size):
 
 
 # -----------------------------------------------------------------------------
-# window_reverse 
+# window_reverse
 # -----------------------------------------------------------------------------
 def window_reverse(windows, window_size, H, W):
     """
@@ -283,7 +283,7 @@ def window_reverse(windows, window_size, H, W):
 
 
 # -----------------------------------------------------------------------------
-# SwinTransformerBlock 
+# SwinTransformerBlock
 # -----------------------------------------------------------------------------
 class SwinTransformerBlock(nn.Module):
     r""" Swin Transformer Block.
@@ -494,7 +494,7 @@ class PatchMerging(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# BasicLayer 
+# BasicLayer
 # -----------------------------------------------------------------------------
 class BasicLayer(nn.Module):
     """ A basic Swin Transformer layer for one stage.
@@ -595,7 +595,7 @@ class BasicLayer(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# PatchEmbed 
+# PatchEmbed
 # -----------------------------------------------------------------------------
 class PatchEmbed(nn.Module):
     r""" Image to Patch Embedding
@@ -656,7 +656,7 @@ class PatchEmbed(nn.Module):
 
 
 # -----------------------------------------------------------------------------
-# SwinTransformerV2 
+# SwinTransformerV2
 # -----------------------------------------------------------------------------
 @ModelFactory.encoder("swinv2")
 class SwinTransformerV2(nn.Module):

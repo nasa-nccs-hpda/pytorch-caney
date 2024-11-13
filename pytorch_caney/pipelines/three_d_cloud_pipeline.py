@@ -4,21 +4,20 @@ import torchmetrics
 
 import lightning.pytorch as pl
 
-from pytorch_caney.models.mim import build_mim_model
 from pytorch_caney.optimizers.build import build_optimizer
 from pytorch_caney.transforms.abi_toa import AbiToaTransform
 from pytorch_caney.models import ModelFactory
-from pytorch_caney.models.decoders import FcnDecoder
-from pytorch_caney.models.heads import SegmentationHead
-from typing import Any, Tuple
+from typing import Tuple
+
 
 # -----------------------------------------------------------------------------
 # ThreeDCloudTask
 # -----------------------------------------------------------------------------
 class ThreeDCloudTask(pl.LightningModule):
 
-    NUM_CLASSES: int = 1 
+    NUM_CLASSES: int = 1
     OUTPUT_SHAPE: Tuple[int, int] = (91, 40)
+
     # -------------------------------------------------------------------------
     # __init__
     # -------------------------------------------------------------------------
@@ -32,7 +31,7 @@ class ThreeDCloudTask(pl.LightningModule):
         self.transform = AbiToaTransform(self.config)
 
     # -------------------------------------------------------------------------
-    # configure_models 
+    # configure_models
     # -------------------------------------------------------------------------
     def configure_models(self):
         factory = ModelFactory()
@@ -41,9 +40,10 @@ class ThreeDCloudTask(pl.LightningModule):
                                              name=self.config.MODEL.ENCODER,
                                              config=self.config)
 
-        self.decoder = factory.get_component(component_type="decoder",
-                                             name=self.config.MODEL.DECODER,
-                                             num_features=self.encoder.num_features)
+        self.decoder = factory.get_component(
+            component_type="decoder",
+            name=self.config.MODEL.DECODER,
+            num_features=self.encoder.num_features)
 
         self.segmentation_head = factory.get_component(
             component_type="head",
@@ -59,7 +59,7 @@ class ThreeDCloudTask(pl.LightningModule):
         print(self.model)
 
     # -------------------------------------------------------------------------
-    # configure_losses 
+    # configure_losses
     # -------------------------------------------------------------------------
     def configure_losses(self):
         loss: str = self.config.LOSS.NAME
@@ -72,7 +72,7 @@ class ThreeDCloudTask(pl.LightningModule):
             )
 
     # -------------------------------------------------------------------------
-    # configure_metrics 
+    # configure_metrics
     # -------------------------------------------------------------------------
     def configure_metrics(self):
         num_classes = 2
@@ -90,7 +90,7 @@ class ThreeDCloudTask(pl.LightningModule):
     # forward
     # -------------------------------------------------------------------------
     def forward(self, x):
-        return self.model(x) 
+        return self.model(x)
 
     # -------------------------------------------------------------------------
     # training_step
@@ -108,7 +108,7 @@ class ThreeDCloudTask(pl.LightningModule):
         self.log('train_loss', self.train_loss_avg.compute(),
                  on_step=True, on_epoch=True, prog_bar=True)
         self.log('train_iou', self.train_iou_avg.compute(),
-                 on_step=True, on_epoch=True, prog_bar=True)        
+                 on_step=True, on_epoch=True, prog_bar=True)
         return loss
 
     # -------------------------------------------------------------------------
@@ -127,14 +127,14 @@ class ThreeDCloudTask(pl.LightningModule):
                  on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log('val_iou', self.val_iou_avg.compute(),
                  on_step=True, on_epoch=True, prog_bar=True, sync_dist=True)
-        
+
         return val_loss
 
     # -------------------------------------------------------------------------
     # configure_optimizers
     # -------------------------------------------------------------------------
     def configure_optimizers(self):
-        optimizer = build_optimizer(self.config, self.model, is_pretrain=True) 
+        optimizer = build_optimizer(self.config, self.model, is_pretrain=True)
         print(f'Using optimizer: {optimizer}')
         return optimizer
 

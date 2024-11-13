@@ -39,7 +39,7 @@ def get_optimizer_from_dict(optimizer_name, config):
 
         error_msg = f"{optimizer_name} is not an implemented optimizer"
 
-        error_msg = f"{error_msg}. Available optimizer functions: {OPTIMIZERS.keys()}"
+        error_msg = f"{error_msg}. Available optimizer functions: {OPTIMIZERS.keys()}"  # noqa: E501
 
         raise KeyError(error_msg)
 
@@ -98,10 +98,10 @@ def build_optimizer(config, model, is_pretrain=False, logger=None):
 
     optimizer = None
     optimizer = optimizer_to_use(parameters,
-                            eps=config.TRAIN.OPTIMIZER.EPS,
-                            betas=config.TRAIN.OPTIMIZER.BETAS,
-                            lr=config.TRAIN.BASE_LR,
-                            weight_decay=config.TRAIN.WEIGHT_DECAY)
+                                 eps=config.TRAIN.OPTIMIZER.EPS,
+                                 betas=config.TRAIN.OPTIMIZER.BETAS,
+                                 lr=config.TRAIN.BASE_LR,
+                                 weight_decay=config.TRAIN.WEIGHT_DECAY)
     if logger:
         logger.info(optimizer)
 
@@ -246,4 +246,3 @@ def get_swin_layer(name, num_layers, depths):
     else:
 
         return num_layers - 1
-

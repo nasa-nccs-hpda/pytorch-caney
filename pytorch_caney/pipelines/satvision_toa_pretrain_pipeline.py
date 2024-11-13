@@ -46,13 +46,13 @@ class SatVisionToaPretrain(pl.LightningModule):
             batch_size=self.batch_size).dataset()
 
     # -------------------------------------------------------------------------
-    # load_checkpoint 
+    # load_checkpoint
     # -------------------------------------------------------------------------
     def load_checkpoint(self):
-        print(f'Attempting to load checkpoint from {self.config.MODEL.PRETRAINED}')
+        print('Loading checkpoint from {self.config.MODEL.PRETRAINED}')
         checkpoint = torch.load(self.config.MODEL.PRETRAINED)
         self.model.load_state_dict(checkpoint['module'])
-        print(f'Successfully applied checkpoint')
+        print('Successfully applied checkpoint')
 
     # -------------------------------------------------------------------------
     # forward
@@ -73,16 +73,15 @@ class SatVisionToaPretrain(pl.LightningModule):
                  self.train_loss_avg.compute(),
                  rank_zero_only=True,
                  batch_size=self.batch_size,
-                 prog_bar=True
-        )
-        
+                 prog_bar=True)
+
         return loss
 
     # -------------------------------------------------------------------------
     # configure_optimizers
     # -------------------------------------------------------------------------
     def configure_optimizers(self):
-        optimizer = build_optimizer(self.config, self.model, is_pretrain=True) 
+        optimizer = build_optimizer(self.config, self.model, is_pretrain=True)
         return optimizer
 
     # -------------------------------------------------------------------------

@@ -1,14 +1,14 @@
 """ PyTorch Lamb optimizer w/ behaviour similar to NVIDIA FusedLamb
 
 This optimizer code was adapted from the following (starting with latest)
-* https://github.com/HabanaAI/Model-References/blob/2b435114fe8e31f159b1d3063b8280ae37af7423/PyTorch/nlp/bert/pretraining/lamb.py
-* https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/LanguageModeling/Transformer-XL/pytorch/lamb.py
+* https://github.com/HabanaAI/Model-References/blob/2b435114fe8e31f159b1d3063b8280ae37af7423/PyTorch/nlp/bert/pretraining/lamb.py  # noqa: E501
+* https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/LanguageModeling/Transformer-XL/pytorch/lamb.py  # noqa: E501
 * https://github.com/cybertronai/pytorch-lamb
 
-Use FusedLamb if you can (GPU). The reason for including this variant of Lamb is to have a version that is
-similar in behaviour to APEX FusedLamb if you aren't using NVIDIA GPUs or cannot install/use APEX.
+Use FusedLamb if you can (GPU). The reason for including this variant of Lamb is to have a version that is  # noqa: E501
+similar in behaviour to APEX FusedLamb if you aren't using NVIDIA GPUs or cannot install/use APEX.  # noqa: E501
 
-In addition to some cleanup, this Lamb impl has been modified to support PyTorch XLA and has been tested on TPU.
+In addition to some cleanup, this Lamb impl has been modified to support PyTorch XLA and has been tested on TPU.  # noqa: E501
 
 Original copyrights for above sources are below.
 
@@ -41,7 +41,7 @@ Modifications Copyright 2021 Ross Wightman
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all
+# The above copyright notice and this permission notice shall be included in all  # noqa: E501
 # copies or substantial portions of the Software.
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -60,7 +60,9 @@ from torch.optim import Optimizer
 from torch.utils.tensorboard import SummaryWriter
 
 
-def log_lamb_rs(optimizer: Optimizer, event_writer: SummaryWriter, token_count: int):
+def log_lamb_rs(optimizer: Optimizer,
+                event_writer: SummaryWriter,
+                token_count: int):
     """Log a histogram of trust ratio scalars in across layers."""
     results = collections.defaultdict(list)
     for group in optimizer.param_groups:
@@ -75,13 +77,13 @@ def log_lamb_rs(optimizer: Optimizer, event_writer: SummaryWriter, token_count: 
 
 
 class Lamb(Optimizer):
-    """Implements a pure pytorch variant of FuseLAMB (NvLamb variant) optimizer from apex.optimizers.FusedLAMB
-    reference: https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/LanguageModeling/Transformer-XL/pytorch/lamb.py
+    """Implements a pure pytorch variant of FuseLAMB (NvLamb variant) optimizer from apex.optimizers.FusedLAMB  # noqa: E501
+    reference: https://github.com/NVIDIA/DeepLearningExamples/blob/master/PyTorch/LanguageModeling/Transformer-XL/pytorch/lamb.py  # noqa: E501
 
-    LAMB was proposed in `Large Batch Optimization for Deep Learning: Training BERT in 76 minutes`_.
+    LAMB was proposed in `Large Batch Optimization for Deep Learning: Training BERT in 76 minutes`_.  # noqa: E501
 
     Arguments:
-        params (iterable): iterable of parameters to optimize or dicts defining parameter groups.
+        params (iterable): iterable of parameters to optimize or dicts defining parameter groups.  # noqa: E501
         lr (float, optional): learning rate. (default: 1e-3)
         betas (Tuple[float, float], optional): coefficients used for computing
             running averages of gradient and its norm. (default: (0.9, 0.999))
@@ -102,12 +104,17 @@ class Lamb(Optimizer):
     """
 
     def __init__(
-            self, params, lr=1e-3, bias_correction=True, betas=(0.9, 0.999), eps=1e-6,
-            weight_decay=0.01, grad_averaging=True, max_grad_norm=1.0, trust_clip=False, always_adapt=False):
+            self, params, lr=1e-3, bias_correction=True,
+            betas=(0.9, 0.999), eps=1e-6, weight_decay=0.01,
+            grad_averaging=True, max_grad_norm=1.0,
+            trust_clip=False, always_adapt=False):
+
         defaults = dict(
-            lr=lr, bias_correction=bias_correction, betas=betas, eps=eps, weight_decay=weight_decay,
+            lr=lr, bias_correction=bias_correction,
+            betas=betas, eps=eps, weight_decay=weight_decay,
             grad_averaging=grad_averaging, max_grad_norm=max_grad_norm,
             trust_clip=trust_clip, always_adapt=always_adapt)
+
         super().__init__(params, defaults)
 
     @torch.no_grad()
@@ -123,7 +130,8 @@ class Lamb(Optimizer):
                 loss = closure()
 
         device = self.param_groups[0]['params'][0].device
-        one_tensor = torch.tensor(1.0, device=device)  # because torch.where doesn't handle scalars correctly
+        # because torch.where doesn't handle scalars correctly
+        one_tensor = torch.tensor(1.0, device=device)
         global_grad_norm = torch.zeros(1, device=device)
         for group in self.param_groups:
             for p in group['params']:
@@ -131,13 +139,15 @@ class Lamb(Optimizer):
                     continue
                 grad = p.grad
                 if grad.is_sparse:
-                    raise RuntimeError('Lamb does not support sparse gradients, consider SparseAdam instad.')
+                    raise RuntimeError(
+                        'Lamb does not support sparse gradients, consider SparseAdam instad.')  # noqa: E501
                 global_grad_norm.add_(grad.pow(2).sum())
 
         global_grad_norm = torch.sqrt(global_grad_norm)
-        # FIXME it'd be nice to remove explicit tensor conversion of scalars when torch.where promotes
-        # scalar types properly https://github.com/pytorch/pytorch/issues/9190
-        max_grad_norm = torch.tensor(self.defaults['max_grad_norm'], device=device)
+        # FIXME it'd be nice to remove explicit tensor conversion of scalars when torch.where promotes  # noqa: E501
+        # scalar types properly https://github.com/pytorch/pytorch/issues/9190   # noqa: E501
+        max_grad_norm = torch.tensor(self.defaults['max_grad_norm'],
+                                     device=device)
         clip_global_grad_norm = torch.where(
             global_grad_norm > max_grad_norm,
             global_grad_norm / max_grad_norm,
@@ -150,7 +160,7 @@ class Lamb(Optimizer):
             beta3 = 1 - beta1 if grad_averaging else 1.0
 
             # assume same step across group now to simplify things
-            # per parameter step can be easily support by making it tensor, or pass list into kernel
+            # per parameter step can be easily support by making it tensor, or pass list into kernel  # noqa: E501
             if 'step' in group:
                 group['step'] += 1
             else:
@@ -179,9 +189,10 @@ class Lamb(Optimizer):
 
                 # Decay the first and second moment running average coefficient
                 exp_avg.mul_(beta1).add_(grad, alpha=beta3)  # m_t
-                exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1 - beta2)  # v_t
+                exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1 - beta2)  # v_t  # noqa: E501
 
-                denom = (exp_avg_sq.sqrt() / math.sqrt(bias_correction2)).add_(group['eps'])
+                denom = (exp_avg_sq.sqrt() /
+                         math.sqrt(bias_correction2)).add_(group['eps'])
                 update = (exp_avg / bias_correction1).div_(denom)
 
                 weight_decay = group['weight_decay']
@@ -189,11 +200,11 @@ class Lamb(Optimizer):
                     update.add_(p, alpha=weight_decay)
 
                 if weight_decay != 0 or group['always_adapt']:
-                    # Layer-wise LR adaptation. By default, skip adaptation on parameters that are
-                    # excluded from weight decay, unless always_adapt == True, then always enabled.
+                    # Layer-wise LR adaptation. By default, skip adaptation on parameters that are  # noqa: E501
+                    # excluded from weight decay, unless always_adapt == True, then always enabled.  # noqa: E501
                     w_norm = p.norm(2.0)
                     g_norm = update.norm(2.0)
-                    # FIXME nested where required since logical and/or not working in PT XLA
+                    # FIXME nested where required since logical and/or not working in PT XLA  # noqa: E501
                     trust_ratio = torch.where(
                         w_norm > 0,
                         torch.where(g_norm > 0, w_norm / g_norm, one_tensor),
