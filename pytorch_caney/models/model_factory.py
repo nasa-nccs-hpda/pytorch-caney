@@ -1,5 +1,3 @@
-import torch.nn as nn
-
 # -----------------------------------------------------------------------------
 # ModelFactory
 # -----------------------------------------------------------------------------
@@ -38,7 +36,7 @@ class ModelFactory:
     # -------------------------------------------------------------------------
     @classmethod
     def get_component(cls, component_type: str, name: str, **kwargs):
-        """Public method to retrieve and instantiate a component by type and name."""
+        """Public method to retrieve and instantiate a component by type and name."""  # noqa: E501
         print(cls.backbones)
         print(cls.decoders)
         print(cls.heads)
@@ -49,8 +47,8 @@ class ModelFactory:
         }.get(component_type)
 
         if registry is None or name not in registry:
-            raise ValueError(f"{component_type.capitalize()} '{name}' not found in registry.")
-        
+            raise ValueError(f"{component_type.capitalize()} '{name}' not found in registry.")  # noqa: E501
+
         return registry[name](**kwargs)
 
     # -------------------------------------------------------------------------

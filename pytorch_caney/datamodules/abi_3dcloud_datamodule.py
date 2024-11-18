@@ -5,9 +5,15 @@ from pytorch_caney.datasets.abi_3dcloud_dataset import AbiToa3DCloudDataset
 from pytorch_caney.transforms.abi_toa import AbiToaTransform
 
 
+# -----------------------------------------------------------------------------
+# AbiToa3DCloudDataModule
+# -----------------------------------------------------------------------------
 class AbiToa3DCloudDataModule(L.LightningDataModule):
     """NonGeo ABI TOA 3D cloud data module implementation"""
 
+    # -------------------------------------------------------------------------
+    # __init__
+    # -------------------------------------------------------------------------
     def __init__(
                 self,
                 config,
@@ -21,6 +27,9 @@ class AbiToa3DCloudDataModule(L.LightningDataModule):
         self.batch_size = config.DATA.BATCH_SIZE
         self.num_workers = config.DATA.NUM_WORKERS
 
+    # -------------------------------------------------------------------------
+    # setup
+    # -------------------------------------------------------------------------
     def setup(self, stage: str) -> None:
         if stage in ["fit"]:
             self.train_dataset = AbiToa3DCloudDataset(
@@ -40,12 +49,27 @@ class AbiToa3DCloudDataModule(L.LightningDataModule):
                 self.test_data_paths,
                 self.transform,
             )
-    
+
+    # -------------------------------------------------------------------------
+    # train_dataloader
+    # -------------------------------------------------------------------------
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.train_dataset,
+                          batch_size=self.batch_size,
+                          num_workers=self.num_workers)
 
+    # -------------------------------------------------------------------------
+    # val_dataloader
+    # -------------------------------------------------------------------------
     def val_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.val_dataset,
+                          batch_size=self.batch_size,
+                          num_workers=self.num_workers)
 
+    # -------------------------------------------------------------------------
+    # test_dataloader
+    # -------------------------------------------------------------------------
     def test_dataloader(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.val_dataset,
+                          batch_size=self.batch_size,
+                          num_workers=self.num_workers)

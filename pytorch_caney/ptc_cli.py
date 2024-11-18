@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from lightning.pytorch import Trainer 
+from lightning.pytorch import Trainer
 
 from pytorch_caney.configs.config import _C, _update_config_from_file
 from pytorch_caney.utils import get_strategy, get_distributed_train_batches
@@ -42,7 +42,8 @@ def main(config, output_dir):
     )
 
     if config.TRAIN.LIMIT_TRAIN_BATCHES:
-        trainer.limit_train_batches = get_distributed_train_batches(config, trainer) 
+        trainer.limit_train_batches = get_distributed_train_batches(
+            config, trainer)
 
     if config.DATA.DATAMODULE:
         available_datamodules = get_available_datamodules()
@@ -53,12 +54,11 @@ def main(config, output_dir):
         trainer.fit(model=ptlPipeline, datamodule=datamodule)
 
     else:
-        print(f'Training without datamodule, assuming data is set in pipeline: {ptlPipeline}')
+        print(f'Training without datamodule, assuming data is set in pipeline: {ptlPipeline}')  # noqa: E501
         trainer.fit(model=ptlPipeline)
 
 
 if __name__ == "__main__":
-
 
     parser = argparse.ArgumentParser()
 

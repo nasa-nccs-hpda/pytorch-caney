@@ -49,7 +49,7 @@ _C.MODEL.TYPE = 'swinv2'
 # Encoder type for fine-tuning
 _C.MODEL.ENCODER = ''
 # Decoder type for fine-tuning
-_C.MODEL.DECODER = '' 
+_C.MODEL.DECODER = ''
 # Model name
 _C.MODEL.NAME = 'swinv2_base_patch4_window7_224'
 # Pretrained weight from checkpoint, could be from previous pre-training
@@ -104,8 +104,8 @@ _C.LOSS.GAMMA = 1.0
 _C.TRAIN = CN()
 _C.TRAIN.ACCELERATOR = 'gpu'
 _C.TRAIN.STRATEGY = 'deepspeed'
-_C.TRAIN.LIMIT_TRAIN_BATCHES = True 
-_C.TRAIN.NUM_TRAIN_BATCHES = None 
+_C.TRAIN.LIMIT_TRAIN_BATCHES = True
+_C.TRAIN.NUM_TRAIN_BATCHES = None
 _C.TRAIN.START_EPOCH = 0
 _C.TRAIN.EPOCHS = 300
 _C.TRAIN.WARMUP_EPOCHS = 20
@@ -120,7 +120,7 @@ _C.TRAIN.CLIP_GRAD = 5.0
 _C.TRAIN.AUTO_RESUME = True
 # Gradient accumulation steps
 # could be overwritten by command line argument
-_C.TRAIN.ACCUMULATION_STEPS = 1 
+_C.TRAIN.ACCUMULATION_STEPS = 1
 # Whether to use gradient checkpointing to save memory
 # could be overwritten by command line argument
 _C.TRAIN.USE_CHECKPOINT = False
@@ -160,8 +160,8 @@ _C.DEEPSPEED = CN()
 _C.DEEPSPEED.STAGE = 2
 _C.DEEPSPEED.REDUCE_BUCKET_SIZE = 5e8
 _C.DEEPSPEED.ALLGATHER_BUCKET_SIZE = 5e8
-_C.DEEPSPEED.CONTIGUOUS_GRADIENTS = True 
-_C.DEEPSPEED.OVERLAP_COMM = True 
+_C.DEEPSPEED.CONTIGUOUS_GRADIENTS = True
+_C.DEEPSPEED.OVERLAP_COMM = True
 
 
 # -----------------------------------------------------------------------------
@@ -175,7 +175,7 @@ _C.TEST.CROP = True
 # Misc
 # -----------------------------------------------------------------------------
 # Whether to enable pytorch amp, overwritten by command line argument
-_C.PRECISION = '32' 
+_C.PRECISION = '32'
 # Enable Pytorch automatic mixed precision (amp).
 _C.AMP_ENABLE = True
 # Path to output folder, overwritten by command line argument
@@ -196,7 +196,7 @@ _C.EVAL_MODE = False
 _C.PIPELINE = 'satvisiontoapretrain'
 # Data module
 _C.DATAMODULE = 'abitoa3dcloud'
-# Fast dev run 
+# Fast dev run
 _C.FAST_DEV_RUN = False
 
 
