@@ -23,7 +23,7 @@ def nodesplitter(src, group=None):
             if i % size == rank:
                 yield item
                 count += 1
-        logging.info(f"nodesplitter: rank={rank} size={size} " + \
+        logging.info(f"nodesplitter: rank={rank} size={size} " +
                      f"count={count} DONE")
     else:
         yield from src
@@ -34,7 +34,7 @@ def nodesplitter(src, group=None):
 # -----------------------------------------------------------------------------
 class ShardedDataset(object):
     """
-    Base pre-training webdataset 
+    Base pre-training webdataset
     """
 
     SHARD_PATH = os.path.join("shards")
@@ -53,7 +53,7 @@ class ShardedDataset(object):
         batch_size=64,
     ):
 
-        self.random_state = 1000 
+        self.random_state = 1000
         self.config = config
         self.img_size = img_size
         self.transform = transform

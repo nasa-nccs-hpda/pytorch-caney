@@ -26,7 +26,7 @@ class ModisToaMimDataModule(L.LightningDataModule):
         self.pin_memory = config.DATA.PIN_MEMORY
 
     # -------------------------------------------------------------------------
-    # setup 
+    # setup
     # -------------------------------------------------------------------------
     def setup(self, stage: str) -> None:
         if stage in ["fit"]:
@@ -40,7 +40,7 @@ class ModisToaMimDataModule(L.LightningDataModule):
                 batch_size=self.batch_size).dataset()
 
     # -------------------------------------------------------------------------
-    # train_dataloader 
+    # train_dataloader
     # -------------------------------------------------------------------------
     def train_dataloader(self) -> DataLoader:
         return DataLoader(self.train_dataset,
