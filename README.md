@@ -324,7 +324,7 @@ For an example of how MiM pre-trained models work, see the example inference not
 - For expected model input see "Expected Model Input" section
 - For steps taken for generating the MODIS-TOA pre-training dataset see "MODIS-TOA Dataset Generation" section
 
-![MODIS TOA Bands](modis_toa_bands.png)
+![MODIS TOA Bands](docs/static/modis_toa_bands.png)
 
 ## MODIS-TOA Dataset Generation
 
