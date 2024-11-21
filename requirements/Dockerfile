@@ -7,7 +7,6 @@ FROM ${FROM_IMAGE}:${VERSION_DATE}-py3
 
 # Ubuntu needs noninteractive to be forced
 ENV DEBIAN_FRONTEND noninteractive
-ENV PROJ_LIB="/usr/share/proj"
 ENV CPLUS_INCLUDE_PATH="/usr/include/gdal"
 ENV C_INCLUDE_PATH="/usr/include/gdal"
 
@@ -75,13 +74,13 @@ RUN git clone --single-branch --branch master https://github.com/pkolano/shift.g
     rm -rf /app
 
 # Pip
-RUN pip --no-cache-dir install omegaconf \
+RUN pip --no-cache-dir install \
     pytorch-lightning \
     Lightning \
     transformers \
     datasets \
-    webdataset \
     deepspeed \
+    webdataset \
     'huggingface_hub[cli,torch]' \
     torchgeo \
     rasterio \
@@ -95,9 +94,6 @@ RUN pip --no-cache-dir install omegaconf \
     opencv-contrib-python-headless \
     tifffile \
     webcolors \
-    Pillow \
-    seaborn \
-    xgboost \
     tiler \
     segmentation-models \
     timm \
