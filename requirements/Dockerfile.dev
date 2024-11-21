@@ -7,7 +7,6 @@ FROM ${FROM_IMAGE}:${VERSION_DATE}-py3
 
 # Ubuntu needs noninteractive to be forced
 ENV DEBIAN_FRONTEND noninteractive
-ENV PROJ_LIB="/usr/share/proj"
 ENV CPLUS_INCLUDE_PATH="/usr/include/gdal"
 ENV C_INCLUDE_PATH="/usr/include/gdal"
 
