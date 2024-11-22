@@ -11,7 +11,6 @@ ENV CPLUS_INCLUDE_PATH="/usr/include/gdal"
 ENV C_INCLUDE_PATH="/usr/include/gdal"
 
 # System dependencies
-# System dependencies
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
     add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \

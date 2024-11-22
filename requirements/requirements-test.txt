@@ -22,5 +22,6 @@ joblib
 GDAL>=3.3.0
 coverage
 deepspeed
+timm
 webdataset
 torchgeo
