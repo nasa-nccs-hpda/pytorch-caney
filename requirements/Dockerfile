@@ -7,11 +7,9 @@ FROM ${FROM_IMAGE}:${VERSION_DATE}-py3
 
 # Ubuntu needs noninteractive to be forced
 ENV DEBIAN_FRONTEND noninteractive
-ENV PROJ_LIB="/usr/share/proj"
 ENV CPLUS_INCLUDE_PATH="/usr/include/gdal"
 ENV C_INCLUDE_PATH="/usr/include/gdal"
 
-# System dependencies
 # System dependencies
 RUN apt-get update && \
     apt-get -y install software-properties-common && \
@@ -75,13 +73,13 @@ RUN git clone --single-branch --branch master https://github.com/pkolano/shift.g
     rm -rf /app
 
 # Pip
-RUN pip --no-cache-dir install omegaconf \
+RUN pip --no-cache-dir install \
     pytorch-lightning \
     Lightning \
     transformers \
     datasets \
-    webdataset \
     deepspeed \
+    webdataset \
     'huggingface_hub[cli,torch]' \
     torchgeo \
     rasterio \
@@ -95,9 +93,6 @@ RUN pip --no-cache-dir install omegaconf \
     opencv-contrib-python-headless \
     tifffile \
     webcolors \
-    Pillow \
-    seaborn \
-    xgboost \
     tiler \
     segmentation-models \
     timm \
@@ -110,8 +105,7 @@ RUN pip --no-cache-dir install omegaconf \
     yacs \
     termcolor \
     segmentation-models-pytorch \
-    pytorch-caney \
-    GDAL==`ogrinfo --version | grep -Eo '[0-9]\.[0-9]\.[0-9]+'`
+    coverage
 
 HEALTHCHECK NONE
 ENTRYPOINT []

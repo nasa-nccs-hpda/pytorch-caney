@@ -1,15 +1,45 @@
-import torch
-import warnings
+from lightning.pytorch.strategies import DeepSpeedStrategy
 
 
-def check_gpus_available(ngpus: int) -> None:
-    ngpus_available = torch.cuda.device_count()
-    if ngpus < ngpus_available:
-        msg = 'Not using all available GPUS.' + \
-            f' N GPUs available: {ngpus_available},' + \
-            f' N GPUs selected: {ngpus}. '
-        warnings.warn(msg)
-    elif ngpus > ngpus_available:
-        msg = 'Not enough GPUs to satisfy selected amount' + \
-            f': {ngpus}. N GPUs available: {ngpus_available}'
-        warnings.warn(msg)
+# -----------------------------------------------------------------------------
+# get_strategy
+# -----------------------------------------------------------------------------
+def get_strategy(config):
+
+    strategy = config.TRAIN.STRATEGY
+
+    if strategy == 'deepspeed':
+        deepspeed_config = {
+            "train_micro_batch_size_per_gpu": config.DATA.BATCH_SIZE,
+            "steps_per_print": config.PRINT_FREQ,
+            "zero_allow_untested_optimizer": True,
+            "zero_optimization": {
+                "stage": config.DEEPSPEED.STAGE,
+                "contiguous_gradients":
+                    config.DEEPSPEED.CONTIGUOUS_GRADIENTS,
+                "overlap_comm": config.DEEPSPEED.OVERLAP_COMM,
+                "reduce_bucket_size": config.DEEPSPEED.REDUCE_BUCKET_SIZE,
+                "allgather_bucket_size":
+                    config.DEEPSPEED.ALLGATHER_BUCKET_SIZE,
+            },
+            "activation_checkpointing": {
+                "partition_activations": config.TRAIN.USE_CHECKPOINT,
+            },
+        }
+
+        return DeepSpeedStrategy(config=deepspeed_config)
+
+    else:
+        # These may be return as strings
+        return strategy
+
+
+# -----------------------------------------------------------------------------
+# get_distributed_train_batches
+# -----------------------------------------------------------------------------
+def get_distributed_train_batches(config, trainer):
+    if config.TRAIN.NUM_TRAIN_BATCHES:
+        return config.TRAIN.NUM_TRAIN_BATCHES
+    else:
+        return config.DATA.LENGTH // \
+            (config.DATA.BATCH_SIZE * trainer.world_size)

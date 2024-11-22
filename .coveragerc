@@ -1,0 +1,25 @@
+[run]
+source = pytorch_caney 
+omit = 
+    */site-packages/*
+    */dist-packages/*
+    */tests/*
+    setup.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if __name__ == .__main__.:
+    raise NotImplementedError
+    pass
+    except ImportError:
+    
+show_missing = True
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml
