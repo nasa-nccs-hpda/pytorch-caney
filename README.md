@@ -44,8 +44,8 @@ singularity build --sandbox pytorch-caney-container docker://nasanccs/pytorch-ca
 ## Contributors
 
 - **Jordan Alexis Caraballo-Vega**: [jordan.a.caraballo-vega@nasa.gov](mailto:jordan.a.caraballo-vega@nasa.gov)
-- **Caleb Spradlin**: [caleb.s.spradlin@nasa.gov](mailto:caleb.s.spradlin@nasa.gov)
 - **Jian Li**: [jian.li@nasa.gov](mailto:jian.li@nasa.gov)
+- **Caleb Spradlin**: [cspradlindev@gmail.com](mailto:cspradlindev@gmail.com)
 
 ## Contributing
 
