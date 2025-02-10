@@ -42,8 +42,8 @@ Contributors
 -------------
 
 - Jordan Alexis Caraballo-Vega, jordan.a.caraballo-vega@nasa.gov
-- Caleb Spradlin, caleb.s.spradlin@nasa.gov
 - Jian Li, jian.li@nasa.gov
+- Caleb Spradlin, cspradlindev@gmail.com
 
 Contributing
 -------------
