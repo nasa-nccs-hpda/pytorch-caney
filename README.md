@@ -1,4 +1,4 @@
-# pytorch-caney
+# pytorch-caney - docs
 
 Python package for lots of Pytorch tools.
 
