@@ -5,7 +5,6 @@
 # SatVision-TOA: A Geospatial Foundation Model for All-Sky Remote Sensing Imagery
 
 [![DOI](https://zenodo.org/badge/472450059.svg)](https://zenodo.org/badge/latestdoi/472450059)
-[![CI](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml/badge.svg)](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://github.com/nasa-nccs-hpda/pytorch-caney/blob/docs/README.md)
 [![Paper](https://img.shields.io/badge/arXiv-2411.17000-blue)](https://arxiv.org/abs/2411.17000)
 
