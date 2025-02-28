@@ -11,8 +11,8 @@
 
 Implementation of the SatVision model for All-Sky Remote Sensing Imagery.
 
-_The package currently includes the pretrained SatVision-TOA model and the fine-tuned version for both Image Reconstruction and 3D Cloud Retrieval._
-_Although instructions for training the model are provided for reference, this deployment is primarily intended for downstream SatVision-TOA task usage and customization_
+_The package currently includes the pretrained SatVision-TOA model as well as the fine-tuned versions for both 1) Image Reconstruction and 2)3D Cloud Retrieval._
+_While instructions for training the model are provided for reference, this deployment is primarily intended for downstream SatVision-TOA task usage and customization_
 
 Concept and design details are provided in the paper [on arXiv.](https://arxiv.org/abs/2405.13063)
 
