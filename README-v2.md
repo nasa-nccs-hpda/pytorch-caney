@@ -26,7 +26,7 @@ Contents:
 - [What is SatVision-TOA?](#what-is-satvision-toa)
 - [Why SatVision-TOA?](#why-satvision-toa)
 - [Getting Started](#getting-started)
-- [API](#api)
+- [User Guide](#user-guide)
 - [Contributing](#contributing)
 - [License](#license)
 - [FAQ](#faq)
@@ -34,8 +34,8 @@ Contents:
 
 ## What is SatVision-TOA?
 We introduce SatVision-TOA, a novel foundation model pre-trained on 14-band MODIS L1B Top-Of-Atmosphere (TOA) radiance imageries, addressing the need for models that handle moderate- and coarse-resolution all- sky remote sensing data. The SatVision-TOA model is pre-trained using a Masked-Image-Modeling (MIM) framework and the SwinV2 architecture, and learns detailed contextual representations through self-supervised learning without the need for labels. It is a 3 billion parameter model that is trained on 100 million images.  To validate the model we focused on two key applications: 
-* 1) image reconstruction performance, which evaluates the masked-image-modeling task on unseen data, 
-* 2) and 3D cloud retrieval, a downstream task targeting the prediction of vertical cloud structure.
+* 1) Image reconstruction performance, which evaluates the masked-image-modeling task on unseen data, 
+* 2) 3D cloud retrieval, a downstream task targeting the prediction of vertical cloud structure.
 
 ## Why SatVision-TOA?
 To our knowledge this is the largest foundation model trained solely on satellite remote sensing imagery. Initial results indicate that SatVision-TOA achieves superior performance over baseline methods when applied to downstream tasks such as 3D cloud retrieval.  Our work advances pre-trained vision modeling for multispectral remote sensing by learning from a variety of atmospheric and aerosol conditions to improve cloud and land surface monitoring.
@@ -47,9 +47,9 @@ _and then can be adapted to specialized cloud and land surface monitoring tasks 
 
 See requirements and installation [instructions](requirements/README.md) 
 
-## API
+## User Guide
 
-See requirements and installation [instructions](requirements/README.md) 
+See [User Guide](USER_GUIDE.md) 
 
 ## Contributing
 
