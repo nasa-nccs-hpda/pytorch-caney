@@ -8,7 +8,7 @@ _CPU support is limited and the author does not provide any guarantee of usabili
 # Provided
 
 * A Docker container, which can also be converted to a Singularity container.
-* A virtual environment [specification] (requirements/environment_gpu.yml) 
+A virtual environment [specification] (requirements/environment_gpu.yml) 
 
 CPU support is limited and the author does not provide any guarantee of usability.
 
