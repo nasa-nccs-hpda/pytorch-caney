@@ -54,7 +54,7 @@ conda activate pytorch-caney
 python <SatVision-TOA API>
 ```
 
-### SatVision-TOA Application Programming Interface (API) 
+## SatVision-TOA Application Programming Interface (API) 
 
 The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described [here](TBD).
 
