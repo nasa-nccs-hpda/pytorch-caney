@@ -1,8 +1,14 @@
 # Requirements
 
-pytorch-caney can be installed and used via anaconda environments and containers.
-A Docker container is provided and this same container can be converted
-to a Singularity container without loosing any functionalities.
+* A container platform _or_ virtual environment (e.g., anaconda). 
+* GPU support.
+
+_CPU support is limited and the author does not provide any guarantee of usability._
+
+# Provided
+
+* A Docker container, which can also be converted to a Singularity container.
+* A virtual environment [specification] (requirements/environment_gpu.yml) 
 
 CPU support is limited and the author does not provide any guarantee of usability.
 
@@ -11,6 +17,9 @@ CPU support is limited and the author does not provide any guarantee of usabilit
 The container is built on top of NGC NVIDIA PYTORCH containers.
 
 This application is powered by PyTorch and PyTorch Lighning AI/ML backends.
+
+## Installation
+SatVision-TOA can be installed and used via anaconda environments and containers.
 
 ## Example to Download the Container via Singularity
 
@@ -33,3 +42,4 @@ As an example, you can shell into the container:
 ```bash
 singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
 ```
+## Example to Download the Container via Singularity
