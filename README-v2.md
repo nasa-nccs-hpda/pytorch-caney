@@ -15,7 +15,7 @@ _The package currently includes the pretrained SatVision-TOA model and the fine-
 
 [Link to the paper on arXiv.](https://arxiv.org/abs/2405.13063)
 
-See system requirements for installation instructions (requirements/README.md)(#requirements/README.md)
+See system requirements for installation instructions [a relative link](requirements/README.md) 
 [Please see the documentation for detailed instructions and more examples.](https://microsoft.github.io/satvision)
 You can also directly go to [a full-fledged example that runs the model on ERA5](https://microsoft.github.io/satvision/example_era5.html).
 
