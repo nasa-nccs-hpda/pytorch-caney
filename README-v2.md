@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="docs/static/DSG_LOGO_REDESIGN.png" alt="SatVision logo" width="200"/>
+    <img src="docs/static/DSG_LOGO_REDESIGN.png" alt="DSG logo" width="200"/>
 </p>
 
 # SatVision-TOA: A Geospatial Foundation Model for All-Sky Remote Sensing Imagery
@@ -7,14 +7,14 @@
 [![DOI](https://zenodo.org/badge/472450059.svg)](https://zenodo.org/badge/latestdoi/472450059)
 [![CI](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml/badge.svg)](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://github.com/nasa-nccs-hpda/pytorch-caney/blob/docs/README.md)
-[![Paper](https://img.shields.io/badge/arXiv-2405.13063-blue)](https://arxiv.org/abs/2405.13063)
+[![Paper](https://img.shields.io/badge/arXiv-2411.17000-blue)](https://arxiv.org/abs/2411.17000)
 
-Implementation of the SatVision model for All-Sky Remote Sensing Imagery.
+Implementation of the SatVision-TOA model for All-Sky Remote Sensing Imagery.
 
 _The package includes the pretrained SatVision-TOA model along with fine-tuned versions for both 1) Image Reconstruction and 2) 3D Cloud Retrieval._
 _While instructions for training the model are provided for reference, this deployment is primarily intended for downstream SatVision-TOA task usage and customization._
 
-Concept and design details are provided in the paper [on arXiv.](https://arxiv.org/abs/2405.13063)
+Concept and design details are provided in the paper [on arXiv.](https://arxiv.org/pdf/2411.17000)
 
 See system requirements for [installation instructions](requirements/README.md) 
 
@@ -34,7 +34,7 @@ Contents:
 
 ## What is SatVision?
 
-SatVision is a machine learning model that can predict atmospheric variables, such as temperature.
+SatVision-TOA is a machine learning model that can predict atmospheric variables, such as temperature.
 It is a _foundation model_, which means that it was first generally trained on a lot of data,
 and then can be adapted to specialised atmospheric forecasting tasks with relatively little data.
 We provide four such specialised versions:
@@ -66,13 +66,13 @@ Our goal in publishing this code is
 This code has not been developed nor tested for non-academic purposes and hence should not be used as such.
 
 ### Limitations
-Although SatVision was trained to accurately predict future weather, air pollution, and ocean waves,
-SatVision is based on neural networks, which means that there are no strict guarantees that predictions will always be accurate.
+Although  was trained to accurately predict future weather, air pollution, and ocean waves,
+SatVision-TOA is based on neural networks, which means that there are no strict guarantees that predictions will always be accurate.
 Altering the inputs, providing a sample that was not in the training set,
 or even providing a sample that was in the training set but is simply unlucky may result in arbitrarily poor predictions.
-In addition, even though SatVision was trained on a wide variety of data sets,
-it is possible that SatVision inherits biases present in any one of those data sets.
-A forecasting system like SatVision is only one piece of the puzzle in a weather prediction pipeline,
+In addition, even though SatVision-TOA was trained on a wide variety of data sets,
+it is possible that SatVision-TOA inherits biases present in any one of those data sets.
+A forecasting system like SatVision-TOA is only one piece of the puzzle in a weather prediction pipeline,
 and its outputs are not meant to be directly used by people or businesses to plan their operations.
 A series of additional verification tests are needed before it can become operationally useful.
 
@@ -82,7 +82,7 @@ A description of all data, including download links, can be found in [Supplement
 The checkpoints include data from ERA5, CMCC, IFS-HR, HRES T0, GFS T0 analysis, and GFS forecasts.
 
 ### Evaluations
-All versions of SatVision were extensively evaluated by evaluating predictions on data not seen during training.
+All versions of SatVision-TOA were extensively evaluated by evaluating predictions on data not seen during training.
 These evaluations not only compare measures of accuracy, such as the root mean square error and anomaly correlation coefficient,
 but also look at the behaviour in extreme situations, like extreme heat and cold, and rare events, like Storm Ciarán in 2023.
 These evaluations are the main topic of [the paper](https://arxiv.org/pdf/2405.13063).
@@ -116,7 +116,7 @@ make docs
 
 To locally view the documentation, open `docs/_build/index.html` in your browser.
 
-### Why are the fine-tuned versions of SatVision for air quality and ocean wave forecasting missing?
+### Why are the fine-tuned versions of SatVision-TOA for air quality and ocean wave forecasting missing?
 
 The package currently includes the pretrained model and the fine-tuned version for high-resolution weather forecasting.
 We are working on the fine-tuned versions for air pollution and ocean wave forecasting, which will be included in due time.
