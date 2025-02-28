@@ -23,8 +23,8 @@ You can also directly go to [a full-fledged example that runs the model on ERA5]
 
 Contents:
 
-- [What is SatVision-TOA?](#what-is-satvision)
-- [Why SatVision-TOA?](#why-satvision)
+- [What is SatVision-TOA?](#what-is-satvision-toa)
+- [Why SatVision-TOA?](#why-satvision-toa?)
 - [Getting Started](#getting-started)
 - [API](#api)
 - [Contributing](#contributing)
@@ -57,9 +57,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 
-See [`LICENSE.md`](LICENSE.md).
-
-This package is a US Government work. It is not subject to copyright under 17 USC 105 and is also made available for use under a CC0 license.
+See [`LICENSE.md`](CONTRIBUTING.md).
 
 ## FAQ
 
