@@ -58,4 +58,4 @@ python <SatVision-TOA API>
 
 The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described [here](TBD).
 
-_Note that the only runtime difference in the installation choice above is that the command line is prefixed by **Singularity>** when invoked from within the container_
+_Note that the only runtime difference based on installation is that the command line is prefixed by **Singularity>** when invoked from within the container_
