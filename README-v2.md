@@ -2,18 +2,19 @@
     <img src="docs/static/DSG_LOGO_REDESIGN.png" alt="SatVision logo" width="200"/>
 </p>
 
-# SatVision-TOA: A Geospatial Foundation Model for Coarse-Resolution All-Sky Remote Sensing Imagery
+# SatVision-TOA: A Geospatial Foundation Model for All-Sky Remote Sensing Imagery
 
 [![DOI](https://zenodo.org/badge/472450059.svg)](https://zenodo.org/badge/latestdoi/472450059)
 [![CI](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml/badge.svg)](https://github.com/microsoft/SatVision/actions/workflows/ci.yaml)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://microsoft.github.io/satvision)
 [![Paper](https://img.shields.io/badge/arXiv-2405.13063-blue)](https://arxiv.org/abs/2405.13063)
 
-Implementation of the SatVision model for Coarse-Resolution All-Sky Remote Sensing Imagery.
+Implementation of the SatVision model for All-Sky Remote Sensing Imagery.
 
-_The package currently includes the pretrained SatVision-TOA model and the fine-tuned version for 3D cloud retrieval._
+_The package currently includes the pretrained SatVision-TOA model and the fine-tuned version for both Image Reconstruction and 3D Cloud Retrieval._
+_Although instructions for training the model are provided for reference, this deployment is primarily intended for downstream SatVision-TOA task usage and customization_
 
-[Link to the paper on arXiv.](https://arxiv.org/abs/2405.13063)
+Concept and design details are provided in the paper [on arXiv.](https://arxiv.org/abs/2405.13063)
 
 See system requirements for [installation instructions](requirements/README.md) 
 
