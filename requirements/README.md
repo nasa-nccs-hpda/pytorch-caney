@@ -56,6 +56,11 @@ python <SatVision-TOA API>
 
 ## SatVision-TOA Application Programming Interface (API) 
 
-The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described [here](TBD).
+The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described in the [User Guide] [here](https://github.com/nasa-nccs-hpda/pytorch-caney/blob/docs/README-v2.md#user-guide).
 
 _Note that the only runtime difference based on installation is that the command line is prefixed by **Singularity>** when invoked from within the container_
+
+
+TBD
+- Add hugging face certificate stuff here....
+- We are missing a file from the HF repo:  
