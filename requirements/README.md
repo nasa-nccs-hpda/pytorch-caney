@@ -10,7 +10,7 @@ _CPU support is limited and the author does not provide any guarantee of usabili
 ## Provided
 
 * Docker container, which can also be converted to a Singularity container.
-* Virtual environment [specification](environment_gpu.yml) 
+* Virtual environment specification [file](environment_gpu.yml) 
 
 CPU support is limited and the author does not provide any guarantee of usability.
 
@@ -22,10 +22,9 @@ This application is powered by PyTorch and PyTorch Lighning AI/ML backends.
 
 ## Installation
 
-SatVision-TOA installation instructions via either 1) Singularity container or 2) Anaconda environment 
-is illustrated here.
+SatVision-TOA can be installed via either 1) Singularity container or 2) Anaconda environment.
 
-### 1) Singularity Container Installation
+#### 1) Singularity Container Installation
 
 ```bash
 module load singularity
@@ -40,9 +39,15 @@ As an example, you can shell into the container:
 singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
 ```
 
-### 2) Anaconda Environment Installation
+#### 2) Anaconda Environment Installation
 
 ``` bash
 git clone git@github.com:nasa-nccs-hpda/pytorch-caney.git
 cd pytorch-caney; conda env create -f requirements/environment_gpu.yml;
+```
+
+#### Environment Usage
+
+```bash
 conda activate pytorch-caney
+```
