@@ -1,14 +1,14 @@
 # Requirements
 
-* A container platform _or_ virtual environment (e.g., anaconda). 
+* Container platform _or_ virtual environment (e.g., anaconda). 
 * GPU support.
 
 _CPU support is limited and the author does not provide any guarantee of usability._
 
 # Provided
 
-* A Docker container, which can also be converted to a Singularity container.
-A virtual environment [specification] (requirements/environment_gpu.yml) 
+* Docker container, which can also be converted to a Singularity container.
+* Virtual environment [specification](requirements/environment_gpu.yml) 
 
 CPU support is limited and the author does not provide any guarantee of usability.
 
