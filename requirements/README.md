@@ -56,7 +56,7 @@ python <SatVision-TOA API>
 
 ## SatVision-TOA Application Programming Interface (API) 
 
-The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described in the [User Guide] [here](https://github.com/nasa-nccs-hpda/pytorch-caney/blob/docs/README-v2.md#user-guide).
+The API for SatVision-TOA, which is a Python application that is invoked from the command line, is described in the [User Guide](../USER_GUIDE.md).
 
 _Note that the only runtime difference based on installation is that the command line is prefixed by **Singularity>** when invoked from within the container_
 
