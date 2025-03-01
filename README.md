@@ -38,7 +38,7 @@ We introduce SatVision-TOA, a novel foundation model pre-trained on 14-band MODI
 * 2) 3D cloud retrieval, a downstream task targeting the prediction of vertical cloud structure.
 
 ## Why SatVision-TOA?
-To our knowledge this is the largest foundation model trained solely on satellite remote sensing imagery. Initial results indicate that SatVision-TOA achieves superior performance over baseline methods when applied to downstream tasks such as 3D cloud retrieval.  Our work advances pre-trained vision modeling for multispectral remote sensing by learning from a variety of atmospheric and aerosol conditions to improve cloud and land surface monitoring.
+This is the largest foundation model trained solely on satellite remote sensing imagery. Initial results indicate that SatVision-TOA achieves superior performance over baseline methods when applied to downstream tasks such as 3D cloud retrieval.  Our work advances pre-trained vision modeling for multispectral remote sensing by learning from a variety of atmospheric and aerosol conditions to improve cloud and land surface monitoring.
 
 _SatVision-TOA is a _foundation model_, which means that it was first generally trained on a lot of data,_
 _and then can be adapted to specialized cloud and land surface monitoring tasks with relatively little data._
