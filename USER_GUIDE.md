@@ -18,7 +18,7 @@ _the SatVision-TOA model.  Note that this pipeline requires advanced GPU and sto
 See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
 * [Run Image Reconstruction with Pretrained Model](TBD)
 
-## Sample Session - Image Reconstruction
+### Sample Session - Image Reconstruction 
 
 ```bash
 (base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision/pytorch-caney$ module load singularity
@@ -37,6 +37,7 @@ Successfully applied checkpoint
 Calling model.encoder() for 128 samples to run prediction and calculate reconstruction losses
 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 128/128 [00:17<00:00,  7.27it/s]
 Successfully exported reconstruction results to: ./image-reconstruction-example.pdf
+```
 
 ## Pipeline 2. 3D Cloud Retrieval
 
