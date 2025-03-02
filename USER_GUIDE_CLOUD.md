@@ -1,6 +1,6 @@
 ## USER GUIDE - Pipeline 2. 3D Cloud Retrieval
 
-_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_
+**_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_**
 
 See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
 * [Run Image Reconstruction with Pretrained Model](./USER_GUIDE_IMAGE.md)
