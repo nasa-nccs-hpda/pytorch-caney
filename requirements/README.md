@@ -1,6 +1,6 @@
 # Getting Started
 
-In addition to the instructions below, GPU support is required to effectively run SatVision-TOA.  
+In addition to the instructions below, GPU support is required to run SatVision-TOA.  
 
 _NOTE: CPU support is limited and the author does not provide any guarantee of usability._
 
@@ -12,7 +12,7 @@ _NOTE: CPU support is limited and the author does not provide any guarantee of u
 ## Architecture
 
 * The container is built on top of NGC NVIDIA PYTORCH containers.
-* This application is powered by PyTorch and PyTorch Lighning AI/ML backends.
+* This application is powered by PyTorch and PyTorch Lightning AI/ML backends.
 
 ## Instructions
 

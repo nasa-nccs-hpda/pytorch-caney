@@ -228,6 +228,29 @@ sys	12m11.982s
 
 ## Output
 
-The results, logs, and model checkpoints are saved in a directory specified by: <output-dir>/<model-name>/<tag>/
-https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-4-threedcloudtask-pipeline-
+The results, logs, and model checkpoints are saved in a directory specified by: <output-dir>/<model-name>/<tag>/.  For example:
 
+``` bash
+(base) gtamkin@ilab213:/explore/nobackup/projects/ilab/projects/Satvision$ ls -aRt 3dcloud-retrieval/
+3dcloud-retrieval/:
+3dcloud-retrieval  .  ..
+
+3dcloud-retrieval/3dcloud-retrieval:
+lightning_logs  3dcloud-retrieval.config.json  .  ..
+
+3dcloud-retrieval/3dcloud-retrieval/lightning_logs:
+.  version_1  ..
+
+3dcloud-retrieval/3dcloud-retrieval/lightning_logs/version_1:
+..  events.out.tfevents.1740944483.gpu003.2139529.0  checkpoints  .  hparams.yaml
+
+3dcloud-retrieval/3dcloud-retrieval/lightning_logs/version_1/checkpoints:
+ .  'epoch=49-step=50.ckpt'   ..
+
+'3dcloud-retrieval/3dcloud-retrieval/lightning_logs/version_1/checkpoints/epoch=49-step=50.ckpt':
+..  latest  .  zero_to_fp32.py  checkpoint
+
+'3dcloud-retrieval/3dcloud-retrieval/lightning_logs/version_1/checkpoints/epoch=49-step=50.ckpt/checkpoint':
+zero_pp_rank_1_mp_rank_00_optim_states.pt  ..  zero_pp_rank_0_mp_rank_00_optim_states.pt  zero_pp_rank_2_mp_rank_00_optim_states.pt  zero_pp_rank_3_mp_rank_00_optim_states.pt  .  mp_rank_00_model_states.pt
+
+```
