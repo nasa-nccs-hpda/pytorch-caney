@@ -1,8 +1,7 @@
 # USER GUIDE - Pipeline 1.  Image Reconstruction
 
 ## Input
-The runtime script, which generation model predictions and calculates the associated reconstruction losses, contains the following default values for input data file locations.  
-Modify ```tests/image_reconstruction.py``` directly to change paths. 
+The runtime script, which generates model predictions and calculates the associated reconstruction losses, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change paths. 
 
 ### Key Configuration Parameters 
 | Command-line-argument | Description                       | Default  |
