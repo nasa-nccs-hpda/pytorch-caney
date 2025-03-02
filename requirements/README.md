@@ -109,7 +109,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHt6HC5R4gT2ZwUg8zqijhNj4Op86isIfY2LXXXXX _<
 
 ### 3) Register the SSH key with HF 
 
-Cut and paste the contents of the .pub file into the GUI: https://huggingface.co/settings/keys/add?type=ssh
+Cut and paste the contents of the .pub file into the GUI: https://huggingface.co/settings/keys/add?type=ssh.  Example below:
+
 ![https://huggingface.co/settings/keys/add?type=ssh](ssh.png)
 
 
