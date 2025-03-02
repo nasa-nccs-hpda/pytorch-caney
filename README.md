@@ -25,11 +25,11 @@ Contents:
 
 - [What is SatVision-TOA?](#what-is-satvision-toa)
 - [Why SatVision-TOA?](#why-satvision-toa)
-- [Getting Started](#getting-started)
-- [User Guide](#user-guide)
-- [Contributing](#contributing)
-- [License](#license)
-- [FAQ](#faq)
+- [Getting Started](requirements/README.md)
+- [User Guide](USER_GUIDE.md)
+- [Contributing](CONTRIBUTING.md)
+- [License](LICENSE.md)
+- [FAQ](FAQ.md)
 - [Citation](#citation)
 
 ## What is SatVision-TOA?
@@ -37,7 +37,7 @@ We introduce SatVision-TOA, a novel foundation model pre-trained on 14-band MODI
 * 1) Image reconstruction performance, which evaluates the masked-image-modeling task on unseen data, 
 * 2) 3D cloud retrieval, a downstream task targeting the prediction of vertical cloud structure.
 
-## Why SatVision-TOA?
+## Why use SatVision-TOA?
 This is the largest foundation model trained solely on satellite remote sensing imagery. Initial results indicate that SatVision-TOA achieves superior performance over baseline methods when applied to downstream tasks such as 3D cloud retrieval.  Our work advances pre-trained vision modeling for multispectral remote sensing by learning from a variety of atmospheric and aerosol conditions to improve cloud and land surface monitoring.
 
 _SatVision-TOA is a _foundation model_, which means that it was first generally trained on a lot of data,_
@@ -57,7 +57,7 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 
-See [`LICENSE.md`](CONTRIBUTING.md).
+See [`LICENSE.md`](LICENSE.md).
 
 ## FAQ
 
