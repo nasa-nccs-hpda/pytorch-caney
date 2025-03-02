@@ -2,10 +2,11 @@
 
 **_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_**
 
-See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
+See _4.2 3D Cloud Retrieval Downstream Task_ (https://arxiv.org/pdf/2411.17000) for prediction details.
+
 * [Run Image Reconstruction with Pretrained Model](./USER_GUIDE_IMAGE.md)
 
-### Sample Session - Image Reconstruction 
+### Sample Session - 3D Cloud Retrieval
 
 ```bash
 (base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision/pytorch-caney$ module load singularity

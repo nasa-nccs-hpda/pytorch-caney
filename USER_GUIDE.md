@@ -9,7 +9,7 @@ We anticipate that users will only initiate pipelines that leverage our _publish
 _For completeness, we have also provided the training pipeline (3) that was used to pre-train_ 
 _the SatVision-TOA model.  Note that this pipeline requires advanced GPU and storage requirements._
 
-**_NOTE:  Complete [installation instructions](requirements/README.md) before proceeding._**
+**_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_**
 
 ## <b> Running SatVision-TOA Pipelines </b>
 

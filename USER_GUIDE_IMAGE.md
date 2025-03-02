@@ -1,6 +1,8 @@
 # USER GUIDE - Pipeline 1.  Image Reconstruction
 
-_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_
+**_NOTE: The Getting Started section must be completed [first.](requirements/README.md)_**
+
+See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
 
 ## Input
 The runtime script, which generates model predictions and calculates the associated reconstruction losses, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change these paths. 
