@@ -228,7 +228,7 @@ sys	12m11.982s
 
 ## Output
 
-The results, logs, and model checkpoints are saved in a directory specified by: <output-dir>/<model-name>/<tag>/.  For example:
+The results, logs, and model checkpoints are saved in a directory specified by ```<output-dir>/<model-name>/<tag>```.  For example:
 
 ``` bash
 (base) <user>@ilab213:/explore/nobackup/projects/ilab/projects/Satvision$ ls -aRt 3dcloud-retrieval/
