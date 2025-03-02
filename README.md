@@ -24,7 +24,7 @@ You can also directly go to [a full-fledged example that runs the model on ERA5]
 Contents:
 
 - [What is SatVision-TOA?](#what-is-satvision-toa)
-- [Why SatVision-TOA?](#why-satvision-toa)
+- [Why use SatVision-TOA?](#why-satvision-toa)
 - [Getting Started](requirements/README.md)
 - [User Guide](USER_GUIDE.md)
 - [Contributing](CONTRIBUTING.md)
