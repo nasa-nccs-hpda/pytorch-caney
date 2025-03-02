@@ -27,7 +27,7 @@ Contents:
 - [Why use SatVision-TOA?](#why-satvision-toa)
 - [Getting Started](requirements/README.md)
 - [User Guide](USER_GUIDE.md)
--     [Image Reconstruction](USER_GUIDE.md#pipeline-1--image-reconstruction)
+- [Image Reconstruction](USER_GUIDE.md#pipeline-1--image-reconstruction)
 - [Contributing](CONTRIBUTING.md)
 - [License](LICENSE.md)
 - [FAQ](FAQ.md)
