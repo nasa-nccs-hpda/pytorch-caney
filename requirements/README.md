@@ -2,7 +2,7 @@
 
 In addition to the instructions below, GPU support is required to effectively run SatVision-TOA.  
 
-_ NOTE: CPU support is limited and the author does not provide any guarantee of usability._
+_NOTE: CPU support is limited and the author does not provide any guarantee of usability._
 
 ## Provided
 
@@ -24,7 +24,7 @@ _ NOTE: CPU support is limited and the author does not provide any guarantee of 
 
 SatVision-TOA can be installed in at least two ways: 1) Singularity container or 2) Anaconda environment.
 
-#### 1) Singularity Container Installation
+#### 1(a) Singularity Container Installation
 
 ```bash
 module load singularity
@@ -40,7 +40,7 @@ singularity shell --nv -B <mounts> /path/to/container/pytorch-caney
 Singularity> python <SatVision-TOA API>
 ```
 
-#### 2) Anaconda Environment Installation
+#### 1(b) Anaconda Environment Installation
 
 ``` bash
 git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git
@@ -125,7 +125,46 @@ at runtime.  So, we suggest that all installation steps occur from the same root
 ### _Sample Session - Download SatVision-TOA datasets_ 
 
 ```bash
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ cd /explore/nobackup/projects/ilab/projects/Satvision
+<user>@gpu004:~$ cd /explore/nobackup/projects/ilab/projects/Satvision
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git
+Cloning into 'pytorch-caney'...
+remote: Enumerating objects: 1337, done.
+remote: Counting objects: 100% (176/176), done.
+remote: Compressing objects: 100% (103/103), done.
+remote: Total 1337 (delta 104), reused 90 (delta 73), pack-reused 1161 (from 1)
+Receiving objects: 100% (1337/1337), 20.08 MiB | 15.85 MiB/s, done.
+Resolving deltas: 100% (749/749), done.
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ module load git-lfs
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git lfs install
+Updated Git hooks.
+Git LFS initialized.
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128
+Cloning into 'satvision-toa-giant-patch8-window8-128'...
+remote: Enumerating objects: 28, done.
+remote: Counting objects: 100% (24/24), done.
+remote: Compressing objects: 100% (24/24), done.
+remote: Total 28 (delta 12), reused 0 (delta 0), pack-reused 4 (from 1)
+Receiving objects: 100% (28/28), 14.75 KiB | 14.75 MiB/s, done.
+Resolving deltas: 100% (12/12), done.
+Encountered 1 file that may not have been copied correctly on Windows:
+	mp_rank_00_model_states.pt
+
+See: `git lfs help smudge` for more details.
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
+Cloning into 'modis_toa_cloud_reconstruction_validation'...
+remote: 
+remote: ========================================================================
+remote: 
+remote: ERROR: Repository not found
+
+remote: 
+remote: ========================================================================
+remote: 
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ 
 <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git
 <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ module load git-lfs
 <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git lfs install
@@ -136,4 +175,4 @@ at runtime.  So, we suggest that all installation steps occur from the same root
 
 NOTES: 
 - After vetting, the docs branch will be migrated into the main branch.  At this point, we can drop the ```--single-branch --branch docs``` parameter
-- We are missing a file from the HF repo (Jordan?):  datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
+- We are missing this file from the HF repo (Jordan?):  datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation.  Image reconstruction cannot be run until this is restored.
