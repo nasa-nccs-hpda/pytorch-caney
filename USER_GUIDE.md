@@ -3,8 +3,8 @@
 SatVision-TOA is composed of packaged Python applications called pipelines, which weave together 
 configurable modules to perform workflows.  The runtime instructions for these pipelines below, 
 typically involve running a python command-line application with a single configuration file.  
-
-We anticipate that users will only initiate pipelines that leverage our _published, pre-trained_ model.  For example, (1) image reconstruction and (2) 3D cloud retrieval.  
+We anticipate that users will only initiate pipelines that leverage our _published, pre-trained_ model.  
+For example, (1) image reconstruction and (2) 3D cloud retrieval.  
 
 _For completeness, we have also provided the training pipeline (3) that was used to pre-train_ 
 _the SatVision-TOA model.  Note that this pipeline requires advanced GPU and storage requirements._
@@ -37,7 +37,6 @@ See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for re
 
 See _4.2 3D Cloud Retrieval Downstream Task_ (https://arxiv.org/pdf/2411.17000) for prediction details.
 * [Run 3D Cloud Task with Pretrained Model](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-examples-)
-* [Run 3D Cloud Task with baseline model](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-examples-)
 
 ## Pipeline 3. Model Training
 See _3.1 Developing a remote sensing pre-training dataset with MODIS TOA_ (https://arxiv.org/pdf/2411.17000) for methodology.
