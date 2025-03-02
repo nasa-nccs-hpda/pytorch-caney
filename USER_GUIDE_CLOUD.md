@@ -1,18 +1,9 @@
-# USER GUIDE - Pipeline 1.  Image Reconstruction
+## USER GUIDE - Image Reconstruction with Pretrained Model
 
-## Input
+## Pipeline 1.  Image Reconstruction
 
-### Key Configuration Parameters 
-| Command-line-argument | Description                       |Required/Optional/Flag | Default  |
-| --------------------- |:----------------------------------|:---------|:---------|
-| `MODEL_PATH`          | Path to training model checkpoint | Required | '../satvision-toa-giant-patch8-window8-128/mp_rank_00_model_states.pt'  |
-| `CONFIG_PATH`         | Path to training model settings   | Required | '../satvision-toa-giant-patch8-window8-128/mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml'  |
-| `DATA_PATH`           | Path to validation file           | Required | '../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy'  |
-| `OUTPUT_PATH`         | Path to image result file (pdf)   | Required | './image-reconstruction-example.pdf'  |
-
-## Output
-
-PDF file with images comparing ....
+See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
+* [Run Image Reconstruction with Pretrained Model](./USER_GUIDE_IMAGE.md)
 
 ### Sample Session - Image Reconstruction 
 

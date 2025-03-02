@@ -9,8 +9,6 @@ We anticipate that users will only initiate pipelines that leverage our _publish
 _For completeness, we have also provided the training pipeline (3) that was used to pre-train_ 
 _the SatVision-TOA model.  Note that this pipeline requires advanced GPU and storage requirements._
 
-### PIPELINES 
-
 **_NOTE:  Complete [installation instructions](requirements/README.md) before proceeding._**
 
 ## <b> Running SatVision-TOA Pipelines </b>
@@ -29,6 +27,7 @@ $ python pytorch-caney/pytorch_caney/ptc_cli.py --config-path <Path to config fi
 | `-config-path`                  | Path to training config                                   | Required | N/A      |`--config-path pytorch-caney/configs/3dcloudtask_swinv2_satvision_gaint_test.yaml`         |
 | `-h, --help`               | show this help message and exit                  | Optional | N/a      |`--help`, `-h` |
 
+
 ## Pipeline 1.  Image Reconstruction
 
 See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
@@ -41,5 +40,5 @@ See _4.2 3D Cloud Retrieval Downstream Task_ (https://arxiv.org/pdf/2411.17000) 
 * [Run 3D Cloud Task with baseline model](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-examples-)
 
 ## Pipeline 3. Model Training
-See _3.1 Developing a remote sensing pre-training dataset with MODIS TOA_ for methodology.
+See _3.1 Developing a remote sensing pre-training dataset with MODIS TOA_ (https://arxiv.org/pdf/2411.17000) for methodology.
 * [Run SatVision-TOA Pretraining from Scratch](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128)
