@@ -34,7 +34,7 @@ Contents:
 
 ## What is SatVision-TOA?
 We introduce SatVision-TOA, a novel foundation model pre-trained on 14-band MODIS L1B Top-Of-Atmosphere (TOA) radiance imageries, addressing the need for models that handle moderate- and coarse-resolution all- sky remote sensing data. The SatVision-TOA model is pre-trained using a Masked-Image-Modeling (MIM) framework and the SwinV2 architecture, and learns detailed contextual representations through self-supervised learning without the need for labels. It is a 3 billion parameter model that is trained on 100 million images.  To validate the model we focused on two key applications: 
-* 1) Image reconstruction performance, which evaluates the masked-image-modeling task on unseen data, 
+### 1) Image reconstruction performance, which evaluates the masked-image-modeling task on unseen data, 
 * 2) 3D cloud retrieval, a downstream task targeting the prediction of vertical cloud structure.
 
 ## Why use SatVision-TOA?

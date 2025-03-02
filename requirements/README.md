@@ -4,6 +4,7 @@
 
 * Container platform _or_ virtual environment (e.g., anaconda). 
 * GPU support.
+* HuggingFace account
 
 _CPU support is limited and the author does not provide any guarantee of usability._
 
