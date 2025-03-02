@@ -63,5 +63,44 @@ _Note that the only runtime difference based on installation is that the command
 
 
 TBD
-- Add hugging face certificate stuff here....
+
+Setup a HuggingFace account in order to retrieve the model and supporting datasets.  Specify _<e-mail address>_ to link to account.
+
+* https://huggingface.co/join?next=%2Fsettings%2Fkeys
+
+- Add hugging face key stuff here....
+
+https://huggingface.co/docs/hub/en/security-git-ssh#add-a-ssh-key-to-your-account
+
+
+### _Sample Session - Create SSH key and add to Hugging Face_ 
+
+```bash
+<user>@discover14:/lscratch/tdirs/gt-scratch/satvision-toa-test$ ssh-keygen -t ed25519 -C "_<e-mail address>_"
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/<user>/.ssh/id_ed25519): /home/<user>/.ssh/id_satvision-toa-test
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+
+Your identification has been saved in /home/<user>/.ssh/id_satvision-toa-test.
+Your public key has been saved in /home/<user>.ssh/id_satvision-toa-test.pub.
+The key fingerprint is:
+SHA256:2ztflrt/OxUFW4UKlOBQQzrnpoVPTLbEo3wZJ/XXXXXX _<e-mail address>_ 
+The key's randomart image is:
++--[ED25519 256]--+
+|      .o=o..  .o+|
+|       = .o   .o.|
+|      o @ .. .. .|
+|     . & B  .  . |
+|      E S       .|
+|       O +     ..|
++----[SHA256]-----+
+<user>@discover14:/lscratch/tdirs/gt-scratch/satvision-toa-test$ 
+<user>@discover14:/lscratch/tdirs/gt-scratch/satvision-toa-test$ ls -alt ~/.ssh/id_satvision-*
+-rw------- 1 <user> ilab 105 Mar  2 08:20 /home/<user>/.ssh/id_satvision-toa-test.pub
+-rw------- 1 <user> ilab 419 Mar  2 08:20 /home/<user>/.ssh/id_satvision-toa-test
+gtamkin@discover14:/lscratch/tdirs/gt-scratch/satvision-toa-test$ more /home/gtamkin/.ssh/id_satvision-toa-test.pub
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHt6HC5R4gT2ZwUg8zqijhNj4Op86isIfY2LXXXXX _<e-mail address>_
+```
+
 - We are missing a file from the HF repo:  
