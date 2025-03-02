@@ -65,7 +65,7 @@ _Note that the only runtime difference based on installation is that the command
 
 ## Setup Hugging Face (HF) Account Access
 
-Setup a HuggingFace account in order to retrieve the model and supporting datasets.  Required steps:
+A Hugging Face account is required in order to retrieve the model and supporting datasets.  Required steps:
 1. Create HF account.
 2. Create a local SSH key.
 3. Register the SSH key with HF.
