@@ -2,8 +2,7 @@
 
 SatVision-TOA is composed of packaged Python applications called pipelines, which weave together 
 configurable modules to perform workflows.  The runtime instructions for these pipelines below, 
-typically involve running a python command-line application with a single configuration file.  
-We anticipate that users will only initiate pipelines that leverage our _published, pre-trained_ model.  
+typically involve running a python command-line application with a single configuration file.  We anticipate that users will only initiate pipelines that leverage our _published, pre-trained_ model.  
 For example, (1) image reconstruction and (2) 3D cloud retrieval.  
 
 _For completeness, we have also provided the training pipeline (3) that was used to pre-train_ 

@@ -15,13 +15,17 @@ The runtime script, which generates model predictions and calculates the associa
 | `DATA_PATH`           | Path to validation file           | ../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy  |
 | `OUTPUT_PATH`         | Path to image result file (pdf)   | ./image-reconstruction-example.pdf  |
 
-## Output
+Annotated commands here, actual session with expected results follows:
+| Description                       | Syntax  |
+| ----------------------------------|:---------|
+| Navigate to root | cd /explore/nobackup/projects/ilab/projects/Satvision  |
+| Run script  | singularity exec --nv -B /explore/nobackup/projects/ilab/projects /explore/nobackup/projects/ilab/containers/pytorch-caney-container python tests/image_reconstruction.py  |
 
-PDF file with images comparing ....
 
 ### _Sample Session - Image Reconstruction_ 
 
 ```bash
+$ cd /explore/nobackup/projects/ilab/projects/Satvision  
 $ module load singularity
 $ export PYTHONPATH=$PWD:$PWD/pytorch-caney
 $ singularity exec --nv -B /explore/nobackup/projects/ilab/projects /explore/nobackup/projects/ilab/containers/pytorch-caney-container python tests/image_reconstruction.py 
@@ -41,3 +45,7 @@ Successfully exported reconstruction results to: ./image-reconstruction-example.
 ```
 
 ![Reconstruction results:](image.png)
+
+## Output
+
+PDF file with images comparing ....
