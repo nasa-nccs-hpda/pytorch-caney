@@ -1,15 +1,15 @@
 # USER GUIDE - Pipeline 1.  Image Reconstruction
 
 ## Input
-The runtime script, which generates model predictions and calculates the associated reconstruction losses, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change paths. 
+The runtime script, which generates model predictions and calculates the associated reconstruction losses, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change these paths. 
 
 ### Key Configuration Parameters 
 | Command-line-argument | Description                       | Default  |
 | --------------------- |:----------------------------------|:---------|
-| `MODEL_PATH`          | Path to training model checkpoint | '../satvision-toa-giant-patch8-window8-128/mp_rank_00_model_states.pt'  |
-| `CONFIG_PATH`         | Path to training model settings   | '../satvision-toa-giant-patch8-window8-128/mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml'  |
-| `DATA_PATH`           | Path to validation file           | '../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy'  |
-| `OUTPUT_PATH`         | Path to image result file (pdf)   | './image-reconstruction-example.pdf'  |
+| `MODEL_PATH`          | Path to training model checkpoint | ../satvision-toa-giant-patch8-window8-128/mp_rank_00_model_states.pt  |
+| `CONFIG_PATH`         | Path to training model settings   | ../satvision-toa-giant-patch8-window8-128/mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml  |
+| `DATA_PATH`           | Path to validation file           | ../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy  |
+| `OUTPUT_PATH`         | Path to image result file (pdf)   | ./image-reconstruction-example.pdf  |
 
 ## Output
 

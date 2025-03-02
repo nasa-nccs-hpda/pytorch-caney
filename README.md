@@ -43,26 +43,6 @@ This is the largest foundation model trained solely on satellite remote sensing 
 _SatVision-TOA is a _foundation model_, which means that it was first generally trained on a lot of data,_
 _and then can be adapted to specialized cloud and land surface monitoring tasks with relatively little data._
 
-## Getting Started
-
-See requirements and installation [instructions](requirements/README.md).
-
-## User Guide
-
-See [User Guide](USER_GUIDE.md). 
-
-## Contributing
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-## License
-
-See [`LICENSE.md`](LICENSE.md).
-
-## FAQ
-
-See [`FAQ.md`](FAQ.md).
-
 ## Citation
 
 Cite us as follows:

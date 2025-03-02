@@ -127,7 +127,7 @@ Annotated commands here, actual session with expected results follows:
 | ----------------------------------|:---------|
 | Navigate to root | cd /explore/nobackup/projects/ilab/projects/Satvision  |
 | Install source code   | git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git |
-| Instalize git-lfs   | module load git-lfs; git lfs install |
+| Initialize git-lfs   | module load git-lfs; git lfs install |
 | install model          | git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128 |
 | Install support data   | git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation |
 
