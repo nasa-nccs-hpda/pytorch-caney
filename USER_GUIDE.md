@@ -31,12 +31,12 @@ $ python pytorch-caney/pytorch_caney/ptc_cli.py --config-path <Path to config fi
 ## Pipeline 1.  Image Reconstruction
 
 See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
-* [Run Image Reconstruction with Pretrained Model](./USER_GUIDE_IMAGE.md)
+* [Run Image Reconstruction with Pretrained Model](USER_GUIDE_IMAGE.md)
 
 ## Pipeline 2. 3D Cloud Retrieval
 
 See _4.2 3D Cloud Retrieval Downstream Task_ (https://arxiv.org/pdf/2411.17000) for prediction details.
-* [Run 3D Cloud Task with Pretrained Model](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-examples-)
+* [Run 3D Cloud Task with Pretrained Model](USER_GUIDE_CLOUD.md)
 
 ## Pipeline 3. Model Training
 See _3.1 Developing a remote sensing pre-training dataset with MODIS TOA_ (https://arxiv.org/pdf/2411.17000) for methodology.
