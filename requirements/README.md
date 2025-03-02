@@ -74,7 +74,7 @@ A Hugging Face account is required in order to retrieve the model and supporting
 Visit the [website](https://huggingface.co/join) to create HF account by specifying the "_<e-mail address>_" to link to account.
 
 ### 2) Create a local SSH key 
-Perform the shortcut steps in the sample session below to create an SSH key and add it to HF.  Background details are provided [here]https://huggingface.co/docs/hub/en/security-git-ssh#add-a-ssh-key-to-your-account
+Perform the shortcut steps in the sample session below to create an SSH key and add it to HF.  Background details are provided here: https://huggingface.co/docs/hub/en/security-git-ssh#add-a-ssh-key-to-your-account
 
 ### _Sample Session - Create SSH key and add to Hugging Face_ 
 
@@ -108,6 +108,8 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHt6HC5R4gT2ZwUg8zqijhNj4Op86isIfY2LXXXXX _<
 ```
 
 ### 3) Register the SSH key with HF 
+
+Cut and paste the contents of the .pub file into the GUI: https://huggingface.co/settings/keys/add?type=ssh
 ![https://huggingface.co/settings/keys/add?type=ssh](ssh.png)
 
 
