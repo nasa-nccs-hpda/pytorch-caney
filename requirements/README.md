@@ -122,6 +122,14 @@ at runtime.  So, we suggest that all installation steps occur from the same root
 * Model Repository: https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128
 * Dataset repo: https://huggingface.co/datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
 
+Annotated commands:
+$ cd /explore/nobackup/projects/ilab/projects/Satvision <or your favorite root directory>     # move to root
+$ git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git # download SatVision-TOA source code
+$ module load git-lfs                                                                         # load the Git large file module 
+$ git lfs install                                                                             # initialize Git large file module
+$ git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128    # download model
+$ git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation # download image stats validation file
+
 ### _Sample Session - Download SatVision-TOA datasets_ 
 
 ```bash
@@ -164,12 +172,8 @@ fatal: Could not read from remote repository.
 
 Please make sure you have the correct access rights
 and the repository exists.
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ 
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone --single-branch --branch docs https://github.com/nasa-nccs-hpda/pytorch-caney.git
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ module load git-lfs
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git lfs install
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128
-<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
+```
+
 
 ```
 
