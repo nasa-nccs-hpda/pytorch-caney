@@ -45,11 +45,11 @@ _and then can be adapted to specialized cloud and land surface monitoring tasks 
 
 ## Getting Started
 
-See requirements and installation [instructions](requirements/README.md) 
+See requirements and installation [instructions](requirements/README.md).
 
 ## User Guide
 
-See [User Guide](USER_GUIDE.md) 
+See [User Guide](USER_GUIDE.md). 
 
 ## Contributing
 
