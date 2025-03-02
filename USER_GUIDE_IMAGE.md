@@ -37,3 +37,4 @@ Calling model.encoder() for 128 samples to run prediction and calculate reconstr
 Successfully exported reconstruction results to: ./image-reconstruction-example.pdf
 ```
 
+![Reconstruction results:](image.png)
