@@ -10,10 +10,10 @@
 # ## 1. Setup and Install Dependencies
 
 ''' 
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ module load git-lfs
+(base) <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ module load git-lfs
 
 # ## 1.a. Fetch the model ckpt from huggingface
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128
+(base) <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128
 Cloning into 'satvision-toa-giant-patch8-window8-128'...
 X11 forwarding request failed on channel 0
 remote: Enumerating objects: 28, done.
@@ -22,11 +22,11 @@ remote: Compressing objects: 100% (24/24), done.
 remote: Total 28 (delta 12), reused 0 (delta 0), pack-reused 4 (from 1)
 Receiving objects: 100% (28/28), 14.75 KiB | 3.69 MiB/s, done.
 Resolving deltas: 100% (12/12), done.
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ ls satvision-toa-giant-patch8-window8-128/
+(base) <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ ls satvision-toa-giant-patch8-window8-128/
 mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml  mp_rank_00_model_states.pt  README.md
 
 # ## 1.b. Fetch  the validation dataset
-# (base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
+# (base) <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ git clone git@hf.co:datasets/nasa-cisto-data-science-group/modis_toa_cloud_reconstruction_validation
 
 '''
 

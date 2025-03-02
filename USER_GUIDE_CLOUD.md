@@ -27,7 +27,7 @@ Annotated commands here, actual session with expected results follows:
 ### _Sample Session - 3D Cloud Retrieval_ 
 
 ```bash
-(base) gtamkin@gpu002:/explore/nobackup/projects/ilab/projects/Satvision$ time singularity exec --nv -B /explore/nobackup/projects/ilab/projects/Satvision,/explore/nobackup/projects/ilab/data/satvision-toa /explore/nobackup/projects/ilab/containers/pytorch-caney-container python ./pytorch-caney/pytorch_caney/ptc_cli.py --config-path ./pytorch-caney/configs/3dcloud_retrieval.yaml
+(base) <user>@gpu002:/explore/nobackup/projects/ilab/projects/Satvision$ time singularity exec --nv -B /explore/nobackup/projects/ilab/projects/Satvision,/explore/nobackup/projects/ilab/data/satvision-toa /explore/nobackup/projects/ilab/containers/pytorch-caney-container python ./pytorch-caney/pytorch_caney/ptc_cli.py --config-path ./pytorch-caney/configs/3dcloud_retrieval.yaml
 WARNING: underlay of /etc/localtime required more than 50 (117) bind mounts
 WARNING: underlay of /usr/bin/nvidia-smi required more than 50 (616) bind mounts
 13:4: not a valid test operator: (
@@ -231,7 +231,7 @@ sys	12m11.982s
 The results, logs, and model checkpoints are saved in a directory specified by: <output-dir>/<model-name>/<tag>/.  For example:
 
 ``` bash
-(base) gtamkin@ilab213:/explore/nobackup/projects/ilab/projects/Satvision$ ls -aRt 3dcloud-retrieval/
+(base) <user>@ilab213:/explore/nobackup/projects/ilab/projects/Satvision$ ls -aRt 3dcloud-retrieval/
 3dcloud-retrieval/:
 3dcloud-retrieval  .  ..
 
