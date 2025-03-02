@@ -18,7 +18,7 @@ The runtime script, which generates model predictions and calculates the associa
 Annotated commands here, actual session with expected results follows:
 | Description                       | Syntax  |
 | ----------------------------------|:---------|
-| Run script  | singularity exec --nv -B /explore/nobackup/projects/ilab/projects /explore/nobackup/projects/ilab/containers/pytorch-caney-container python tests/image_reconstruction.py  |
+| Run script  | python tests/image_reconstruction.py  |
 
 
 ### _Sample Session - Image Reconstruction_ 
@@ -49,7 +49,7 @@ The resulting PDF file contains four images for each reconstructed sample.
 
 * Bottom Left: MOD021KM v6.1 cropped image chip using MODIS bands [0, 2, 1] (truth). 
 * Bottom Right:  The randomly generated reconstruction mask, which masks 60% of the original image.  
-* Top Right: The same images with the mask applied. 
+* Top Right: The same image as bottom left with the mask applied. 
 * Top Left: The reconstructed images produced by the model. These examples illustrate the model’s ability to preserve structural detail and reconstruct heterogeneous features, such as cloud textures and land-cover transitions, with high fidelity.
 
 ![Reconstruction results:](image.png)
