@@ -76,7 +76,7 @@ Perform the shortcut steps in the sample session below to create an SSH key and 
 ### _Sample Session - Create SSH key and add to Hugging Face_ 
 
 ```bash
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision
+<user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision
 <user>@gpu004:/explore/nobackup/projects/ilab/projects/Satvision$ ssh-keygen -t ed25519 -C "_<e-mail address>_"
 Generating public/private ed25519 key pair.
 Enter file in which to save the key (/home/<user>/.ssh/id_ed25519): /home/<user>/.ssh/id_satvision-toa-test
