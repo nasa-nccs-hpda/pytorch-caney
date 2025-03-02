@@ -5,7 +5,7 @@
 See _4.2 3D Cloud Retrieval Downstream Task_ (https://arxiv.org/pdf/2411.17000) for prediction details.
 
 ## Input
-The runtime script, which generates model predictions and calculates the associated reconstruction losses, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change these paths. 
+The runtime script, which  predicts a 3D cloud vertical structure, specifies the following default values for input data file locations.  Modify ```tests/image_reconstruction.py``` directly to change these paths. 
 
 ### Key Configuration Parameters 
 | Command-line-argument | Description                       | Default  |

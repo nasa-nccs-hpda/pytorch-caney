@@ -15,12 +15,6 @@ _While instructions for training the model are provided for reference, this depl
 
 Concept and design details are provided in the paper on [arXiv.](https://arxiv.org/pdf/2411.17000)
 
-See system requirements for [installation instructions](requirements/README.md) 
-
-[Please see the documentation for detailed instructions and more examples.](https://microsoft.github.io/satvision)
-You can also directly go to [a full-fledged example that runs the model on ERA5](https://microsoft.github.io/satvision/example_era5.html).
-
-
 Contents:
 
 - [What is SatVision-TOA?](#what-is-satvision-toa)
