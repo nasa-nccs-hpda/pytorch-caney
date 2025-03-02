@@ -4,6 +4,6 @@
 
 See requirements and installation [instructions](requirements/README.md) 
 
-### How do I train my own SatVision model?
+### Do I to train my own SatVision model?
 
-TBD
+No, you are invited to use our pretrained model: https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128#-satvision-toa-

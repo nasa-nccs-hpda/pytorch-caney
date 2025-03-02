@@ -24,7 +24,6 @@ Contents:
 - ===> [Image Reconstruction](USER_GUIDE.md#pipeline-1--image-reconstruction)
 - ===> [3D Cloud Retrieval](USER_GUIDE.md#pipeline-2-3d-cloud-retrieval)
 - ===> [Model Training](https://huggingface.co/nasa-cisto-data-science-group/satvision-toa-giant-patch8-window8-128)
-- [Contributing](CONTRIBUTING.md)
 - [License](LICENSE.md)
 - [FAQ](FAQ.md)
 - [Citation](#citation)
