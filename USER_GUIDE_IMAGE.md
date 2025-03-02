@@ -1,25 +1,27 @@
 # USER GUIDE - Pipeline 1.  Image Reconstruction
 
 ## Input
+The runtime script, which generation model predictions and calculates the associated reconstruction losses, contains the following default values for input data file locations.  
+Modify ```tests/image_reconstruction.py``` directly to change paths. 
 
 ### Key Configuration Parameters 
-| Command-line-argument | Description                       |Required/Optional/Flag | Default  |
-| --------------------- |:----------------------------------|:---------|:---------|
-| `MODEL_PATH`          | Path to training model checkpoint | Required | '../satvision-toa-giant-patch8-window8-128/mp_rank_00_model_states.pt'  |
-| `CONFIG_PATH`         | Path to training model settings   | Required | '../satvision-toa-giant-patch8-window8-128/mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml'  |
-| `DATA_PATH`           | Path to validation file           | Required | '../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy'  |
-| `OUTPUT_PATH`         | Path to image result file (pdf)   | Required | './image-reconstruction-example.pdf'  |
+| Command-line-argument | Description                       | Default  |
+| --------------------- |:----------------------------------|:---------|
+| `MODEL_PATH`          | Path to training model checkpoint | '../satvision-toa-giant-patch8-window8-128/mp_rank_00_model_states.pt'  |
+| `CONFIG_PATH`         | Path to training model settings   | '../satvision-toa-giant-patch8-window8-128/mim_pretrain_swinv2_satvision_giant_128_window08_50ep.yaml'  |
+| `DATA_PATH`           | Path to validation file           | '../modis_toa_cloud_reconstruction_validation/sv_toa_128_chip_validation_04_24.npy'  |
+| `OUTPUT_PATH`         | Path to image result file (pdf)   | './image-reconstruction-example.pdf'  |
 
 ## Output
 
 PDF file with images comparing ....
 
-### Sample Session - Image Reconstruction 
+### _Sample Session - Image Reconstruction_ 
 
 ```bash
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision/pytorch-caney$ module load singularity
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision/pytorch-caney$ export PYTHONPATH=$PWD:$PWD/pytorch-caney
-(base) gtamkin@gpu004:/explore/nobackup/projects/ilab/projects/Satvision/pytorch-caney$ singularity exec --nv -B /explore/nobackup/projects/ilab/projects /explore/nobackup/projects/ilab/containers/pytorch-caney-container python tests/image_reconstruction.py 
+$ module load singularity
+$ export PYTHONPATH=$PWD:$PWD/pytorch-caney
+$ singularity exec --nv -B /explore/nobackup/projects/ilab/projects /explore/nobackup/projects/ilab/containers/pytorch-caney-container python tests/image_reconstruction.py 
 WARNING: underlay of /etc/localtime required more than 50 (117) bind mounts
 WARNING: underlay of /usr/bin/nvidia-smi required more than 50 (616) bind mounts
 13:4: not a valid test operator: (

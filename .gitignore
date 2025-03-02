@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 README.md.main
+image-reconstruction-example.pdf
