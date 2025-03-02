@@ -13,6 +13,22 @@ _the SatVision-TOA model.  Note that this pipeline requires advanced GPU and sto
 
 **_NOTE:  Complete [installation instructions](requirements/README.md) before proceeding._**
 
+## <b> Running SatVision-TOA Pipelines </b>
+
+### <b> Command-Line Interface (CLI) </b>
+
+To run tasks with **SatVision-TOA**, use the following command:
+
+```bash
+$ python pytorch-caney/pytorch_caney/ptc_cli.py --config-path <Path to config file>
+```
+
+### <b> Common CLI Arguments </b>
+| Command-line-argument | Description                                         |Required/Optional/Flag | Default  | Example                  |
+| --------------------- |:----------------------------------------------------|:---------|:---------|:--------------------------------------|
+| `-config-path`                  | Path to training config                                   | Required | N/A      |`--config-path pytorch-caney/configs/3dcloudtask_swinv2_satvision_gaint_test.yaml`         |
+| `-h, --help`               | show this help message and exit                  | Optional | N/a      |`--help`, `-h` |
+
 ## Pipeline 1.  Image Reconstruction
 
 See Section _4.1 Image Reconstruction_ (https://arxiv.org/pdf/2411.17000) for reconstruction performance measurements.
