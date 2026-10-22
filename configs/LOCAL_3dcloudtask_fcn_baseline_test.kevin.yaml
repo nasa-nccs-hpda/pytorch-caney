@@ -1,0 +1,33 @@
+PIPELINE: '3dcloud'
+DATAMODULE: 'abitoa3dcloud'
+MODEL:
+  ENCODER: 'fcn'
+  DECODER: 'fcn'
+  NAME: 3dcloud-fcn-baseline
+  IN_CHANS: 14
+  DROP_PATH_RATE: 0.1
+DATA:
+  BATCH_SIZE: 8  # Reduced from 32 for small dataset
+  DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
+  TEST_DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
+  IMG_SIZE: 128
+  NUM_WORKERS: 0
+TRAIN:
+  ACCELERATOR: 'gpu'
+  STRATEGY: 'auto'
+  EPOCHS: 2  # Reduced from 50 for quick test
+  WARMUP_EPOCHS: 1  # Reduced from 10
+  BASE_LR: 3e-4
+  MIN_LR: 2e-4
+  WARMUP_LR: 1e-4
+  WEIGHT_DECAY: 0.05
+  LR_SCHEDULER:
+    NAME: 'multistep'
+    GAMMA: 0.1
+    MULTISTEPS: [700,]
+LOSS:
+  NAME: 'bce'
+PRINT_FREQ: 1
+SAVE_FREQ: 50
+VALIDATION_FREQ: 20
+TAG: 3dcloud_task_fcn_baseline_128_scaled_bt_minmax_LOCAL_TEST_KEVIN
