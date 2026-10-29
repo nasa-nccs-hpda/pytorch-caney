@@ -7,6 +7,7 @@ import datetime
 from tqdm import tqdm
 import numpy as np
 from skimage.metrics import mean_squared_error, structural_similarity as ssim
+import pandas as pd
 import logging
 
 import torch
@@ -214,8 +215,8 @@ for i, f in enumerate(validation_dataset_path.rglob("*.npz")):
         tmp_validation_dataset = archive["chip"]
     full_validation_dataset.append(tmp_validation_dataset)
 
-    if i >= 200:
-        break
+    # if i >= 200:
+    #    break
 full_validation_dataset = np.array(full_validation_dataset)
 
 solar_zenith = full_validation_dataset[:, :, :, -1]
@@ -265,7 +266,13 @@ for i in tqdm(range(img.shape[0])):
     inputs.extend(single_img.cpu())
     masks.extend(single_mask.cpu())
     outputs.extend(img_recon.cpu())
-    losses.append(loss.cpu())
+    losses.append(loss.cpu().item())
+
+goes_vis_losses = pd.Series(losses)
+goes_vis_df = pd.DataFrame({"Losses": goes_vis_losses})
+goes_vis_df.to_csv("goes_vis_losses.csv")
+print(goes_vis_df)
+exit()
 
 rgb_index = [0, 2, 1]
 for idx in range(len(inputs)):
