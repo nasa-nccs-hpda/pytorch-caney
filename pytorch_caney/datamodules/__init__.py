@@ -1,9 +1,11 @@
 from .abi_3dcloud_datamodule import AbiToa3DCloudDataModule
+from .abi_3dcloud_track_datamodule import AbiToa3DCloudTrackDataModule
 from .modis_toa_mim_datamodule import ModisToaMimDataModule
 
 
 DATAMODULES = {
     'abitoa3dcloud': AbiToa3DCloudDataModule,
+    'abitoa3dcloud_track': AbiToa3DCloudTrackDataModule,
     'modistoamimpretrain': ModisToaMimDataModule,
 }
 

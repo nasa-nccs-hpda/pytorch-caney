@@ -35,6 +35,26 @@ _C.DATA.INTERPOLATION = 'bicubic'
 _C.DATA.PIN_MEMORY = True
 # Number of data loading threads
 _C.DATA.NUM_WORKERS = 8
+# Raw ABI channel numbers (1-based) to select from input chips.
+_C.DATA.INPUT_CHANNELS = [2, 3, 1, 5, 6, 7, 4, 9, 10, 11, 12, 14, 15, 16]
+# Raw solar zenith angle channel number (1-based) used for plotting day/night.
+_C.DATA.SOLAR_ZENITH_CHANNEL = 22
+# Key names for curtain rasterization.
+_C.DATA.CURTAIN_KEY = 'Cloud_mask'
+_C.DATA.CURTAIN_VALID_KEY = 'cloud_mask_cpr_atlid_msi_1km'
+_C.DATA.CURTAIN_HEIGHT_KEY = 'height'
+_C.DATA.TRACK_ROW_KEY = 'chip_row_idx'
+_C.DATA.TRACK_COL_KEY = 'chip_col_idx'
+# Optional fill value inside the curtain labels.
+_C.DATA.CURTAIN_FILL_VALUE = None
+# Number of vertical bins to exclude from the top/bottom of the curtain.
+_C.DATA.CURTAIN_EXCLUDE_TOP_BINS = 0
+_C.DATA.CURTAIN_EXCLUDE_BOTTOM_BINS = 0
+# How to merge multiple profiles that land in the same ABI pixel.
+_C.DATA.CURTAIN_AGGREGATION = 'majority'
+_C.DATA.CURTAIN_AGGREGATION_THRESHOLD = 0.5
+# Optionally return collate-safe metadata alongside dense labels.
+_C.DATA.RETURN_METADATA = False
 # [SimMIM] Mask patch size for MaskGenerator
 _C.DATA.MASK_PATCH_SIZE = 32
 # [SimMIM] Mask ratio for MaskGenerator
@@ -65,6 +85,14 @@ _C.MODEL.IN_CHANS = 3
 _C.MODEL.DROP_RATE = 0.0
 # Drop path rate
 _C.MODEL.DROP_PATH_RATE = 0.1
+# Head type for downstream dense-prediction tasks.
+_C.MODEL.HEAD = 'segmentation_head'
+# Number of output vertical bins for dense profile retrieval.
+_C.MODEL.OUTPUT_BINS = 206
+# Kernel size for dense profile heads.
+_C.MODEL.HEAD_KERNEL_SIZE = 1
+# Dropout before the dense profile head convolution.
+_C.MODEL.HEAD_DROPOUT = 0.0
 
 # Swin Transformer V2 parameters
 _C.MODEL.SWINV2 = CN()
@@ -97,6 +125,17 @@ _C.LOSS.EPS = 1e-7
 _C.LOSS.ALPHA = 0.5
 _C.LOSS.BETA = 0.5
 _C.LOSS.GAMMA = 1.0
+# Positive class reweighting for BCE-with-logits.
+_C.LOSS.POS_WEIGHT = 1.0
+
+# -----------------------------------------------------------------------------
+# Metrics settings
+# -----------------------------------------------------------------------------
+_C.METRICS = CN()
+# Probability threshold for binary metrics.
+_C.METRICS.THRESHOLD = 0.5
+# Optionally log IoU for every height bin at the end of validation.
+_C.METRICS.LOG_PER_HEIGHT_IOU = False
 
 # -----------------------------------------------------------------------------
 # Training settings
@@ -170,6 +209,17 @@ _C.DEEPSPEED.OVERLAP_COMM = True
 _C.TEST = CN()
 # Whether to use center crop when testing
 _C.TEST.CROP = True
+
+# -----------------------------------------------------------------------------
+# Plotting settings
+# -----------------------------------------------------------------------------
+_C.PLOTTING = CN()
+# Mean solar zenith angle below this threshold is considered daytime.
+_C.PLOTTING.DAY_NIGHT_SZA_THRESHOLD = 90.0
+# ABI channels used to render daytime true color, in raw 1-based channel ids.
+_C.PLOTTING.TRUE_COLOR_CHANNELS = [2, 3, 1]
+# ABI channel used to render nighttime infrared imagery, in raw 1-based ids.
+_C.PLOTTING.NIGHT_IR_CHANNEL = 14
 
 # -----------------------------------------------------------------------------
 # Misc

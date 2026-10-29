@@ -12,6 +12,7 @@ Python package for lots of Pytorch tools.
 ## Documentation
 
 - Latest: https://nasa-nccs-hpda.github.io/pytorch-caney/latest
+- EarthCARE dense-track 3D cloud task: [docs/earthcare_dense_track_readme.md](docs/earthcare_dense_track_readme.md)
 
 # pytorch-caney
 

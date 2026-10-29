@@ -1,0 +1,166 @@
+AMP_ENABLE: true
+BASE:
+- ''
+DATA:
+  BATCH_SIZE: 32
+  CURTAIN_AGGREGATION: majority
+  CURTAIN_AGGREGATION_THRESHOLD: 0.5
+  CURTAIN_EXCLUDE_BOTTOM_BINS: 0
+  CURTAIN_EXCLUDE_TOP_BINS: 0
+  CURTAIN_FILL_VALUE: null
+  CURTAIN_HEIGHT_KEY: height
+  CURTAIN_KEY: Cloud_mask
+  CURTAIN_VALID_KEY: cloud_mask_cpr_atlid_msi_1km
+  DATAMODULE: true
+  DATASET: MODIS
+  DATA_PATHS:
+  - /p/lustre5/smalley5/ecg_output
+  IMG_SIZE: 128
+  INPUT_CHANNELS:
+  - 2
+  - 3
+  - 1
+  - 5
+  - 6
+  - 7
+  - 4
+  - 9
+  - 10
+  - 11
+  - 12
+  - 14
+  - 15
+  - 16
+  INTERPOLATION: bicubic
+  LENGTH: 1920000
+  MASK_PATCH_SIZE: 32
+  MASK_PATHS:
+  - ''
+  MASK_RATIO: 0.6
+  NUM_WORKERS: 0
+  PIN_MEMORY: true
+  RETURN_METADATA: false
+  SOLAR_ZENITH_CHANNEL: 22
+  TEST_DATA_PATHS:
+  - /p/lustre5/smalley5/ecg_output
+  TRACK_COL_KEY: chip_col_idx
+  TRACK_ROW_KEY: chip_row_idx
+  VALIDATION_PATH: ''
+DATAMODULE: abitoa3dcloud_track
+DEEPSPEED:
+  ALLGATHER_BUCKET_SIZE: 500000000.0
+  CONTIGUOUS_GRADIENTS: true
+  OVERLAP_COMM: true
+  REDUCE_BUCKET_SIZE: 500000000.0
+  STAGE: 2
+EVAL_MODE: false
+FAST_DEV_RUN: false
+LOSS:
+  ALPHA: 0.5
+  BETA: 0.5
+  CLASSES: null
+  EPS: 1.0e-07
+  GAMMA: 1.0
+  IGNORE_INDEX: null
+  LOG: false
+  LOGITS: true
+  MODE: multiclass
+  NAME: bce
+  POS_WEIGHT: 1.0
+  SMOOTH: 0.0
+METRICS:
+  LOG_PER_HEIGHT_IOU: false
+  THRESHOLD: 0.5
+MODEL:
+  DECODER: denseprofiledecoder
+  DROP_PATH_RATE: 0.1
+  DROP_RATE: 0.0
+  ENCODER: fcn
+  HEAD: dense_profile_head
+  HEAD_DROPOUT: 0.0
+  HEAD_KERNEL_SIZE: 1
+  IN_CHANS: 14
+  NAME: 3dcloud-fcn-baseline
+  NUM_CLASSES: 17
+  OUTPUT_BINS: 206
+  PRETRAINED: ''
+  RESUME: ''
+  SWINV2:
+    APE: false
+    DEPTHS:
+    - 2
+    - 2
+    - 6
+    - 2
+    EMBED_DIM: 96
+    IN_CHANS: 3
+    MLP_RATIO: 4.0
+    NORM_PERIOD: 0
+    NORM_STAGE: false
+    NUM_HEADS:
+    - 3
+    - 6
+    - 12
+    - 24
+    PATCH_NORM: true
+    PATCH_SIZE: 4
+    PRETRAINED_WINDOW_SIZES:
+    - 0
+    - 0
+    - 0
+    - 0
+    QKV_BIAS: true
+    WINDOW_SIZE: 7
+  TYPE: swinv2
+OUTPUT: .
+PIPELINE: 3dcloud_track
+PLOTTING:
+  DAY_NIGHT_SZA_THRESHOLD: 90.0
+  NIGHT_IR_CHANNEL: 14
+  TRUE_COLOR_CHANNELS:
+  - 2
+  - 3
+  - 1
+PRECISION: '32'
+PRINT_FREQ: 1
+SAVE_FREQ: 50
+SEED: 42
+TAG: 3dcloud_task_fcn_baseline_128_scaled_bt_minmax_LOCAL_TEST_KEVIN
+TENSORBOARD:
+  WRITER_DIR: .
+TEST:
+  CROP: true
+TRAIN:
+  ACCELERATOR: gpu
+  ACCUMULATION_STEPS: 1
+  AUTO_RESUME: true
+  BASE_LR: 0.0003
+  CLIP_GRAD: 5.0
+  EPOCHS: 1
+  LAYER_DECAY: 1.0
+  LIMIT_TRAIN_BATCHES: true
+  LR_SCHEDULER:
+    CYCLE_PERCENTAGE: 0.3
+    DECAY_EPOCHS: 30
+    DECAY_RATE: 0.1
+    GAMMA: 0.1
+    MULTISTEPS:
+    - 700
+    NAME: multistep
+  MIN_LR: 0.0002
+  NUM_TRAIN_BATCHES: null
+  OPTIMIZER:
+    BETAS:
+    - 0.9
+    - 0.999
+    EPS: 1.0e-08
+    MOMENTUM: 0.9
+    NAME: adamw
+  START_EPOCH: 0
+  STRATEGY: auto
+  USE_CHECKPOINT: false
+  WARMUP_EPOCHS: 1
+  WARMUP_LR: 0.0001
+  WARMUP_STEPS: 200
+  WEIGHT_DECAY: 0.05
+VALIDATION_FREQ: 20

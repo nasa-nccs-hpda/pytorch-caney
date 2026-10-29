@@ -1,17 +1,27 @@
-PIPELINE: '3dcloud'
-DATAMODULE: 'abitoa3dcloud'
+PIPELINE: '3dcloud_track'
+DATAMODULE: 'abitoa3dcloud_track'
 MODEL:
   ENCODER: 'fcn'
-  DECODER: 'fcn'
+  DECODER: 'denseprofiledecoder'
+  HEAD: 'dense_profile_head'
   NAME: 3dcloud-fcn-baseline
   IN_CHANS: 14
+  OUTPUT_BINS: 206
   DROP_PATH_RATE: 0.1
 DATA:
-  BATCH_SIZE: 8  # Reduced from 32 for small dataset
+  BATCH_SIZE: 32  # Reduced from 32 for small dataset
   DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
   TEST_DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
   IMG_SIZE: 128
   NUM_WORKERS: 0
+  INPUT_CHANNELS: [2, 3, 1, 5, 6, 7, 4, 9, 10, 11, 12, 14, 15, 16]
+  SOLAR_ZENITH_CHANNEL: 22
+  CURTAIN_KEY: 'Cloud_mask'
+  CURTAIN_VALID_KEY: 'cloud_mask_cpr_atlid_msi_1km'
+  CURTAIN_HEIGHT_KEY: 'height'
+  TRACK_ROW_KEY: 'chip_row_idx'
+  TRACK_COL_KEY: 'chip_col_idx'
+  CURTAIN_AGGREGATION: 'majority'
 TRAIN:
   ACCELERATOR: 'gpu'
   STRATEGY: 'auto'
@@ -27,6 +37,9 @@ TRAIN:
     MULTISTEPS: [700,]
 LOSS:
   NAME: 'bce'
+  POS_WEIGHT: 1.0
+METRICS:
+  LOG_PER_HEIGHT_IOU: False
 PRINT_FREQ: 1
 SAVE_FREQ: 50
 VALIDATION_FREQ: 20
