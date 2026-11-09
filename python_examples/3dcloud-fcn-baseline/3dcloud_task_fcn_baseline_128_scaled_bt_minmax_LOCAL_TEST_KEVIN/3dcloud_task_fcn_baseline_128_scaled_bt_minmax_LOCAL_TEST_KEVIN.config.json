@@ -14,7 +14,7 @@ DATA:
   DATAMODULE: true
   DATASET: MODIS
   DATA_PATHS:
-  - /p/lustre5/smalley5/ecg_output
+  - /p/lustre5/smalley5/ecg_splits/training
   IMG_SIZE: 128
   INPUT_CHANNELS:
   - 2
@@ -42,7 +42,7 @@ DATA:
   RETURN_METADATA: false
   SOLAR_ZENITH_CHANNEL: 22
   TEST_DATA_PATHS:
-  - /p/lustre5/smalley5/ecg_output
+  - /p/lustre5/smalley5/ecg_splits/validation
   TRACK_COL_KEY: chip_col_idx
   TRACK_ROW_KEY: chip_row_idx
   VALIDATION_PATH: ''
@@ -72,11 +72,11 @@ METRICS:
   LOG_PER_HEIGHT_IOU: false
   THRESHOLD: 0.5
 MODEL:
-  DECODER: fcn
+  DECODER: denseprofiledecoder
   DROP_PATH_RATE: 0.1
   DROP_RATE: 0.0
   ENCODER: fcn
-  HEAD: segmentation_head
+  HEAD: dense_profile_head
   HEAD_DROPOUT: 0.0
   HEAD_KERNEL_SIZE: 1
   IN_CHANS: 14
@@ -163,4 +163,4 @@ TRAIN:
   WARMUP_LR: 0.0001
   WARMUP_STEPS: 200
   WEIGHT_DECAY: 0.05
-VALIDATION_FREQ: 20
+VALIDATION_FREQ: 1

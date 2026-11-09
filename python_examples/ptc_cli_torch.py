@@ -3,6 +3,7 @@ import math
 import os
 import random
 import sys
+from itertools import islice
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,7 @@ from torchmetrics.classification import (
     BinaryPrecision,
     BinaryRecall,
 )
+from tqdm.auto import tqdm
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -143,7 +145,7 @@ def get_transform_and_dataset_cls(config):
             f"Supported datamodules: {sorted(SUPPORTED_DATASETS)}"
         )
 
-    dataset_cls = SUPPORTED_DATASETS[config.DATAMODULE]
+    dataset_cls = SUPPORTED_DATASETS[config.DATAMODULE]  # set the correct dataset class
     transform = None
     if config.DATAMODULE in {"abitoa3dcloud", "abitoa3dcloud_track"}:
         transform = AbiToaTransform(config.DATA.IMG_SIZE)
@@ -151,15 +153,35 @@ def get_transform_and_dataset_cls(config):
     return dataset_cls, transform
 
 
-def build_datasets(config):
+def build_datasets(config, output_dir: str):
     dataset_cls, transform = get_transform_and_dataset_cls(config)
-    train_dataset = dataset_cls(config, config.DATA.DATA_PATHS, transform)
-    val_dataset = dataset_cls(config, config.DATA.TEST_DATA_PATHS, transform)
+    dataset_kwargs = {}
+    if config.DATAMODULE == "abitoa3dcloud_track":
+        dataset_kwargs["audit_dir"] = output_dir
+    train_dataset = dataset_cls(
+        config,
+        config.DATA.DATA_PATHS,
+        transform,
+        split="train",
+        **dataset_kwargs,
+    )
+    val_dataset = dataset_cls(
+        config,
+        config.DATA.TEST_DATA_PATHS,
+        transform,
+        split="val",
+        **dataset_kwargs,
+    )
     return train_dataset, val_dataset
 
 
-def build_dataloaders(config, inspect_mode: bool = False):
-    train_dataset, val_dataset = build_datasets(config)
+def build_dataloaders(config, output_dir: str, inspect_mode: bool = False):
+    train_dataset, val_dataset = build_datasets(config, output_dir)
+    # print(train_dataset)
+    # print(train_dataset)
+    # print("\n" * 5)
+    # print(val_dataset)
+    # exit()
     common_kwargs = {
         "batch_size": config.DATA.BATCH_SIZE,
         "num_workers": config.DATA.NUM_WORKERS,
@@ -461,6 +483,8 @@ def run_epoch(
     config,
     device,
     stage: str,
+    epoch: int,
+    total_epochs: int,
     max_batches: int | None,
     scheduler=None,
     scaler=None,
@@ -472,12 +496,30 @@ def run_epoch(
     amp_dtype = resolve_amp_dtype(config, device)
     amp_enabled = amp_dtype is not None
     batch_scheduler = scheduler is not None and scheduler_steps_on_batch(config)
+    total_batches = len(loader)
+    if max_batches is not None:
+        total_batches = min(total_batches, max(max_batches, 0))
 
-    for batch_idx, batch in enumerate(loader):
-        if max_batches is not None and batch_idx >= max_batches:
-            break
+    progress = tqdm(
+        enumerate(islice(loader, total_batches)),
+        total=total_batches,
+        desc=f"{stage.capitalize()} Epoch {epoch}/{total_epochs}",
+        unit="batch",
+        dynamic_ncols=True,
+    )
+    running_loss_sum = 0.0
+    running_loss_weight = 0
 
+    for batch_idx, batch in progress:
         inputs, labels, valid, _ = unpack_dense_track_batch(batch, device)
+
+        if not torch.isfinite(inputs).all():
+            nan_count = int(torch.isnan(inputs).sum().item())
+            inf_count = int(torch.isinf(inputs).sum().item())
+            raise ValueError(
+                f"Non-finite inputs detected in {stage} batch {batch_idx}: "
+                f"nan_count={nan_count}, inf_count={inf_count}"
+            )
 
         if is_train:
             optimizer.zero_grad(set_to_none=True)
@@ -486,11 +528,24 @@ def run_epoch(
             device_type=device.type, enabled=amp_enabled, dtype=amp_dtype
         ):
             logits = model(inputs)
+            if not torch.isfinite(logits).all():
+                nan_count = int(torch.isnan(logits).sum().item())
+                inf_count = int(torch.isinf(logits).sum().item())
+                raise ValueError(
+                    f"Non-finite logits detected in {stage} batch {batch_idx}: "
+                    f"nan_count={nan_count}, inf_count={inf_count}"
+                )
             loss, valid_count = masked_binary_cross_entropy_with_logits(
                 logits,
                 labels,
                 valid,
                 pos_weight=config.LOSS.POS_WEIGHT,
+            )
+
+        if not torch.isfinite(loss):
+            raise ValueError(
+                f"Non-finite loss detected in {stage} batch {batch_idx}: "
+                f"loss={loss.item()}"
             )
 
         did_optimizer_step = False
@@ -507,8 +562,11 @@ def run_epoch(
             if batch_scheduler:
                 scheduler.step()
 
-        if valid_count.item() > 0:
+        valid_count_value = int(valid_count.detach().item())
+        if valid_count_value > 0:
             metrics["loss"].update(loss.detach(), weight=valid_count.detach())
+            running_loss_sum += float(loss.detach()) * valid_count_value
+            running_loss_weight += valid_count_value
 
         preds, metric_targets = build_masked_metric_tensors(logits, labels, valid)
         if preds is not None:
@@ -528,18 +586,10 @@ def run_epoch(
                 threshold=config.METRICS.THRESHOLD,
             )
 
-        if batch_idx % max(config.PRINT_FREQ, 1) == 0:
-            current_lr = (
-                optimizer.param_groups[0]["lr"]
-                if optimizer is not None
-                else float("nan")
-            )
-            print(
-                f"[{stage}] batch={batch_idx} "
-                f"loss={float(loss.detach()):.6f} "
-                f"valid_count={int(valid_count.detach())} "
-                f"lr={current_lr:.6g}"
-            )
+        running_loss = (
+            running_loss_sum / running_loss_weight if running_loss_weight > 0 else 0.0
+        )
+        progress.set_postfix(loss=f"{running_loss:.6f}")
 
     if scheduler is not None and not batch_scheduler and is_train and not no_backward:
         scheduler.step()
@@ -561,7 +611,9 @@ def print_epoch_summary(stage: str, epoch: int, summary: dict):
 
 
 def manual_fit(config, output_dir: str, device: torch.device, args):
-    train_loader, val_loader = build_dataloaders(config, inspect_mode=False)
+    train_loader, val_loader = build_dataloaders(
+        config, output_dir=output_dir, inspect_mode=False
+    )
     model = build_dense_track_model(config).to(device)
 
     if config.MODEL.RESUME:
@@ -597,6 +649,8 @@ def manual_fit(config, output_dir: str, device: torch.device, args):
             config,
             device,
             stage="train",
+            epoch=epoch,
+            total_epochs=epochs,
             max_batches=max_train_batches,
             scheduler=scheduler,
             scaler=scaler,
@@ -604,8 +658,11 @@ def manual_fit(config, output_dir: str, device: torch.device, args):
         )
         print_epoch_summary("train", epoch, train_summary)
 
+        # should_validate = not args.disable_validation and (
+        #    config.VALIDATION_FREQ <= 1 or epoch % config.VALIDATION_FREQ == 0
+        # )
         should_validate = not args.disable_validation and (
-            config.VALIDATION_FREQ <= 1 or epoch % config.VALIDATION_FREQ == 0
+            epoch % config.VALIDATION_FREQ == 0
         )
         if should_validate:
             with torch.no_grad():
@@ -616,12 +673,15 @@ def manual_fit(config, output_dir: str, device: torch.device, args):
                     config,
                     device,
                     stage="val",
+                    epoch=epoch,
+                    total_epochs=epochs,
                     max_batches=max_val_batches,
                     scheduler=None,
                     scaler=None,
                     no_backward=True,
                 )
             print_epoch_summary("val", epoch, val_summary)
+        exit()
 
 
 def main():
@@ -643,7 +703,9 @@ def main():
     print(f"Full config saved to {path}")
 
     if args.mode == "inspect":
-        train_loader, val_loader = build_dataloaders(config, inspect_mode=True)
+        train_loader, val_loader = build_dataloaders(
+            config, output_dir=output_dir, inspect_mode=True
+        )
         loader = train_loader if args.inspect_loader == "train" else val_loader
         inspect_loader_batch(loader, args.inspect_batch_index, args.inspect_loader)
         return
