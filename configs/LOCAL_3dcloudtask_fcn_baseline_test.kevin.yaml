@@ -10,8 +10,8 @@ MODEL:
   DROP_PATH_RATE: 0.1
 DATA:
   BATCH_SIZE: 32  # Reduced from 32 for small dataset
-  DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
-  TEST_DATA_PATHS: [/p/lustre5/smalley5/ecg_output]
+  DATA_PATHS: [/p/lustre5/smalley5/ecg_splits/training]
+  TEST_DATA_PATHS: [/p/lustre5/smalley5/ecg_splits/validation]
   IMG_SIZE: 128
   NUM_WORKERS: 0
   INPUT_CHANNELS: [2, 3, 1, 5, 6, 7, 4, 9, 10, 11, 12, 14, 15, 16]
@@ -41,6 +41,6 @@ LOSS:
 METRICS:
   LOG_PER_HEIGHT_IOU: False
 PRINT_FREQ: 1
-SAVE_FREQ: 50
-VALIDATION_FREQ: 20
+SAVE_FREQ: 2
+VALIDATION_FREQ: 1
 TAG: 3dcloud_task_fcn_baseline_128_scaled_bt_minmax_LOCAL_TEST_KEVIN
