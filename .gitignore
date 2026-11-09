@@ -130,3 +130,6 @@ dmypy.json
 
 #data files
 *.csv
+
+#outut directories
+3dcloud-fcn-baseline/
