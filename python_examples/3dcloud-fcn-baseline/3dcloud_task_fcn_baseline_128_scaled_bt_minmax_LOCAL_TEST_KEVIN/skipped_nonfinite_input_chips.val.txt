@@ -1,1 +1,0 @@
-sample_path	nonfinite_count	selected_channel_indices	abi_channel_numbers	all_nonfinite_selected_channels
