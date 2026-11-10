@@ -1,9 +1,7 @@
 from pathlib import Path
 
 import numpy as np
-import pytest
-import torch
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader
 
 from pytorch_caney.configs.config import _C
 from pytorch_caney.datasets.abi_3dcloud_track_dataset import AbiToa3DCloudTrackDataset
@@ -211,3 +209,48 @@ def test_dataset_collates_variable_track_lengths(tmp_path):
 def test_channel_selection_uses_requested_order():
     indices = channel_numbers_to_indices([2, 3, 1, 5])
     assert indices == [1, 2, 0, 4]
+
+
+def test_dataset_drops_nonfinite_selected_input_and_writes_audit(tmp_path):
+    config = make_config(tmp_path)
+    raw_channels = 22
+
+    finite_chip = np.ones((8, 8, raw_channels), dtype=np.float32)
+    finite_chip[..., 21] = 45.0
+    bad_chip = finite_chip.copy()
+    # Selected channel index 0 corresponds to raw channel number 2.
+    bad_chip[0, 0, 1] = np.nan
+
+    curtain = np.array([[1, 0, 1, 0], [0, 1, 0, 1]], dtype=bool)
+    valid_source = np.ones_like(curtain, dtype=np.float32)
+    rows = np.array([0, 1], dtype=np.int32)
+    cols = np.array([0, 1], dtype=np.int32)
+
+    bad_path = tmp_path / 'bad_sample.npz'
+    good_path = tmp_path / 'good_sample.npz'
+    write_sample(bad_path, bad_chip, curtain, valid_source, rows, cols)
+    write_sample(good_path, finite_chip, curtain, valid_source, rows, cols)
+
+    audit_dir = tmp_path / 'audit'
+    dataset = AbiToa3DCloudTrackDataset(
+        config,
+        config.DATA.DATA_PATHS,
+        transform=None,
+        split='train',
+        audit_dir=audit_dir,
+    )
+
+    assert len(dataset) == 1
+    assert dataset.image_list == [str(good_path)]
+    assert len(dataset.skipped_nonfinite_files) == 1
+    skipped = dataset.skipped_nonfinite_files[0]
+    assert skipped['sample_path'] == str(bad_path)
+    assert skipped['nonfinite_count'] == 1
+    assert skipped['selected_channel_indices'] == [0]
+    assert skipped['abi_channel_numbers'] == [2]
+
+    audit_file = audit_dir / 'skipped_nonfinite_input_chips.train.txt'
+    assert audit_file.exists()
+    contents = audit_file.read_text()
+    assert 'sample_path\tnonfinite_count\tselected_channel_indices\tabi_channel_numbers\tall_nonfinite_selected_channels' in contents
+    assert str(bad_path) in contents
