@@ -25,8 +25,8 @@ DATA:
 TRAIN:
   ACCELERATOR: 'gpu'
   STRATEGY: 'auto'
-  EPOCHS: 2  # Reduced from 50 for quick test
-  WARMUP_EPOCHS: 1  # Reduced from 10
+  EPOCHS: 20  # Reduced from 50 for quick test
+  WARMUP_EPOCHS: 10  # Reduced from 10
   BASE_LR: 3e-4
   MIN_LR: 2e-4
   WARMUP_LR: 1e-4
@@ -41,6 +41,6 @@ LOSS:
 METRICS:
   LOG_PER_HEIGHT_IOU: False
 PRINT_FREQ: 1
-SAVE_FREQ: 2
+SAVE_FREQ: 5
 VALIDATION_FREQ: 1
 TAG: 3dcloud_task_fcn_baseline_128_scaled_bt_minmax_LOCAL_TEST_KEVIN
