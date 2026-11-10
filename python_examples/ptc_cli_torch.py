@@ -11,6 +11,7 @@ import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingLR, MultiStepLR, OneCycleLR, StepLR
 from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
 from torchmetrics import MeanMetric
 from torchmetrics.classification import (
     BinaryF1Score,
@@ -637,51 +638,58 @@ def manual_fit(config, output_dir: str, device: torch.device, args):
     )
     max_val_batches = resolve_max_batches(args.max_val_batches, False, None)
     epochs = config.TRAIN.EPOCHS
+    writer_dir = Path(config.TENSORBOARD.WRITER_DIR).expanduser()
+    if not writer_dir.is_absolute():
+        writer_dir = Path(output_dir) / writer_dir
 
     print(f"Fitting plain PyTorch model on {device}")
     print(f"Output directory: {output_dir}")
+    print(f"TensorBoard directory: {writer_dir}")
 
-    for epoch in range(1, epochs + 1):
-        train_summary = run_epoch(
-            model,
-            train_loader,
-            optimizer,
-            config,
-            device,
-            stage="train",
-            epoch=epoch,
-            total_epochs=epochs,
-            max_batches=max_train_batches,
-            scheduler=scheduler,
-            scaler=scaler,
-            no_backward=args.no_backward,
-        )
-        print_epoch_summary("train", epoch, train_summary)
+    with SummaryWriter(log_dir=str(writer_dir)) as writer:
+        for epoch in range(1, epochs + 1):
+            train_summary = run_epoch(
+                model,
+                train_loader,
+                optimizer,
+                config,
+                device,
+                stage="train",
+                epoch=epoch,
+                total_epochs=epochs,
+                max_batches=max_train_batches,
+                scheduler=scheduler,
+                scaler=scaler,
+                no_backward=args.no_backward,
+            )
+            print_epoch_summary("train", epoch, train_summary)
+            epoch_losses = {"train": train_summary["loss"]}
 
-        # should_validate = not args.disable_validation and (
-        #    config.VALIDATION_FREQ <= 1 or epoch % config.VALIDATION_FREQ == 0
-        # )
-        should_validate = not args.disable_validation and (
-            epoch % config.VALIDATION_FREQ == 0
-        )
-        if should_validate:
-            with torch.no_grad():
-                val_summary = run_epoch(
-                    model,
-                    val_loader,
-                    optimizer,
-                    config,
-                    device,
-                    stage="val",
-                    epoch=epoch,
-                    total_epochs=epochs,
-                    max_batches=max_val_batches,
-                    scheduler=None,
-                    scaler=None,
-                    no_backward=True,
-                )
-            print_epoch_summary("val", epoch, val_summary)
-        exit()
+            should_validate = not args.disable_validation and (
+                epoch % config.VALIDATION_FREQ == 0
+            )
+            if should_validate:
+                with torch.no_grad():
+                    val_summary = run_epoch(
+                        model,
+                        val_loader,
+                        optimizer,
+                        config,
+                        device,
+                        stage="val",
+                        epoch=epoch,
+                        total_epochs=epochs,
+                        max_batches=max_val_batches,
+                        scheduler=None,
+                        scaler=None,
+                        no_backward=True,
+                    )
+                print_epoch_summary("val", epoch, val_summary)
+                epoch_losses["validation"] = val_summary["loss"]
+
+            writer.add_scalars("loss", epoch_losses, global_step=epoch)
+            if epoch % config.SAVE_FREQ == 0:
+                writer.flush()
 
 
 def main():
