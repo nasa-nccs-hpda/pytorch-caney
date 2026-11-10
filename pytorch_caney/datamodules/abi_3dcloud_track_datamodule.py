@@ -1,4 +1,5 @@
 import lightning as L
+from pathlib import Path
 from torch.utils.data import DataLoader
 
 from pytorch_caney.datasets.abi_3dcloud_track_dataset import AbiToa3DCloudTrackDataset
@@ -15,6 +16,7 @@ class AbiToa3DCloudTrackDataModule(L.LightningDataModule):
         self.batch_size = config.DATA.BATCH_SIZE
         self.num_workers = config.DATA.NUM_WORKERS
         self.pin_memory = config.DATA.PIN_MEMORY
+        self.output_dir = Path(config.OUTPUT) / config.MODEL.NAME / config.TAG
 
     def setup(self, stage: str) -> None:
         if stage in ['fit']:
@@ -22,18 +24,24 @@ class AbiToa3DCloudTrackDataModule(L.LightningDataModule):
                 self.config,
                 self.train_data_paths,
                 self.transform,
+                split='train',
+                audit_dir=self.output_dir,
             )
         if stage in ['fit', 'validate']:
             self.val_dataset = AbiToa3DCloudTrackDataset(
                 self.config,
                 self.test_data_paths,
                 self.transform,
+                split='val',
+                audit_dir=self.output_dir,
             )
         if stage in ['test']:
             self.test_dataset = AbiToa3DCloudTrackDataset(
                 self.config,
                 self.test_data_paths,
                 self.transform,
+                split='test',
+                audit_dir=self.output_dir,
             )
 
     def train_dataloader(self):
